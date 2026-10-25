@@ -1,131 +1,36 @@
-name: hourly-update
+name: deploy-on-push
 
-# 每小时第 7 分钟跑管线：链上读取器生成原始数据 → 适配器（可信过滤）
-# 生成 dist/data/pools.json + lp.json → 存档到 data-history 分支 →
-# 异动（movers）→ 数据质量门（降级时自动恢复上一轮 feed）→ Wrangler
-# Direct Upload 部署到 Cloudflare Pages（不消耗 Pages 构建额度）。
-# 接口约定见 reader/README.md 与 deploy/README.md。
+# Muse 托管模式（切换后启用，本文件现为草案，勿直接提交）：
+# 数据由 Muse 侧每小时管线在本地生成（reader → adapter → movers →
+# 质量门），过门后经 GitHub API 把 dist/data/ 四个文件一次性提交
+# 到 main；本工作流只负责把仓库当前 dist/ 部署到 Cloudflare Pages。
+#
+# 与旧 hourly-update.yml 的差异见 hosting/WORKFLOW-DIFF.md。
+# 启用方式：切换时以本文件内容覆盖 .github/workflows/hourly-update.yml
+# （同名替换，避免仓库里同时存在两个部署工作流）。
+
 on:
-  schedule:
-    - cron: "7 * * * *"
-    - cron: "37 * * * *"
+  push:
+    paths:
+      - "dist/**"
   workflow_dispatch: {}
 
 concurrency:
-  group: hourly-update
+  group: deploy-on-push
   cancel-in-progress: false
 
-# 存档步要把每轮 feed 推到 data-history 分支，必须给 GITHUB_TOKEN 写权限。
-# 注意：仓库 Settings → Actions → General → Workflow permissions 还必须
-# 选「Read and write permissions」。个人账号新建仓库默认是受限项
-# （contents / packages 仅只读），该设置是权限上限，本文件的声明
-# 突破不了它 —— 不改设置的话存档步的 push 会 403（已做降级处理：
-# 记 warning、写进 status.json，不阻断部署）。
+# 只读检出即可：存档推送与数据提交都走 Muse 侧的 API 令牌，
+# Actions 不再往仓库写任何东西。
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  update:
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Fetch previous live feeds (quality gate baseline)
-        # 开工先把线上现行 feed 抓到 prev/，供质量门对比与降级恢复。
-        # 拿不到（首次运行 / 文件尚不存在）就跳过，质量门会跳过对比类检查。
-        run: |
-          mkdir -p prev
-          curl -fsSL --max-time 60 https://aerodash.xyz/data/pools.json -o prev/pools.json || rm -f prev/pools.json
-          curl -fsSL --max-time 60 https://aerodash.xyz/data/lp.json -o prev/lp.json || rm -f prev/lp.json
-          ls -la prev/ || true
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install deps
-        run: pip install "web3==8.*" requests
-
-      - name: Run on-chain reader (raw)
-        # 第 1 步：链上直读原始数据（时长见 reader/README.md）。
-        # AERO_ALCHEMY_KEY 存在时读取器优先用 Alchemy 专用端点（7 链），
-        # 公共端点作回退；Secret 未配置时自动全程走公共端点。
-        env:
-          AERO_ALCHEMY_KEY: ${{ secrets.ALCHEMY_API_KEY }}
-        run: python reader/reader.py --out raw_pools.json
-
-      - name: Convert to page format (trust filter)
-        # 第 2 步：适配为页面格式 dist/data/pools.json（仅双代币
-        # Coinbase 定价的可信池进墙，规则见 reader/README.md），
-        # 并同时生成 LP 页数据 dist/data/lp.json。
-        run: python reader/to_page_json.py --in raw_pools.json --out dist/data/pools.json --lp-out dist/data/lp.json
-
-      - name: Checkout data-history branch
-        # 第 3 步前置：把存档分支 checkout 到 history-repo/ 子目录，
-        # 供存档步写入、供 movers 读取。分支还不存在时本步失败
-        # （continue-on-error），存档步会自行初始化 orphan 分支。
-        id: history_checkout
-        continue-on-error: true
-        uses: actions/checkout@v4
-        with:
-          ref: data-history
-          path: history-repo
-          fetch-depth: 1
-
-      - name: Archive feeds to data-history
-        # 第 3 步：把本轮 pools.json / lp.json 以 gzip 存入 data-history
-        # 分支 history/YYYY/MM/DD/{pools,lp}-HHMM.json.gz（时间取 feed
-        # 的 generated_at，UTC）。任何失败只往 archive_warnings.txt
-        # 记一行（质量门会收进 status.json 的 warnings），绝不阻断部署。
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          WARN="$PWD/archive_warnings.txt"
-          : > "$WARN"
-          note_fail() { echo "history archive failed: $1" >> "$WARN"; echo "::warning::history archive failed: $1"; }
-          if [ ! -d history-repo/.git ]; then
-            rm -rf history-repo && mkdir -p history-repo
-            cd history-repo
-            git init -q -b data-history 2>/dev/null || { git init -q && git checkout -q --orphan data-history; }
-            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-            cd ..
-          fi
-          read -r Y M D HM <<< "$(python3 -c "
-          import json
-          try:
-              g = json.load(open('dist/data/pools.json'))['generated_at']
-              print(g[0:4], g[5:7], g[8:10], g[11:13] + g[14:16])
-          except Exception:
-              pass
-          ")"
-          if [ -z "${Y:-}" ]; then note_fail "cannot parse dist/data/pools.json generated_at"; exit 0; fi
-          DEST="history-repo/history/$Y/$M/$D"
-          mkdir -p "$DEST"
-          gzip -c dist/data/pools.json > "$DEST/pools-$HM.json.gz" || { note_fail "gzip pools.json"; exit 0; }
-          if [ -f dist/data/lp.json ]; then
-            gzip -c dist/data/lp.json > "$DEST/lp-$HM.json.gz" || note_fail "gzip lp.json"
-          fi
-          cd history-repo
-          git add history
-          if git diff --cached --quiet; then echo "archive: nothing new to commit"; exit 0; fi
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -q -m "history: $Y-$M-$D $HM UTC" || { note_fail "git commit"; exit 0; }
-          git push -q origin HEAD:data-history || note_fail "git push to data-history (needs Settings -> Actions -> Workflow permissions = Read and write)"
-
-      - name: Build movers (24h allocation deltas)
-        # 第 4 步：用存档快照算 24h Allocation 异动，写
-        # dist/data/movers.json。历史不足时 ready=false，失败不阻断。
-        continue-on-error: true
-        run: python reader/movers.py --history-dir history-repo/history --out dist/data/movers.json
-
-      - name: Quality gate (may restore previous feeds)
-        # 第 5 步：数据质量门。硬失败时把 prev/ 的上一轮 feed 覆盖回
-        # dist/data/（保留好数据）并照常部署；无论结果都写
-        # dist/data/status.json（契约见 deploy/README.md）。
-        run: python reader/quality_gate.py --pools dist/data/pools.json --lp dist/data/lp.json --prev-dir prev --raw raw_pools.json --status-out dist/data/status.json --warnings-file archive_warnings.txt
 
       - name: Deploy to Cloudflare Pages (Direct Upload)
         uses: cloudflare/wrangler-action@v3
