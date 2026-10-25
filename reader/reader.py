@@ -14,7 +14,17 @@ emission rate min(weight * emissionsPerVP / 1e18, emissionCap) from
 LeafVoter + FactoryRegistry, and derived aero_apr_pct / fees_apr_pct;
 fees_window_partial flags pools whose tape history is < 48h (their
 fee delta covers window_seconds, a sub-window of the trailing 48h).
-Prices: Coinbase spot API for majors + on-chain spot propagation.
+Prices: Coinbase spot API for majors + on-chain spot propagation,
+then the v15 price sanity gate (see price_gate below): Coinbase is
+matched by SYMBOL, so a same-symbol different-asset listing poisons
+the seed -- the Robinhood "Index" token was priced $0.3034 against a
+$0.0055 on-chain consensus (+55x, inflating its pool's fees/TVL/APR
+together), and the Robinhood "AI" token $0.0183 against $0.054-0.056
+(-3x); both 2026-10-25, swap-log-verified (caliber_check/). The gate
+confronts every adopted price with a depth-weighted cross-pool spot
+consensus and corrects or flags >2x disagreements BEFORE any USD
+figure is computed. Normal tokens (PEPE, ENA) sit within a few
+percent of their pool spots, so the 2x line never touches them.
 NO DefiLlama anywhere. eth_call only; no keys, no signing.
 
 Run: ~/workspace/hbtc-miner/venv/bin/python reader.py [--chains base,...]
@@ -46,6 +56,17 @@ from web3 import Web3
 HERE = os.path.dirname(os.path.abspath(__file__))
 WINDOW = 172800  # 48h in seconds
 ANNUALIZE = 365.25 * 24 * 3600 / WINDOW  # 182.625
+# ---- price sanity gate thresholds (v15) -----------------------------------
+# Basis (caliber_check/, 2026-10-25): the two observed poisonings deviated
+# 55x (Index, overpriced) and ~3x (AI, underpriced) from their pools' spot
+# consensus, while healthy Coinbase-matched tokens (PEPE, ENA, WETH, the
+# stables) agree with their pool spots within a few percent. A 2x trip
+# line sits far above healthy noise and far below both observed failures,
+# in either direction.
+PRICE_GATE_DEVIATION = 2.0        # adopted/consensus ratio that trips the gate
+PRICE_GATE_MIN_POOLS = 2          # distinct pools backing a trusted consensus
+PRICE_GATE_MIN_DEPTH_USD = 5000.0  # ...or one pool with >= this counterparty-side USD depth
+PRICE_GATE_SPREAD_MAX = 4.0       # implied prices disagreeing by more than this = no reliable consensus
 MULTICALL3 = "0xcA11bde05977b3631167028862bF2a173976CA11"
 POOL_TAPE = "0x34bdD64B19D8631F936c2D07F19AAa6B83515992"
 CL_POOL_TAPE = "0x27D5EB73e7406675F6B0CbD037490ec3dba935a4"
@@ -877,7 +898,193 @@ def price_tokens(records, cb_prices):
     return prices
 
 
-def finalize(records, prices, cb_prices, aero_usd, now_by_chain, block_by_chain):
+def _spot_of(rec):
+    """token1-per-token0 spot in human units, or None. Same convention
+    as price_tokens' propagation (CL: sqrtPriceX96; Basic: reserves)."""
+    d0, d1 = rec.get("dec0"), rec.get("dec1")
+    if d0 is None or d1 is None:
+        return None
+    if rec["kind"] == "cl" and rec.get("sqrtPriceX96"):
+        sp = rec["sqrtPriceX96"] / 2 ** 96
+        return sp * sp * 10 ** (d0 - d1)
+    if rec.get("reserve0") and rec.get("reserve1"):
+        return (rec["reserve1"] / 10 ** d1) / (rec["reserve0"] / 10 ** d0)
+    return None
+
+
+def _weighted_median(obs):
+    """obs: list of (value, weight) with weight > 0. Depth-weighted
+    median: the value at which cumulative weight reaches half the
+    total. Robust to one manipulated thin pool when deeper pools
+    agree."""
+    srt = sorted(obs)
+    total = sum(w for _, w in srt)
+    if total <= 0:
+        return None
+    acc = 0.0
+    for v, w in srt:
+        acc += w
+        if acc >= total / 2:
+            return v
+    return srt[-1][0]
+
+
+def _consensus(obs):
+    """obs: list of (implied_usd, depth_usd, pool). -> (median,
+    supported, n_pools, spread) or None when there are no usable
+    observations. Supported = at least PRICE_GATE_MIN_POOLS distinct
+    pools, or a single pool whose counterparty-side depth reaches
+    PRICE_GATE_MIN_DEPTH_USD; and the implied prices must cohere
+    (max/min <= PRICE_GATE_SPREAD_MAX) -- pools disagreeing wildly
+    are not a consensus."""
+    usable = [(v, w) for v, w, _ in obs if v > 0 and w > 0]
+    if not usable:
+        return None
+    pools = {p for _, _, p in obs}
+    spread = max(v for v, _ in usable) / min(v for v, _ in usable)
+    supported = (len(pools) >= PRICE_GATE_MIN_POOLS
+                 or max(w for _, w in usable) >= PRICE_GATE_MIN_DEPTH_USD)
+    if spread > PRICE_GATE_SPREAD_MAX:
+        supported = False
+    return _weighted_median(usable), supported, len(pools), spread
+
+
+def price_gate(records, prices):
+    """Price sanity gate (v15): adopted price vs cross-pool spot
+    consensus, per (chain, token).
+
+    For every pool a token appears in, the pool's spot ratio x the
+    counterparty's price implies a USD price for the token; the
+    depth-weighted median across pools (weight = counterparty-side
+    USD balance) is its consensus. When the adopted price disagrees
+    with a SUPPORTED consensus by more than PRICE_GATE_DEVIATION
+    (either direction), the adopted price is replaced by the
+    consensus and the token is marked corrected (price_source
+    becomes "spot_consensus"; the original price is kept in the
+    report). When implied prices exist and disagree by >2x but no
+    consensus is supported, the token is marked price_unverified --
+    its USD figures stay in the raw output under that flag and the
+    adapter excludes its pools from both feeds.
+
+    Trust discipline (the subtle part): an implied price is only
+    evidence when the COUNTERPARTY's price is trustworthy -- a
+    poisoned counterparty would otherwise indict the innocent side
+    of every pool it sits in (in testing, the poisoned Index seed
+    made WETH and USDG themselves look 55x off). So observations
+    are drawn only from TRUSTED counterparties. Trust starts from
+    seed anchors -- Coinbase-priced tokens that are canonical majors
+    (the CB_ALIAS family: WETH/ETH, WBTC/cbBTC/BTC) or sit at the
+    USD peg (Coinbase price within 2% of $1) -- and grows in rounds:
+    a token whose price is confirmed by a supported trusted
+    consensus (deviation <= 2x) becomes trusted, as does a token
+    corrected to its consensus. Rounds repeat until neither trust
+    nor any price changes (max 8). Prices propagated FROM a
+    poisoned seed are therefore re-judged once the seed is
+    corrected, and long-tail tokens validate in dependency order.
+    A seed anchor itself is never auto-corrected (its Coinbase
+    price is the prior); if trusted evidence refutes it by >2x it
+    is flagged price_unverified instead, which quarantines its
+    pools without rewriting the anchor.
+
+    Returns (effective_prices, report) where report maps
+    (chain, token) -> {symbol, corrected, unverified, original_usd,
+    consensus_usd, deviation, support_pools}; deviation is measured
+    against the ORIGINAL adopted price."""
+    appearances = {}
+    symbols = {}
+    for rec in records:
+        t0, t1 = rec.get("token0"), rec.get("token1")
+        if t0:
+            symbols[(rec["chain"], t0)] = rec.get("symbol0")
+        if t1:
+            symbols[(rec["chain"], t1)] = rec.get("symbol1")
+        spot = _spot_of(rec)
+        if not spot or not t0 or not t1:
+            continue
+        chain = rec["chain"]
+        b0, b1 = rec.get("balance0_raw"), rec.get("balance1_raw")
+        appearances.setdefault((chain, t0), []).append(
+            {"cp": (chain, t1), "spot": spot, "side": 0,
+             "cp_bal": (b1 / 10 ** rec["dec1"] if b1 is not None else None),
+             "pool": rec["pool"]})
+        appearances.setdefault((chain, t1), []).append(
+            {"cp": (chain, t0), "spot": spot, "side": 1,
+             "cp_bal": (b0 / 10 ** rec["dec0"] if b0 is not None else None),
+             "pool": rec["pool"]})
+
+    alias_family = set(CB_ALIAS) | set(CB_ALIAS.values())
+    seeds = set()
+    for key, (usd, via) in prices.items():
+        if via != "coinbase":
+            continue
+        sym = symbols.get(key)
+        if sym in alias_family or 0.98 <= usd <= 1.02:
+            seeds.add(key)
+
+    effective = dict(prices)
+    trusted = set(seeds)
+    state = {}
+    for _round in range(8):
+        changed = False
+        new_trusted = set(trusted)
+        new_state = {}
+        for key, adopted in list(effective.items()):
+            orig = prices.get(key, (None, None))[0]
+            st = {"symbol": symbols.get(key),
+                  "corrected": state.get(key, {}).get("corrected", False),
+                  "unverified": False,
+                  "original_usd": orig,
+                  "consensus_usd": None, "deviation": None,
+                  "support_pools": None}
+            obs = []
+            for a in appearances.get(key) or []:
+                if a["cp"] not in trusted:
+                    continue  # only trusted counterparties are evidence
+                cp_eff = effective.get(a["cp"])
+                if cp_eff is None:
+                    continue
+                implied = (cp_eff[0] * a["spot"] if a["side"] == 0
+                           else cp_eff[0] / a["spot"])
+                depth = (a["cp_bal"] * cp_eff[0]
+                         if a["cp_bal"] is not None else 0.0)
+                obs.append((implied, depth, a["pool"]))
+            cons = _consensus(obs)
+            if cons is not None:
+                val, supported, npools, _spread = cons
+                st["consensus_usd"] = val
+                st["support_pools"] = npools
+                if orig:
+                    st["deviation"] = max(orig / val, val / orig)
+                dev_now = (max(adopted[0] / val, val / adopted[0])
+                           if val > 0 else float("inf"))
+                if supported and dev_now > PRICE_GATE_DEVIATION:
+                    if key in seeds:
+                        st["unverified"] = True  # never rewrite an anchor
+                    else:
+                        effective[key] = (val, "spot_consensus")
+                        changed = True
+                        st["corrected"] = True
+                        new_trusted.add(key)
+                elif supported and dev_now <= PRICE_GATE_DEVIATION:
+                    new_trusted.add(key)
+                    if st["corrected"] and \
+                            abs(adopted[0] - val) > val * 0.001:
+                        # Keep a corrected price glued to the
+                        # (possibly refined) consensus.
+                        effective[key] = (val, "spot_consensus")
+                        changed = True
+                elif dev_now > PRICE_GATE_DEVIATION and not st["corrected"]:
+                    st["unverified"] = True
+            new_state[key] = st
+        state = new_state
+        if new_trusted == trusted and not changed:
+            break
+        trusted = new_trusted
+    return effective, state
+
+
+def finalize(records, prices, cb_prices, aero_usd, now_by_chain, block_by_chain,
+             token_gate=None):
     out = []
     for rec in records:
         chain = rec["chain"]
@@ -901,14 +1108,32 @@ def finalize(records, prices, cb_prices, aero_usd, now_by_chain, block_by_chain)
         r["priced"] = bool(p0 and p1)
         r["price_via"] = {"token0": p0[1] if p0 else None,
                           "token1": p1[1] if p1 else None}
+        # Price gate flags (v15): a pool is price_unverified when either
+        # token's adopted price disagreed >2x with an unsupported spot
+        # consensus; the adapter excludes such pools from both feeds.
+        def _unv(tok):
+            if not token_gate or not tok:
+                return False
+            return bool(token_gate.get((chain, tok), {}).get("unverified"))
+        r["price_unverified"] = (_unv(rec.get("token0"))
+                                  or _unv(rec.get("token1")))
         fees = mev = None
-        if r["priced"] and rec.get("fee_raw") and rec.get("dec0") is not None:
+        f0 = f1 = None
+        if (rec.get("fee_raw") and rec.get("dec0") is not None
+                and rec.get("dec1") is not None):
+            # Raw fee token amounts (human units, price-independent --
+            # the caliber arbitration data) are always persisted when
+            # read; USD values additionally need both prices.
             f0 = rec["fee_raw"][0] / 10 ** rec["dec0"]
             f1 = rec["fee_raw"][1] / 10 ** rec["dec1"]
-            m0 = rec["mev_raw"][0] / 10 ** rec["dec0"]
-            m1 = rec["mev_raw"][1] / 10 ** rec["dec1"]
-            fees = f0 * p0[0] + f1 * p1[0]
-            mev = m0 * p0[0] + m1 * p1[0]
+            mev_raw = rec.get("mev_raw") or (0, 0)
+            m0 = mev_raw[0] / 10 ** rec["dec0"]
+            m1 = mev_raw[1] / 10 ** rec["dec1"]
+            if r["priced"]:
+                fees = f0 * p0[0] + f1 * p1[0]
+                mev = m0 * p0[0] + m1 * p1[0]
+        r["fees_token0"] = f0
+        r["fees_token1"] = f1
         r["fees48h_usd"] = fees
         r["mev48h_usd"] = mev
         def price_raw(raw_list):
@@ -1097,11 +1322,59 @@ def main():
     print("coinbase priced symbols:", len(cb), "AERO:", aero_usd, flush=True)
 
     prices = price_tokens(all_records, cb)
+    prices, token_gate = price_gate(all_records, prices)
+    for (chain, token), st in sorted(token_gate.items()):
+        if st.get("corrected"):
+            print(f"price gate: CORRECTED {chain} {st.get('symbol')} "
+                  f"({token}) {st['original_usd']} -> "
+                  f"{st['consensus_usd']} (deviation "
+                  f"{st['deviation']:.1f}x, {st['support_pools']} pools)",
+                  flush=True)
+        elif st.get("unverified"):
+            print(f"price gate: UNVERIFIED {chain} {st.get('symbol')} "
+                  f"({token}) adopted {st['original_usd']} vs implied "
+                  f"{st['consensus_usd']} (deviation "
+                  f"{st['deviation']:.1f}x, support insufficient)",
+                  flush=True)
     final = finalize(all_records, prices, cb, aero_usd, now_by_chain,
-                     block_by_chain)
+                     block_by_chain, token_gate)
+    # Per-token price persistence (v15): the adopted price actually
+    # used for every USD figure, its source, and the gate's verdict --
+    # the arbitration record for any future caliber dispute.
+    token_prices = []
+    for (chain, token) in sorted(prices):
+        usd, via = prices[(chain, token)]
+        st = token_gate.get((chain, token), {})
+        entry = {"chain": chain, "token": token,
+                 "symbol": st.get("symbol"), "price_usd": usd,
+                 "price_source": via,
+                 "price_corrected": bool(st.get("corrected"))}
+        if st.get("corrected"):
+            entry["price_original_usd"] = st.get("original_usd")
+        if st.get("unverified"):
+            entry["price_unverified"] = True
+        if st.get("consensus_usd"):
+            entry["consensus_usd"] = st["consensus_usd"]
+            entry["deviation"] = st.get("deviation")
+            entry["support_pools"] = st.get("support_pools")
+        token_prices.append(entry)
+    corrected_keys = {k for k, s in token_gate.items() if s.get("corrected")}
+    pg_summary = {
+        "tokens_corrected": len(corrected_keys),
+        "tokens_unverified": sum(1 for s in token_gate.values()
+                                 if s.get("unverified")),
+        "pools_corrected": sum(
+            1 for r in final
+            if (r["chain"], r.get("token0")) in corrected_keys
+            or (r["chain"], r.get("token1")) in corrected_keys),
+        "pools_unverified": sum(1 for r in final
+                                if r.get("price_unverified")),
+    }
+    print(f"price gate summary: {pg_summary}", flush=True)
     doc = {"generated_at": int(time.time()), "aero_usd": aero_usd,
            "coinbase_symbols_priced": len(cb), "chain_stats": stats,
-           "pool_count": len(final), "pools": final}
+           "pool_count": len(final), "pools": final,
+           "token_prices": token_prices, "price_gate": pg_summary}
     with open(args.out, "w") as f:
         json.dump(doc, f, indent=1, default=str)
     print(f"wrote {args.out}: {len(final)} pools")
