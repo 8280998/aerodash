@@ -9,11 +9,18 @@ time (end > now), each at rate * full 48h window (not pro-rated by
 overlap), matching the official UI (proven 2026-10-24, ratios
 0.998-1.000 on 6 Base pools); the old gross trailing-48h stream is
 kept separately as incentives48h_gross_usd.
+LP extension (2026-10-24): per-pool token balances (TVL), the gauge
+emission rate min(weight * emissionsPerVP / 1e18, emissionCap) from
+LeafVoter + FactoryRegistry, and derived aero_apr_pct / fees_apr_pct;
+fees_window_partial flags pools whose tape history is < 48h (their
+fee delta covers window_seconds, a sub-window of the trailing 48h).
 Prices: Coinbase spot API for majors + on-chain spot propagation.
 NO DefiLlama anywhere. eth_call only; no keys, no signing.
 
 Run: ~/workspace/hbtc-miner/venv/bin/python reader.py [--chains base,...]
 Output: pools.json (+ token_cache.json for metadata caching).
+Env: AERO_ALCHEMY_KEY (optional) — when set, per-chain Alchemy endpoints
+are prepended to each chain's public RPC list (see below).
 """
 import argparse
 import json
@@ -68,6 +75,28 @@ CHAINS = {
                   "cl_factory": "0xc63d7338c178e805c544B8f897066bD3BBcBE136",
                   "rpcs": ["https://robinhood.drpc.org"], "chunk": 50},
 }
+
+# Optional dedicated RPC: when the AERO_ALCHEMY_KEY environment variable
+# is set (locally, or in GitHub Actions from the ALCHEMY_API_KEY secret),
+# each chain's Alchemy endpoint is prepended to its public endpoint list;
+# the public endpoints stay as fallback and the RPC class rotates on
+# failure. The key is only ever read from the environment — it is never
+# written to code, output, or logs (only chain names are printed).
+_ALCHEMY_SUBDOMAIN = {"ethereum": "eth", "arbitrum": "arb",
+                      "optimism": "opt", "base": "base", "ink": "ink",
+                      "arc": "arc", "robinhood": "robinhood"}
+_alchemy_key = os.environ.get("AERO_ALCHEMY_KEY")
+if _alchemy_key:
+    _prepended = []
+    for _chain, _sub in _ALCHEMY_SUBDOMAIN.items():
+        if _chain in CHAINS:
+            CHAINS[_chain]["rpcs"].insert(
+                0, f"https://{_sub}-mainnet.g.alchemy.com"
+                   f"/v2/{_alchemy_key}")
+            _prepended.append(_chain)
+    print(f"alchemy: dedicated endpoint primary for "
+          f"{sorted(_prepended)}", flush=True)
+    del _alchemy_key, _prepended, _chain, _sub
 
 # Coinbase spot aliases: on-chain symbol -> Coinbase asset code
 CB_ALIAS = {"WETH": "ETH", "WBTC": "BTC", "cbBTC": "BTC", "BTC": "BTC",
@@ -338,10 +367,19 @@ class TokenCache:
                                                  "decimals": decimals}
 
 
+def _redact_url(url):
+    """Strip any credential embedded in an endpoint URL (e.g. an Alchemy
+    API key after /v2/) before the URL is persisted into output stats."""
+    if "/v2/" in url:
+        return url.split("/v2/")[0] + "/v2/***"
+    return url
+
+
 def read_chain(chain, cfg, cache, max_pools=None, only=None):
     rpc = RPC(cfg["rpcs"], cfg["chain_id"])
     rpc.chunk = cfg.get("chunk", 100)
-    stats = {"chain": chain, "chain_id": cfg["chain_id"], "rpc_used": cfg["rpcs"],
+    stats = {"chain": chain, "chain_id": cfg["chain_id"],
+             "rpc_used": [_redact_url(u) for u in cfg["rpcs"]],
              "errors": []}
     got_id = int(rpc.call("eth_chainId", []), 16)
     if got_id != cfg["chain_id"]:
@@ -557,6 +595,58 @@ def read_chain(chain, cfg, cache, max_pools=None, only=None):
             rec["errors"].append(f"incentiveCount failed: {r[1]}")
     print(f"    [{chain}] gauge/incentive batches done "
           f"{time.time()-t0:.0f}s", flush=True)
+
+    # ---- batch B2: chain emissions scalar + per-gauge emission caps -------
+    # LeafVoter turns allocations into per-gauge emission rates: the chain
+    # index accrues at emissionsPerVP (PRECISION-scaled AERO per VP per
+    # second, LeafAllocationLibrary._settleIndex), a gauge's uncapped rate
+    # is weight * emissionsPerVP / PRECISION, and settlement caps it at
+    # FactoryRegistry.emissionCap(gauge) raw AERO/sec (_segmentAccrual:
+    # effective = min(allocated, cap * duration)). Validated 2026-10-24:
+    # min(weight*evp, cap) reproduces both the projected-share accrual
+    # rate (exact on Base CL50 + Basic anchors) and the official LP
+    # snapshot's AERO APR for Basic pools (34.1 vs 34.4).
+    ecalls = [Call(LEAF_VOTER, "emissionsPerVP()", [], [], ["uint256"])]
+    emeta = []
+    for rec in gauged:
+        ecalls.append(Call(cfg["registry"], "emissionCap(address)",
+                           ["address"], [rec["gauge"]], ["uint128"]))
+        emeta.append(rec)
+    eres = multicall(rpc, ecalls) if ecalls else []
+    evp = eres[0][1][0] if eres and eres[0][0] else None
+    stats["emissions_per_vp"] = evp
+    for rec, r in zip(emeta, eres[1:]):
+        rec["emissions_per_vp"] = evp
+        if r[0]:
+            rec["emission_cap_raw"] = r[1][0]
+        else:
+            rec["errors"].append(f"emissionCap failed: {r[1]}")
+    print(f"    [{chain}] emissions batch done {time.time()-t0:.0f}s",
+          flush=True)
+
+    # ---- batch C: pool token balances (TVL base) ---------------------------
+    # TVL = balanceOf(pool) for token0/token1 x prices. For Basic pools
+    # the balances are the reserves; for CL pools they are the pool
+    # contract's holdings (all positions valued at spot + uncollected
+    # fees). Validated 2026-10-24 vs the official Liquidity snapshot:
+    # balance TVLs match the UI's TVL column within ~2% on anchors.
+    ccalls, cmeta = [], []
+    for rec in records:
+        if rec.get("token0") and rec.get("token1"):
+            ccalls.append(Call(rec["token0"], "balanceOf(address)",
+                               ["address"], [rec["pool"]], ["uint256"]))
+            ccalls.append(Call(rec["token1"], "balanceOf(address)",
+                               ["address"], [rec["pool"]], ["uint256"]))
+            cmeta.append(rec)
+    cres = multicall(rpc, ccalls) if ccalls else []
+    for i, rec in enumerate(cmeta):
+        r0b, r1b = cres[2 * i], cres[2 * i + 1]
+        if r0b[0] and r1b[0]:
+            rec["balance0_raw"], rec["balance1_raw"] = r0b[1][0], r1b[1][0]
+        else:
+            rec["errors"].append("balanceOf failed")
+    print(f"    [{chain}] balance batch done {time.time()-t0:.0f}s",
+          flush=True)
     stats["rpc_calls"] = rpc.calls
     stats["rpc_errors"] = rpc.errors
     stats["read_seconds"] = round(time.time() - t0, 1)
@@ -668,7 +758,7 @@ def price_tokens(records, cb_prices):
                 d0, d1 = rec.get("dec0"), rec.get("dec1")
                 if not t0 or not t1 or d0 is None or d1 is None:
                     continue
-                spot = None  # price of token1 in token0 units (raw-adj)
+                spot = None  # token1 per token0 (human units)
                 if rec["kind"] == "cl" and rec.get("sqrtPriceX96"):
                     sp = rec["sqrtPriceX96"] / 2 ** 96
                     spot = sp * sp * 10 ** (d0 - d1)  # token1 per token0 (human)
@@ -679,10 +769,12 @@ def price_tokens(records, cb_prices):
                 p0 = prices.get((chain, t0))
                 p1 = prices.get((chain, t1))
                 if p0 and not p1:
-                    prices[(chain, t1)] = (p0[0] * spot, "onchain")
+                    # spot is token1-per-token0: USD(t1) = USD(t0) / spot
+                    prices[(chain, t1)] = (p0[0] / spot, "onchain")
                     changed = True
                 elif p1 and not p0:
-                    prices[(chain, t0)] = (p1[0] / spot, "onchain")
+                    # USD(t0) = USD(t1) * spot
+                    prices[(chain, t0)] = (p1[0] * spot, "onchain")
                     changed = True
             if not changed:
                 break
@@ -758,6 +850,46 @@ def finalize(records, prices, cb_prices, aero_usd, now_by_chain, block_by_chain)
             if denom > 0:
                 apr = rewards * ANNUALIZE / denom * 100
         r["stake_apr_pct"] = apr
+        # ---- LP fields: TVL, emission rate, LP APRs ----------------------
+        # TVL from pool token balances x the same price map as fees.
+        tvl = None
+        if (p0 and p1 and rec.get("balance0_raw") is not None
+                and rec.get("dec0") is not None):
+            tvl = (rec["balance0_raw"] / 10 ** rec["dec0"] * p0[0]
+                   + rec["balance1_raw"] / 10 ** rec["dec1"] * p1[0])
+        r["tvl_usd"] = tvl
+        # Emission rate (AERO/sec): min(weight * emissionsPerVP / 1e18,
+        # emissionCap) in raw units, / 1e18. No gauge -> 0.
+        rate = None
+        if rec.get("gauge"):
+            if (rec.get("allocation_raw") is not None
+                    and rec.get("emissions_per_vp") is not None):
+                raw_rate = (rec["allocation_raw"]
+                            * rec["emissions_per_vp"] / 1e18)
+                if rec.get("emission_cap_raw") is not None:
+                    raw_rate = min(raw_rate, rec["emission_cap_raw"])
+                rate = raw_rate / 1e18
+        else:
+            rate = 0.0
+        r["emission_rate_aero_sec"] = rate
+        if tvl and tvl > 0 and aero_usd and rate is not None:
+            r["aero_apr_pct"] = rate * aero_usd * 31536000 / tvl * 100
+        elif rate == 0.0 and tvl:
+            r["aero_apr_pct"] = 0.0
+        else:
+            r["aero_apr_pct"] = None
+        if fees is not None and tvl and tvl > 0:
+            r["fees_apr_pct"] = (fees + (mev or 0.0)) / tvl * 182.5 * 100
+        else:
+            r["fees_apr_pct"] = None
+        # Window integrity: when the tape's history is shorter than 48h,
+        # observe() falls back to the oldest stored observation (tape
+        # interface spec), so the delta covers window_seconds, not 48h.
+        # Such a delta never overstates the trailing-48h fees (it spans a
+        # sub-window, and pre-tape activity is invisible to the tape),
+        # but it is flagged so downstream consumers can see the coverage.
+        ws = rec.get("window_seconds")
+        r["fees_window_partial"] = (ws is not None and ws < WINDOW)
         r["rewards_manager"] = rec.get("rewards_manager")
         r["incentive_program_count"] = rec.get("incentive_count")
         out.append(r)
