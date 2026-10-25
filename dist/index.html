@@ -59,6 +59,10 @@
         font-size: 15px;
         line-height: 1.55;
       }
+      .headrow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .langseg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--surface); flex: none; margin-top: 2px; }
+      .langseg button { appearance: none; border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; padding: 7px 14px; min-height: 40px; cursor: pointer; }
+      .langseg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
       .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
       main { max-width: 1060px; margin: 0 auto; padding: 18px 14px 40px; }
       h1 { font-size: 24px; line-height: 1.25; margin: 2px 0 4px; letter-spacing: .01em; }
@@ -247,6 +251,8 @@
       table.pools tr.clickable { cursor: pointer; }
       table.pools tr.clickable:hover td { background: var(--surface-2); }
       @media (max-width: 480px) { .tabbar button { font-size: 13px; padding: 8px 2px; } }
+      @media (max-width: 480px) { body.lang-en .tabbar button { font-size: 11px; padding: 8px 0; letter-spacing: -.01em; } }
+      body.lang-en .stat .k { white-space: normal; overflow: visible; text-overflow: clip; }
       img, svg { max-width: 100%; }
       @media (max-width: 640px) {
         .mini-btn { min-height: 40px; padding: 8px 12px; display: inline-flex; align-items: center; }
@@ -256,9 +262,9 @@
   </head>
   <body>
     <main>
-      <h1>AERO 分析看板</h1>
-      <p class="lede">迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain 共 7 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 7 链。本页为独立的新系统数据看板，下方四个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>我的 sAERO</b>（输入地址查仓位的当前分配、待领收益与冷却，并给出投票建议）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。</p>
-      <p class="stamp">数据时间 — <span id="dtVote">投票墙：2026-10-24 17:13–17:15 HKT · app.aero.xyz Markets 直读（473 池）</span>；<span id="dtLp">LP 排名：2026-10-24 18:45 HKT · app.aero.xyz Liquidity 快照（124 池）</span>；<span id="dtOv">总览：2026-10-24 17:00 HKT 官方应用快照 · 价格 Coinbase · 链上参数 Base 公共 RPC 直读</span></p>
+      <div class="headrow"><h1 id="pageTitle">AERO 分析看板</h1><div class="langseg" role="group" aria-label="Language / 语言"><button type="button" id="langZh" aria-pressed="true">中文</button><button type="button" id="langEn" aria-pressed="false">EN</button></div></div>
+      <p class="lede" id="ledeText">迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain 共 7 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 7 链。本页为独立的新系统数据看板，下方四个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>我的 sAERO</b>（输入地址查仓位的当前分配、待领收益与冷却，并给出投票建议）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。</p>
+      <p class="stamp"><span id="stampPrefix">数据时间 — </span><span id="dtVote">投票墙：2026-10-24 17:13–17:15 HKT · app.aero.xyz Markets 直读（473 池）</span>；<span id="dtLp">LP 排名：2026-10-24 18:45 HKT · app.aero.xyz Liquidity 快照（124 池）</span>；<span id="dtOv">总览：2026-10-24 17:00 HKT 官方应用快照 · 价格 Coinbase · 链上参数 Base 公共 RPC 直读</span></p>
 
       <p class="stamp" id="runStatus" hidden></p>
 
@@ -273,21 +279,21 @@
       <div class="panel" id="panel-vote">
         <section class="sec-main" style="margin-top:20px">
           <div class="sec-head">
-            <h2>投票收益排名 · 按 Allocation 分档</h2>
-            <span class="note">每卡仅前 10 名 · 按 Stake APR 降序 · Allocation 分档 · 不分页</span>
+            <h2 id="voteH2">投票收益排名 · 按 Allocation 分档</h2>
+            <span class="note" id="voteNote">每卡仅前 10 名 · 按 Stake APR 降序 · Allocation 分档 · 不分页</span>
           </div>
           <div class="basis">
             <h3 id="basisTitle">数据口径：官方应用直读快照</h3>
             <p id="basisSource">来源：官方应用 <b>app.aero.xyz/markets/pools</b> Markets 页全量实抓快照，抓取时间 <b>2026-10-24 17:13–17:15 HKT</b>，共 <b>473 个池</b>（与页面 UI 总数核对一致）。本墙直接采用官方展示字段。若与官方应用当前显示有个别出入，以抓取时点快照为准。</p>
             <p id="basisInc" style="display:none"></p>
-            <p>分档与排序：按 <b>Allocation（分配量，Allocation Power 原值）</b>分 6 档 —— 100K 以下 / 100K–500K / 500K–1M / 1M–5M / 5M–10M / 10M 以上；档内按 <b>Stake APR</b> 降序取前 10 名。Allocation 即指向该池的总分配权力，是新系统口径下的「投票量」。</p>
-            <div class="formula">Stake APR（sAPR）＝ 官方定义：过去 48 小时收益（交易费 ＋ MEV capture ＋ Liquidity Payments ＋ Launch Payments）年化的预测值，非保证收益　·　每行构成：Fees 48H ＋ Incentives 48H ＝ Rewards 48H</div>
-            <p>防尘门槛：为防尘埃池虚高 APR 霸榜，排名设门槛 <b>Rewards 48H ≥ $10</b>，未达门槛的池不进前 10（与防尘口径一致，本框披露）。每卡仅显示前 10，不分页。窗口为官方 48H 口径。</p>
+            <p id="basisTier">分档与排序：按 <b>Allocation（分配量，Allocation Power 原值）</b>分 6 档 —— 100K 以下 / 100K–500K / 500K–1M / 1M–5M / 5M–10M / 10M 以上；档内按 <b>Stake APR</b> 降序取前 10 名。Allocation 即指向该池的总分配权力，是新系统口径下的「投票量」。</p>
+            <div class="formula" id="basisFormula">Stake APR（sAPR）＝ 官方定义：过去 48 小时收益（交易费 ＋ MEV capture ＋ Liquidity Payments ＋ Launch Payments）年化的预测值，非保证收益　·　每行构成：Fees 48H ＋ Incentives 48H ＝ Rewards 48H</div>
+            <p id="basisDust">防尘门槛：为防尘埃池虚高 APR 霸榜，排名设门槛 <b>Rewards 48H ≥ $10</b>，未达门槛的池不进前 10（与防尘口径一致，本框披露）。每卡仅显示前 10，不分页。窗口为官方 48H 口径。</p>
             <p id="basisRefresh">刷新节奏：数据将按<b>每小时</b>节奏由链上直读更新——PoolTape / CLPoolTape 读取 48 小时费用、LeafVoter 读取 Allocation，公开 RPC 直读官方合约（管线接入后生效）；管线接入前，本墙仍为上述 2026-10-24 17:13–17:15 HKT 官方应用快照，不自动刷新。</p>
           </div>
           <div id="moversStrip" hidden></div>
           <div class="tiers" id="tiers"></div>
-          <p class="src">每行小字为 48 小时构成：Fees 48H（交易费）· Incentives 48H（激励）· Rewards 48H（合计）。数据为 app.aero.xyz Markets 页 2026-10-24 17:13–17:15 HKT 快照直读。Stake APR 为过去 48 小时收益年化的预测值，非保证收益；48 小时窗口波动较大，请结合池深与持续性判断，勿据单窗尖峰追高。</p>
+          <p class="src" id="wallSrc">每行小字为 48 小时构成：Fees 48H（交易费）· Incentives 48H（激励）· Rewards 48H（合计）。数据为 app.aero.xyz Markets 页 2026-10-24 17:13–17:15 HKT 快照直读。Stake APR 为过去 48 小时收益年化的预测值，非保证收益；48 小时窗口波动较大，请结合池深与持续性判断，勿据单窗尖峰追高。</p>
         </section>
       </div>
 
@@ -295,11 +301,11 @@
       <div class="panel" id="panel-mine" hidden>
         <section style="margin-top:20px">
           <div class="sec-head">
-            <h2>我的 sAERO</h2>
-            <span class="note">浏览器直连 7 链公共 RPC 只读查询 · 无需连钱包 · 不签名、不发交易</span>
+            <h2 id="mineH2">我的 sAERO</h2>
+            <span class="note" id="mineNote">浏览器直连 7 链公共 RPC 只读查询 · 无需连钱包 · 不签名、不发交易</span>
           </div>
           <div class="ctl-row">
-            <span class="lbl">模式</span>
+            <span class="lbl" id="modeLbl">模式</span>
             <div class="seg" id="saMode">
               <button type="button" data-mode="single" aria-pressed="true">单地址详情</button>
               <button type="button" data-mode="batch" aria-pressed="false">批量雷达</button>
@@ -307,11 +313,11 @@
           </div>
           <div id="saSingle">
             <div class="sa-form">
-              <div class="sa-grow"><label class="sa-lbl" for="saAddr">钱包地址</label><input class="sa-input mono" id="saAddr" type="text" placeholder="0x…" autocomplete="off" spellcheck="false" /></div>
+              <div class="sa-grow"><label class="sa-lbl" for="saAddr" id="saAddrLbl">钱包地址</label><input class="sa-input mono" id="saAddr" type="text" placeholder="0x…" autocomplete="off" spellcheck="false" /></div>
               <button class="sa-btn" type="button" id="saGo">查询</button>
             </div>
             <div class="sa-form" style="margin-top:10px">
-              <div class="sa-grow"><label class="sa-lbl" for="saTokenId">或直接输入仓位 tokenId</label><input class="sa-input mono" id="saTokenId" type="text" inputmode="numeric" placeholder="如 6032" autocomplete="off" spellcheck="false" /></div>
+              <div class="sa-grow"><label class="sa-lbl" for="saTokenId" id="saTokenLbl">或直接输入仓位 tokenId</label><input class="sa-input mono" id="saTokenId" type="text" inputmode="numeric" placeholder="如 6032" autocomplete="off" spellcheck="false" /></div>
               <button class="sa-btn ghost" type="button" id="saGoId">按 tokenId 查询</button>
             </div>
             <p class="sa-err" id="saErr" hidden></p>
@@ -320,13 +326,13 @@
             <div id="saResult"></div>
           </div>
           <div id="saBatch" hidden>
-            <label class="sa-lbl" for="saAddrs">地址列表（一行一个，最多 50 个）</label>
+            <label class="sa-lbl" for="saAddrs" id="saAddrsLbl">地址列表（一行一个，最多 50 个）</label>
             <textarea class="sa-input mono" id="saAddrs" rows="6" placeholder="0x…&#10;0x…"></textarea>
             <div style="margin-top:10px"><button class="sa-btn" type="button" id="saBatchGo">开始扫描</button></div>
             <p class="sa-prog" id="saBatchProg" hidden></p>
             <div id="saBatchResult" style="margin-top:12px"></div>
           </div>
-          <p class="src">读取口径：仓位与余额读 Base 上的 VotingEscrow；各链当前分配、闲置额与冷却读各链 LeafVoter 的 tokenStates / allocatedGauges / allocations（冷却逐链读 allocationCooldown()，读取失败时回落 169,200 秒）；待领收益读各池 gauge 的 rewards manager（earnedFees / earnedIncentives，按最近 255 个检查点）。查询由你的浏览器直连公共 RPC 完成，地址与仓位均为链上公开数据。</p>
+          <p class="src" id="mineSrc">读取口径：仓位与余额读 Base 上的 VotingEscrow；各链当前分配、闲置额与冷却读各链 LeafVoter 的 tokenStates / allocatedGauges / allocations（冷却逐链读 allocationCooldown()，读取失败时回落 169,200 秒）；待领收益读各池 gauge 的 rewards manager（earnedFees / earnedIncentives，按最近 255 个检查点）。查询由你的浏览器直连公共 RPC 完成，地址与仓位均为链上公开数据。</p>
         </section>
       </div>
 
@@ -334,15 +340,15 @@
       <div class="panel" id="panel-lp" hidden>
         <section style="margin-top:20px">
           <div class="sec-head">
-            <h2>LP 收益排名 · 按链</h2>
+            <h2 id="lpH2">LP 收益排名 · 按链</h2>
             <span class="note" id="lpHeadNote">快照 2026-10-24 18:45 HKT · 仅 TVL ≥ $100K 的池</span>
           </div>
           <div class="ctl-row">
-            <span class="lbl">链</span>
+            <span class="lbl" id="chainLbl">链</span>
             <div class="seg wrap" id="lpChains"></div>
           </div>
           <div class="ctl-row">
-            <span class="lbl">排序</span>
+            <span class="lbl" id="sortLbl">排序</span>
             <div class="seg" id="lpSort">
               <button type="button" data-sort="total" aria-pressed="true">合计 APR</button>
               <button type="button" data-sort="aero" aria-pressed="false">AERO 排放</button>
@@ -358,21 +364,21 @@
       <!-- 分页 3：数据总览 -->
       <div class="panel" id="panel-overview" hidden>
         <div class="strip" id="strip">
-          <div class="stat"><div class="k">AERO 价格</div><div class="v mono" id="stAeroPx">$0.7902</div><div class="s"><span id="pxTime">Coinbase 现货 · 10-23 12:50 HKT</span></div></div>
-          <div class="stat"><div class="k">Predictive Allocation 冷却</div><div class="v mono">47 小时</div><div class="s">调整分配的官方冷却 · 链上实测 169,200 秒</div></div>
-          <div class="stat"><div class="k">新 AERO 推算总供应</div><div class="v mono">21.24 亿</div><div class="s">新合约供应推算 · 链上 totalSupply 口径</div></div>
-          <div class="stat"><div class="k">sAERO 仓位 NFT 总数</div><div class="v mono">11,916</div><div class="s">VotingEscrow totalSupply · 10-23 链上直读（结算在 Base）</div></div>
+          <div class="stat"><div class="k" id="ovPxK">AERO 价格</div><div class="v mono" id="stAeroPx">$0.7902</div><div class="s"><span id="pxTime">Coinbase 现货 · 10-23 12:50 HKT</span></div></div>
+          <div class="stat"><div class="k" id="ovCoolK">Predictive Allocation 冷却</div><div class="v mono" id="ovCoolV">47 小时</div><div class="s" id="ovCoolS">调整分配的官方冷却 · 链上实测 169,200 秒</div></div>
+          <div class="stat"><div class="k" id="ovSupplyK">新 AERO 推算总供应</div><div class="v mono" id="ovSupplyV">21.24 亿</div><div class="s" id="ovSupplyS">新合约供应推算 · 链上 totalSupply 口径</div></div>
+          <div class="stat"><div class="k" id="ovNftK">sAERO 仓位 NFT 总数</div><div class="v mono">11,916</div><div class="s" id="ovNftS">VotingEscrow totalSupply · 10-23 链上直读（结算在 Base）</div></div>
           <div class="stat"><div class="k" id="kTvl">TVL（全系统）</div><div class="v mono" id="stTvl">$344.13M</div><div class="s" id="sTvl">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
           <div class="stat"><div class="k" id="kVol7">近 7 天交易量</div><div class="v mono" id="stVol7">$2.63B</div><div class="s" id="sVol7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
           <div class="stat"><div class="k" id="kRev7">近 7 天 Revenue</div><div class="v mono" id="stRev7">$1.74M</div><div class="s" id="sRev7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
-          <div class="stat"><div class="k">覆盖链数</div><div class="v mono" id="stChains">7 链</div><div class="s" id="sChains">Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO 结算在 Base</div></div>
+          <div class="stat"><div class="k" id="ovChainsK">覆盖链数</div><div class="v mono" id="stChains">7 链</div><div class="s" id="sChains">Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO 结算在 Base</div></div>
         </div>
 
         <section>
-          <div class="sec-head"><h2>分链数据统计</h2><span class="note" id="csNote">由 LP 快照聚合 · TVL ≥ $100K 口径</span></div>
+          <div class="sec-head"><h2 id="csH2">分链数据统计</h2><span class="note" id="csNote">由 LP 快照聚合 · TVL ≥ $100K 口径</span></div>
           <div class="card">
             <div class="tblwrap">
-              <table class="pools">
+              <table class="pools" id="csTable">
                 <thead><tr><th>链</th><th class="num">达标池数</th><th class="num">TVL 合计</th><th class="num">Fees 48H 合计</th><th class="num">平均合计 APR（TVL 加权）</th></tr></thead>
                 <tbody id="chainStatsBody"></tbody>
               </table>
@@ -382,11 +388,11 @@
         </section>
 
         <section>
-          <div class="sec-head"><h2>新规则收益机制</h2><span class="note">口径以 2026-10-23 链上解码为准</span></div>
+          <div class="sec-head"><h2 id="mechH2">新规则收益机制</h2><span class="note" id="mechNote">口径以 2026-10-23 链上解码为准</span></div>
           <div class="vs">
             <div>
-              <h3>旧系统 ve(3,3) <span class="tag">已结束</span></h3>
-              <ul>
+              <h3 id="oldTitle">旧系统 ve(3,3) <span class="tag">已结束</span></h3>
+              <ul id="oldList">
                 <li>每周投票决定排放去向，收入 = 所投池<b>手续费 + 贿赂</b>，按 epoch 周结</li>
                 <li><b>rebase</b> 按周发放，对冲增发稀释，需手动领取</li>
                 <li>选错池只损失一周，下周可改投</li>
@@ -394,8 +400,8 @@
               </ul>
             </div>
             <div>
-              <h3>新系统 sAERO + Predictive Allocation <span class="tag new">现行</span></h3>
-              <ul>
+              <h3 id="newTitle">新系统 sAERO + Predictive Allocation <span class="tag new">现行</span></h3>
+              <ul id="newList">
                 <li>sAERO <b>无 rebase、可转让、面值固定</b>；收益只来自<b>手续费分成 + 激励</b>，不再有抗稀释 rebase 兜底</li>
                 <li>分配设定一次<b>持续生效</b>；调整分配有 <b>47 小时冷却</b></li>
                 <li><b>allocate 只做分配、不自动领奖</b>：奖励在各叶子链 rewards manager 按检查点累积，须单独调用 claimRewards <b>按链领取</b>；重新分配也不会触发领取</li>
@@ -405,36 +411,397 @@
             </div>
           </div>
           <div class="contracts">
-            <div class="contract"><span class="nm">Allocator（分配入口）</span><span class="ad mono">0x49d7d4f17ec56ef8fa04e464af5d1a4942cc31e6</span><button class="mini-btn" data-copy="0x49d7d4f17ec56ef8fa04e464af5d1a4942cc31e6">复制</button><a href="https://basescan.org/address/0x49d7d4f17ec56ef8fa04e464af5d1a4942cc31e6" target="_blank" rel="noopener">Basescan ↗</a></div>
-            <div class="contract"><span class="nm">sAERO VotingEscrow（仓位凭证）</span><span class="ad mono">0xbf7977e1521e9a3032bf7243ee4712f311f13915</span><button class="mini-btn" data-copy="0xbf7977e1521e9a3032bf7243ee4712f311f13915">复制</button><a href="https://basescan.org/address/0xbf7977e1521e9a3032bf7243ee4712f311f13915" target="_blank" rel="noopener">Basescan ↗</a></div>
-            <div class="contract"><span class="nm">样本热门池 WETH/cbBTC</span><span class="ad mono">0xabb3fb6659e05847631896cb87a6d1b8bc0c6d8c</span><button class="mini-btn" data-copy="0xabb3fb6659e05847631896cb87a6d1b8bc0c6d8c">复制</button><a href="https://basescan.org/address/0xabb3fb6659e05847631896cb87a6d1b8bc0c6d8c" target="_blank" rel="noopener">Basescan ↗</a></div>
+            <div class="contract"><span class="nm" id="contract1Name">Allocator（分配入口）</span><span class="ad mono">0x49d7d4f17ec56ef8fa04e464af5d1a4942cc31e6</span><button class="mini-btn" data-copy="0x49d7d4f17ec56ef8fa04e464af5d1a4942cc31e6">复制</button><a href="https://basescan.org/address/0x49d7d4f17ec56ef8fa04e464af5d1a4942cc31e6" target="_blank" rel="noopener">Basescan ↗</a></div>
+            <div class="contract"><span class="nm" id="contract2Name">sAERO VotingEscrow（仓位凭证）</span><span class="ad mono">0xbf7977e1521e9a3032bf7243ee4712f311f13915</span><button class="mini-btn" data-copy="0xbf7977e1521e9a3032bf7243ee4712f311f13915">复制</button><a href="https://basescan.org/address/0xbf7977e1521e9a3032bf7243ee4712f311f13915" target="_blank" rel="noopener">Basescan ↗</a></div>
+            <div class="contract"><span class="nm" id="contract3Name">样本热门池 WETH/cbBTC</span><span class="ad mono">0xabb3fb6659e05847631896cb87a6d1b8bc0c6d8c</span><button class="mini-btn" data-copy="0xabb3fb6659e05847631896cb87a6d1b8bc0c6d8c">复制</button><a href="https://basescan.org/address/0xabb3fb6659e05847631896cb87a6d1b8bc0c6d8c" target="_blank" rel="noopener">Basescan ↗</a></div>
           </div>
         </section>
 
         <section>
-          <div class="sec-head"><h2>数据口径与来源</h2></div>
+          <div class="sec-head"><h2 id="srcH2">数据口径与来源</h2></div>
           <div class="card">
             <ul class="factlist" style="margin-top:0">
-              <li><b>投票收益</b>：官方应用 app.aero.xyz/markets/pools Markets 页直读快照（全量 473 池，2026-10-24 17:13–17:15 HKT），字段 Fees / Incentives / Rewards 48H、Stake APR、Allocation；后续由链上直读管线按每小时节奏更新（data/pools.json），页面打开时自动加载，加载不到时显示内嵌快照。</li>
-              <li><b>LP 收益</b>：官方应用 Liquidity 页快照（2026-10-24 18:45 HKT），抓取 TVL ≥ $90K 共 124 池，页面仅展示 TVL ≥ $100K 的 122 池；字段 TVL、Volume 48H、Fees 48H、AERO APR、Fees APR 均为官方显示值。</li>
-              <li><b>总览</b>：TVL、近 7 天交易量与 Revenue 为 app.aero.xyz 官方应用快照（2026-10-24 17:00 HKT）；AERO 价格为 Coinbase 现货；供应、冷却（169,200 秒）与仓位 NFT 总数为 Base 公共 RPC 链上直读官方合约（Allocator / VotingEscrow）。</li>
+              <li id="srcLi1"><b>投票收益</b>：官方应用 app.aero.xyz/markets/pools Markets 页直读快照（全量 473 池，2026-10-24 17:13–17:15 HKT），字段 Fees / Incentives / Rewards 48H、Stake APR、Allocation；后续由链上直读管线按每小时节奏更新（data/pools.json），页面打开时自动加载，加载不到时显示内嵌快照。</li>
+              <li id="srcLi2"><b>LP 收益</b>：官方应用 Liquidity 页快照（2026-10-24 18:45 HKT），抓取 TVL ≥ $90K 共 124 池，页面仅展示 TVL ≥ $100K 的 122 池；字段 TVL、Volume 48H、Fees 48H、AERO APR、Fees APR 均为官方显示值。</li>
+              <li id="srcLi3"><b>总览</b>：TVL、近 7 天交易量与 Revenue 为 app.aero.xyz 官方应用快照（2026-10-24 17:00 HKT）；AERO 价格为 Coinbase 现货；供应、冷却（169,200 秒）与仓位 NFT 总数为 Base 公共 RPC 链上直读官方合约（Allocator / VotingEscrow）。</li>
             </ul>
           </div>
         </section>
       </div>
 
       <footer>
-        <p><b>非官方声明</b>：本站为社区非官方（unofficial）数据看板，与 Aerodrome 官方无关，不提供交易、兑换或分配执行功能，所有操作请以官方渠道为准。</p>
-        <p>数据来源：投票收益为官方应用 Markets 页直读快照（473 池，2026-10-24 17:13–17:15 HKT）；LP 收益为官方应用 Liquidity 页快照（124 池，2026-10-24 18:45 HKT，展示 TVL ≥ $100K 的 122 池）；总览 TVL、近 7 天交易量与 Revenue 为官方应用快照（2026-10-24 17:00 HKT）；价格 Coinbase；供应与冷却参数为 Base 公共 RPC 链上直读官方合约（Allocator / VotingEscrow）。</p>
-        <p>收益数字均为历史记录或官方估算，不代表未来收益，不构成投资建议。</p>
-        <p>源码：<a href="https://github.com/8280998/aerodash" target="_blank" rel="noopener">github.com/8280998/aerodash</a> · 本站由 Meta Muse 开发</p>
+        <p id="footer1"><b>非官方声明</b>：本站为社区非官方（unofficial）数据看板，与 Aerodrome 官方无关，不提供交易、兑换或分配执行功能，所有操作请以官方渠道为准。</p>
+        <p id="footer2">数据来源：投票收益为官方应用 Markets 页直读快照（473 池，2026-10-24 17:13–17:15 HKT）；LP 收益为官方应用 Liquidity 页快照（124 池，2026-10-24 18:45 HKT，展示 TVL ≥ $100K 的 122 池）；总览 TVL、近 7 天交易量与 Revenue 为官方应用快照（2026-10-24 17:00 HKT）；价格 Coinbase；供应与冷却参数为 Base 公共 RPC 链上直读官方合约（Allocator / VotingEscrow）。</p>
+        <p id="footer3">收益数字均为历史记录或官方估算，不代表未来收益，不构成投资建议。</p>
+        <p><span id="footerSrcLbl">源码：</span><a href="https://github.com/8280998/aerodash" target="_blank" rel="noopener">github.com/8280998/aerodash</a> · <span id="footerCredit">本站由 Meta Muse 开发</span></p>
       </footer>
     </main>
 
     <script>
+      /* ================= i18n：中英双语字典与切换 ================= */
+      var LANG = "zh";
+      try { var __sl = localStorage.getItem("aero-lang"); if (__sl === "en" || __sl === "zh") LANG = __sl; } catch (e) {}
+      var I18N = {
+        zh: {
+          title: "AERO 分析看板",
+          lede: "迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain 共 7 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 7 链。本页为独立的新系统数据看板，下方四个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>我的 sAERO</b>（输入地址查仓位的当前分配、待领收益与冷却，并给出投票建议）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。",
+          stamp_prefix: "数据时间 — ",
+          dt_vote_snap: "投票墙：2026-10-24 17:13–17:15 HKT · app.aero.xyz Markets 直读（473 池）",
+          dt_lp_snap: "LP 排名：2026-10-24 18:45 HKT · app.aero.xyz Liquidity 快照（124 池）",
+          dt_ov_snap: "总览：2026-10-24 17:00 HKT 官方应用快照 · 价格 Coinbase · 链上参数 Base 公共 RPC 直读",
+          dt_vote_live: "投票墙：链上直读 · 生成于 {t} · 每小时更新",
+          dt_lp_live: "LP 排名：链上直读 · 生成于 {t} · 每小时更新",
+          dt_ov_live: "总览：由实时数据聚合",
+          tab_vote: "投票收益", tab_mine: "我的 sAERO", tab_lp: "LP 收益", tab_overview: "数据总览",
+          tablist_label: "分页",
+          vote_h2: "投票收益排名 · 按 Allocation 分档",
+          vote_note: "每卡仅前 10 名 · 按 Stake APR 降序 · Allocation 分档 · 不分页",
+          basis_title_snap: "数据口径：官方应用直读快照",
+          basis_title_live: "数据口径：链上直读",
+          basis_source_snap: "来源：官方应用 <b>app.aero.xyz/markets/pools</b> Markets 页全量实抓快照，抓取时间 <b>2026-10-24 17:13–17:15 HKT</b>，共 <b>473 个池</b>（与页面 UI 总数核对一致）。本墙直接采用官方展示字段。若与官方应用当前显示有个别出入，以抓取时点快照为准。",
+          basis_source_live: "来源：<b>链上直读（PoolTape / CLPoolTape + LeafVoter）</b>——PoolTape / CLPoolTape 读取各池过去 48 小时费用、LeafVoter 读取 Allocation，经公开 RPC 直读官方合约生成；生成时间 <b>{t}</b>，共 <b>{n} 个池</b>。分档、排序与防尘门槛与下方说明一致。",
+          basis_tier: "分档与排序：按 <b>Allocation（分配量，Allocation Power 原值）</b>分 6 档 —— 100K 以下 / 100K–500K / 500K–1M / 1M–5M / 5M–10M / 10M 以上；档内按 <b>Stake APR</b> 降序取前 10 名。Allocation 即指向该池的总分配权力，是新系统口径下的「投票量」。",
+          basis_formula: "Stake APR（sAPR）＝ 官方定义：过去 48 小时收益（交易费 ＋ MEV capture ＋ Liquidity Payments ＋ Launch Payments）年化的预测值，非保证收益　·　每行构成：Fees 48H ＋ Incentives 48H ＝ Rewards 48H",
+          basis_dust: "防尘门槛：为防尘埃池虚高 APR 霸榜，排名设门槛 <b>Rewards 48H ≥ $10</b>，未达门槛的池不进前 10（与防尘口径一致，本框披露）。每卡仅显示前 10，不分页。窗口为官方 48H 口径。",
+          basis_refresh_snap: "刷新节奏：数据将按<b>每小时</b>节奏由链上直读更新——PoolTape / CLPoolTape 读取 48 小时费用、LeafVoter 读取 Allocation，公开 RPC 直读官方合约（管线接入后生效）；管线接入前，本墙仍为上述 2026-10-24 17:13–17:15 HKT 官方应用快照，不自动刷新。",
+          basis_refresh_live: "刷新节奏：本墙由链上直读管线按<b>每小时</b>更新，上方生成时间即最近一次更新时间；页面打开时自动加载最新一期数据，加载不到时显示内嵌快照。",
+          basis_inc_note: "注：部分池的 <b>Incentives 48H 暂未纳入</b>，该池 Incentives 按 $0 显示；Rewards 48H 与 Stake APR 以读取器产出为准。",
+          wall_src: "每行小字为 48 小时构成：Fees 48H（交易费）· Incentives 48H（激励）· Rewards 48H（合计）。数据为 app.aero.xyz Markets 页 2026-10-24 17:13–17:15 HKT 快照直读。Stake APR 为过去 48 小时收益年化的预测值，非保证收益；48 小时窗口波动较大，请结合池深与持续性判断，勿据单窗尖峰追高。",
+          tier_top: "共 {n} 池中本档前 10",
+          tier_highest: "最高 Stake APR {apr}% · 按 Allocation 分档",
+          tier_empty: "本档暂无达到 Rewards 48H ≥ $10 门槛的池。",
+          tier_foot: "仅显示前 10 · 门槛 Rewards 48H ≥ $10 · Stake APR 降序",
+          tier_under: "100K 以下", tier_over: "10M 以上",
+          fee_rate: "费率",
+          mine_h2: "我的 sAERO",
+          mine_note: "浏览器直连 7 链公共 RPC 只读查询 · 无需连钱包 · 不签名、不发交易",
+          mode_label: "模式", mode_single: "单地址详情", mode_batch: "批量雷达",
+          wallet_label: "钱包地址", query_btn: "查询",
+          tokenid_label: "或直接输入仓位 tokenId", tokenid_ph: "如 6032", tokenid_btn: "按 tokenId 查询",
+          batch_label: "地址列表（一行一个，最多 50 个）", batch_btn: "开始扫描",
+          mine_src: "读取口径：仓位与余额读 Base 上的 VotingEscrow；各链当前分配、闲置额与冷却读各链 LeafVoter 的 tokenStates / allocatedGauges / allocations（冷却逐链读 allocationCooldown()，读取失败时回落 169,200 秒）；待领收益读各池 gauge 的 rewards manager（earnedFees / earnedIncentives，按最近 255 个检查点）。查询由你的浏览器直连公共 RPC 完成，地址与仓位均为链上公开数据。",
+          lp_h2: "LP 收益排名 · 按链",
+          lp_head_snap: "快照 2026-10-24 18:45 HKT · 仅 TVL ≥ $100K 的池",
+          lp_head_live: "链上直读{t} · 每小时更新 · 仅 TVL ≥ $100K 的池",
+          chain_label: "链", sort_label: "排序",
+          sort_total: "合计 APR", sort_aero: "AERO 排放", sort_fees: "手续费",
+          all_chains: "全部",
+          lp_src_snap: "数据来源：Aero 官方应用 Liquidity 页快照，2026-10-24 18:45 HKT；仅含 TVL ≥ $100,000 的池（122 / 全网 1,040）；AERO APR 为官方显示的排放年化，Fees APR 为手续费年化，均为官方估算口径。快照共抓取 124 个 TVL ≥ $90K 的池，其中 2 个低于 $100K 门槛（USDC/RIZE $93.58K、wstETH/WETH $91.55K）不展示。AERO APR 显示「—」表示该池无 AERO 排放，按 0 参与合计与排序；「<0.01」为官方原显示，按 0.005 参与排序。LEGACY 为官方应用中的旧版池标记。个别池因 TVL 较小、短期成交放大，APR 会异常高，请结合 TVL 与 48 小时成交量判断。",
+          lp_src_live: "数据来源：链上直读（data/lp.json）{t}，每小时更新；TVL 为池内两种代币余额 × 价格直算，AERO APR 为 gauge 排放年化，Fees APR 为过去 48 小时手续费年化，与官方应用口径可能不同。实时模式无 Volume 48H 数据源，该项不显示。加载不到实时数据时回落官方应用 Liquidity 快照（2026-10-24 18:45 HKT）。",
+          lp_sum: "<b>{chain}</b> · 达标池 <b>{n}</b> 个 · TVL 合计 <b>{tvl}</b> · 按{name}降序",
+          lp_sort_total: "合计 APR", lp_sort_aero: "AERO 排放 APR", lp_sort_fees: "手续费 APR",
+          lp_empty: "该链暂无 TVL ≥ $100K 的池。",
+          ov_px_k: "AERO 价格", ov_px_snap: "Coinbase 现货 · 10-23 12:50 HKT", ov_px_live: "Coinbase 现货 · 刚刚刷新 {t}",
+          ov_px_feed: "链上 feed · 生成于 {t}",
+          ov_cool_k: "Predictive Allocation 冷却", ov_cool_v: "47 小时", ov_cool_s: "调整分配的官方冷却 · 链上实测 169,200 秒",
+          ov_supply_k: "新 AERO 推算总供应", ov_supply_v: "21.24 亿", ov_supply_s: "新合约供应推算 · 链上 totalSupply 口径",
+          ov_nft_k: "sAERO 仓位 NFT 总数", ov_nft_s: "VotingEscrow totalSupply · 10-23 链上直读（结算在 Base）",
+          ov_tvl_k_snap: "TVL（全系统）", ov_tvl_s_snap: "来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT",
+          ov_vol_k_snap: "近 7 天交易量", ov_rev_k_snap: "近 7 天 Revenue",
+          ov_chains_k: "覆盖链数", ov_chains_v_snap: "7 链", ov_chains_s_snap: "Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO 结算在 Base",
+          ov_tvl_k_live: "TVL 合计（达标池）", ov_tvl_s_live: "TVL ≥ $100K 池 · 链上直读（data/lp.json）· 每小时更新",
+          ov_fees_k_live: "48H 手续费合计", ov_fees_s_live: "TVL ≥ $100K 池口径 · 由 Fees APR × TVL ÷ 18250 反推",
+          ov_wall_k_live: "投票墙池数", ov_wall_s_live: "data/pools.json 链上直读条数", ov_wall_s_snap: "内嵌快照池数（pools.json 未加载）",
+          ov_chains_v_live: "{n} 链", ov_chains_s_live: "上榜池 {n} 个（TVL ≥ $100K）· sAERO 结算在 Base",
+          cs_h2: "分链数据统计", cs_note_snap: "由 LP 快照聚合 · TVL ≥ $100K 口径", cs_note_live: "由 LP 实时数据聚合 · TVL ≥ $100K 口径 · 链上直读",
+          cs_th_chain: "链", cs_th_count: "达标池数", cs_th_tvl: "TVL 合计", cs_th_fees: "Fees 48H 合计", cs_th_apr: "平均合计 APR（TVL 加权）",
+          cs_total: "全网合计",
+          cs_src_snap: "口径：与「LP 收益」分页同一快照（官方应用 Liquidity 页，2026-10-24 18:45 HKT），仅统计 TVL ≥ $100,000 的 122 个池；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均；「—」排放按 0、「<0.01」按 0.005 计。此处 TVL 合计仅覆盖达标池，与上方全系统 TVL（官方应用全口径）不同。",
+          cs_src_live: "口径：与「LP 收益」分页同一实时数据（链上直读，每小时更新），仅统计 TVL ≥ $100,000 的池；48H 手续费合计由各池 Fees APR × TVL ÷ 18250 反推；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均。此处 TVL 合计仅覆盖达标池。",
+          mech_h2: "新规则收益机制", mech_note: "口径以 2026-10-23 链上解码为准",
+          old_title: "旧系统 ve(3,3) ", old_tag: "已结束",
+          old_li: "<li>每周投票决定排放去向，收入 = 所投池<b>手续费 + 贿赂</b>，按 epoch 周结</li><li><b>rebase</b> 按周发放，对冲增发稀释，需手动领取</li><li>选错池只损失一周，下周可改投</li><li>Relay 等金库代投、自动复投</li>",
+          new_title: "新系统 sAERO + Predictive Allocation ", new_tag: "现行",
+          new_li: "<li>sAERO <b>无 rebase、可转让、面值固定</b>；收益只来自<b>手续费分成 + 激励</b>，不再有抗稀释 rebase 兜底</li><li>分配设定一次<b>持续生效</b>；调整分配有 <b>47 小时冷却</b></li><li><b>allocate 只做分配、不自动领奖</b>：奖励在各叶子链 rewards manager 按检查点累积，须单独调用 claimRewards <b>按链领取</b>；重新分配也不会触发领取</li><li>一笔分配可跨 <b>7 条链</b>（Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain），gas 只付 Base</li><li>排放由 AER Engine 按美元价值定速率、每池 gauge cap、全局通胀上限约束（机制参数，实际速率待数据积累）</li>",
+          contract1: "Allocator（分配入口）", contract2: "sAERO VotingEscrow（仓位凭证）", contract3: "样本热门池 WETH/cbBTC",
+          copy: "复制", copied: "已复制",
+          src_h2: "数据口径与来源",
+          src_li1: "<b>投票收益</b>：官方应用 app.aero.xyz/markets/pools Markets 页直读快照（全量 473 池，2026-10-24 17:13–17:15 HKT），字段 Fees / Incentives / Rewards 48H、Stake APR、Allocation；后续由链上直读管线按每小时节奏更新（data/pools.json），页面打开时自动加载，加载不到时显示内嵌快照。",
+          src_li2: "<b>LP 收益</b>：官方应用 Liquidity 页快照（2026-10-24 18:45 HKT），抓取 TVL ≥ $90K 共 124 池，页面仅展示 TVL ≥ $100K 的 122 池；字段 TVL、Volume 48H、Fees 48H、AERO APR、Fees APR 均为官方显示值。",
+          src_li3: "<b>总览</b>：TVL、近 7 天交易量与 Revenue 为 app.aero.xyz 官方应用快照（2026-10-24 17:00 HKT）；AERO 价格为 Coinbase 现货；供应、冷却（169,200 秒）与仓位 NFT 总数为 Base 公共 RPC 链上直读官方合约（Allocator / VotingEscrow）。",
+          footer_1: "<b>非官方声明</b>：本站为社区非官方（unofficial）数据看板，与 Aerodrome 官方无关，不提供交易、兑换或分配执行功能，所有操作请以官方渠道为准。",
+          footer_2: "数据来源：投票收益为官方应用 Markets 页直读快照（473 池，2026-10-24 17:13–17:15 HKT）；LP 收益为官方应用 Liquidity 页快照（124 池，2026-10-24 18:45 HKT，展示 TVL ≥ $100K 的 122 池）；总览 TVL、近 7 天交易量与 Revenue 为官方应用快照（2026-10-24 17:00 HKT）；价格 Coinbase；供应与冷却参数为 Base 公共 RPC 链上直读官方合约（Allocator / VotingEscrow）。",
+          footer_3: "收益数字均为历史记录或官方估算，不代表未来收益，不构成投资建议。",
+          footer_src_label: "源码：",
+          footer_credit: "本站由 Meta Muse 开发",
+          unit_yi: "亿", unit_wan: "万",
+          movers_title: "过去 24 小时 Allocation 异动", movers_up: "涨幅前 5", movers_down: "跌幅前 5", movers_none: "暂无",
+          status_fail: "运行状态：本轮未通过质量检查，已保留上一轮数据{hf}",
+          status_ok: "运行状态：正常{t}", status_gen: " · 生成于 {t}", status_warn: " · 提示：{w}",
+          sa_pos_summary: "<b>仓位 #{id}</b> · 余额 <span class=\"mono\">{bal} AERO</span> · 已分配 <span class=\"mono\">{alloc} AERO</span> · 未派发余量 <span class=\"mono\">{rem} AERO</span>",
+          sa_votes_h: "当前投票所在", sa_rewards_h: "当前收益 · 待领估算", sa_cool_h: "冷却时间", sa_advice_h: "投票建议",
+          sa_read_fail: "读取失败，可重试", sa_retry: "重试", sa_retrying: "重试中…",
+          sa_chain_alloc: "本链分配 <span class=\"mono\">{amt} AERO</span>（占仓位 {pct}）",
+          sa_idle: "闲置（已分配到本链、未指定池）",
+          sa_no_alloc: "该仓位目前没有分配到任何池。",
+          sa_rewards_calc: "计算收益中…",
+          sa_rewards_note: "待领估算：已结束的激励计划可能被发起方回收；手续费按最近 255 个检查点估算，实际可领以领取时为准。汇总只对 AERO 计价，其余币种只列数量。",
+          sa_cd_none: "未分配 · 可立即分配",
+          sa_cd_cooling: "冷却中 · ",
+          sa_cd_ready: "可再分配（上次分配 {t}）",
+          sa_cd_done: "已到期 · 可再分配",
+          sa_cd_left: "剩余 {hms} · {t} 起可再分配",
+          sa_no_gauges_rewards: "该仓位暂无已分配的池，无待领收益。",
+          sa_gauge_rewards_fail: "该池收益读取失败。",
+          sa_fees_line: "手续费：",
+          sa_inc_line: "激励（计划 #{pid} · {status}）：",
+          inc_active: "进行中", inc_ended: "已结束",
+          sa_no_claimable: "暂无待领收益。",
+          sa_claim_total: "待领汇总", sa_approx: "（约 {v}）",
+          sa_pool_token: "池 token",
+          sa_advice_unavail: "实时数据不可用，暂无法生成建议（data/pools.json 未加载）。",
+          sa_advice_cooling_note: " 冷却中，本次不动（剩余时间见上方冷却区）。",
+          sa_advice_summary: "可移动额 <b class=\"mono\">{mov} AERO</b>（未派发余量 + 闲置 + 已到期链现持分配）· 当前预计 48H 收益 <b class=\"mono\">{cur}</b> · 建议预计 <b class=\"mono\">{sug}</b>{diff}",
+          sa_advice_diff: " · 差值 <b class=\"mono\">{v}%</b>",
+          sa_advice_th_pool: "建议池", sa_advice_th_chain: "链", sa_advice_th_alloc: "建议分配（AERO）", sa_advice_th_share: "占仓位", sa_advice_th_est: "预计 48H 收益",
+          sa_advice_empty: "当前无可移动额，或 feed 中暂无合适候选池。",
+          sa_advice_unknown: "部分现持池不在实时 feed 中，其当前收益未计入「当前预计」。",
+          sa_advice_note: "估算基于 {t} 数据：候选按 Stake APR 降序贪心填充，单池上限为该池当前 Allocation 值的 25%（防稀释），预计收益已按进场后稀释折算；APR 随分配浮动，非保证收益。本页只读，执行分配请用你自己的工具。",
+          sa_advice_feed_time: "实时 feed",
+          sa_prog_chains: "读取各链分配中…（7 条链并行）",
+          sa_prog_enum: "枚举仓位中…（Base VotingEscrow）",
+          sa_no_positions: "该地址没有 sAERO 仓位。",
+          sa_prog_enum_n: "枚举仓位中…共 {n} 个，读取余额",
+          sa_err_enum: "仓位枚举失败，请重试。",
+          sa_err_enum_rpc: "仓位枚举失败：Base RPC 读取出错，请重试。",
+          sa_prog_token: "读取仓位 #{id} 余额中…",
+          sa_err_token_zero: "未读到该 tokenId 的仓位余额（仓位可能不存在或余额为 0）。",
+          sa_err_rpc: "读取失败：Base RPC 出错，请重试。",
+          sa_err_addr: "地址格式错误：应为 0x 开头的 42 位地址。",
+          sa_err_tokenid: "tokenId 应为正整数。",
+          radar_none: "无仓位", radar_ok: "正常", radar_fail: "读取失败", radar_bad: "地址格式错误",
+          radar_need_input: "请先粘贴地址，一行一个。",
+          radar_scanning: "扫描中 {i} / {n} …",
+          radar_th_addr: "地址", radar_th_count: "仓位数", radar_th_total: "sAERO 总额", radar_th_cooling: "冷却中链数", radar_th_earliest: "最早可再分配", radar_th_status: "状态",
+          radar_all_ready: "全部可分配",
+          radar_note: "点击状态为「正常」的行，查看该地址的单地址详情。"
+        },
+        en: {
+          title: "AERO Analytics Dashboard",
+          lede: "The new AERO system after the migration: how the reward structure changes for former veAERO holders under the sAERO rules, and which pools pay more. The new system runs on <b>7 chains — Base, Ethereum mainnet, Optimism, Arbitrum, Ink, Arc and Robinhood Chain</b> — with a single AERO token; sAERO staking settles on Base and one allocation can span all 7 chains. The four tabs below: <b>Voting Rewards</b> (Stake APR rankings tiered by Allocation), <b>My sAERO</b> (look up a position's current allocation, est. claimable rewards and cooldown, with allocation suggestions), <b>LP Rewards</b> (AERO emissions and fee APR by chain for pools with TVL ≥ $100K) and <b>Overview</b> (system-wide and per-chain stats).",
+          stamp_prefix: "Data as of — ",
+          dt_vote_snap: "Voting wall: 2026-10-24 17:13–17:15 HKT · read directly from app.aero.xyz Markets (473 pools)",
+          dt_lp_snap: "LP rankings: 2026-10-24 18:45 HKT · app.aero.xyz Liquidity snapshot (124 pools)",
+          dt_ov_snap: "Overview: 2026-10-24 17:00 HKT official app snapshot · prices from Coinbase · on-chain parameters read via Base public RPC",
+          dt_vote_live: "Voting wall: on-chain data · generated {t} · updated hourly",
+          dt_lp_live: "LP rankings: on-chain data · generated {t} · updated hourly",
+          dt_ov_live: "Overview: aggregated from live data",
+          tab_vote: "Voting Rewards", tab_mine: "My sAERO", tab_lp: "LP Rewards", tab_overview: "Overview",
+          tablist_label: "Tabs",
+          vote_h2: "Voting Rewards · Tiered by Allocation",
+          vote_note: "Top 10 per card only · sorted by Stake APR descending · tiered by Allocation · no pagination",
+          basis_title_snap: "Methodology: official app snapshot",
+          basis_title_live: "Methodology: on-chain data",
+          basis_source_snap: "Source: full snapshot captured from the official app's Markets page at <b>app.aero.xyz/markets/pools</b>, captured <b>2026-10-24 17:13–17:15 HKT</b>, <b>473 pools</b> in total (matches the UI count). This wall uses the official display fields as-is; if the live app differs, the snapshot prevails.",
+          basis_source_live: "Source: <b>on-chain data (PoolTape / CLPoolTape + LeafVoter)</b> — PoolTape / CLPoolTape read each pool's fees over the past 48 hours and LeafVoter reads Allocation, via public RPC calls to the official contracts; generated <b>{t}</b>, <b>{n} pools</b>. Tiering, sorting and the dust threshold are as described below.",
+          basis_tier: "Tiering & sorting: pools are split into 6 tiers by <b>Allocation (Allocation Power)</b> — under 100K / 100K–500K / 500K–1M / 1M–5M / 5M–10M / over 10M; within each tier the top 10 are ranked by <b>Stake APR</b> descending. Allocation is the total allocation power directed to a pool — the new system's equivalent of votes.",
+          basis_formula: "Stake APR (sAPR) = official definition: annualised estimate of the past 48 hours of rewards (trading fees + MEV capture + Liquidity Payments + Launch Payments); not a guaranteed return · Each row: Fees 48H + Incentives 48H = Rewards 48H",
+          basis_dust: "Dust threshold: to stop dust pools topping the board with inflated APRs, the ranking requires <b>Rewards 48H ≥ $10</b>; pools below the threshold are excluded from the top 10 (disclosed here, consistent with the dust filter). Top 10 per card only, no pagination. Window: official 48H basis.",
+          basis_refresh_snap: "Refresh cadence: data will be updated <b>hourly</b> from on-chain data — PoolTape / CLPoolTape read 48-hour fees and LeafVoter reads Allocation via public RPC (takes effect once the pipeline is connected); until then this wall remains the 2026-10-24 17:13–17:15 HKT official app snapshot and does not auto-refresh.",
+          basis_refresh_live: "Refresh cadence: this wall is updated <b>hourly</b> by the on-chain pipeline; the generation time above is the latest update. The page loads the newest data on open and falls back to the embedded snapshot if unavailable.",
+          basis_inc_note: "Note: <b>Incentives 48H are not yet included</b> for some pools and are shown as $0 for those pools; Rewards 48H and Stake APR follow the reader output.",
+          wall_src: "The small print under each row is the 48-hour breakdown: Fees 48H (trading fees) · Incentives 48H (incentives) · Rewards 48H (total). Data read directly from the app.aero.xyz Markets snapshot, 2026-10-24 17:13–17:15 HKT. Stake APR is an annualised estimate based on the past 48 hours, not a guaranteed return; the 48-hour window is volatile — judge by pool depth and persistence, not a single spike.",
+          tier_top: "Top 10 of {n} pools in this tier",
+          tier_highest: "Highest Stake APR {apr}% · tiered by Allocation",
+          tier_empty: "No pool in this tier currently meets the Rewards 48H ≥ $10 threshold.",
+          tier_foot: "Top 10 only · dust threshold Rewards 48H ≥ $10 · Stake APR descending",
+          tier_under: "Under 100K", tier_over: "Over 10M",
+          fee_rate: "Fee",
+          mine_h2: "My sAERO",
+          mine_note: "Read-only queries via public RPC for all 7 chains, straight from your browser · no wallet connection · nothing is signed or sent",
+          mode_label: "Mode", mode_single: "Single address", mode_batch: "Batch radar",
+          wallet_label: "Wallet address", query_btn: "Look up",
+          tokenid_label: "Or enter a position tokenId directly", tokenid_ph: "e.g. 6032", tokenid_btn: "Look up by tokenId",
+          batch_label: "Address list (one per line, up to 50)", batch_btn: "Start scan",
+          mine_src: "How reads work: positions and balances come from the VotingEscrow on Base; each chain's current allocation, idle amount and cooldown come from that chain's LeafVoter tokenStates / allocatedGauges / allocations (cooldown read per chain via allocationCooldown(), falling back to 169,200 seconds on read failure); est. claimable rewards come from each pool gauge's rewards manager (earnedFees / earnedIncentives, over the most recent 255 checkpoints). Queries run from your browser against public RPC endpoints; addresses and positions are public on-chain data.",
+          lp_h2: "LP Rewards · By Chain",
+          lp_head_snap: "Snapshot 2026-10-24 18:45 HKT · pools with TVL ≥ $100K only",
+          lp_head_live: "On-chain data{t} · updated hourly · pools with TVL ≥ $100K only",
+          chain_label: "Chain", sort_label: "Sort",
+          sort_total: "Total APR", sort_aero: "AERO emissions", sort_fees: "Fees",
+          all_chains: "All",
+          lp_src_snap: "Source: Aero official app Liquidity page snapshot, 2026-10-24 18:45 HKT; pools with TVL ≥ $100,000 only (122 of 1,040 network-wide); AERO APR is the official emissions APR and Fees APR the official fee APR, both official estimates. The snapshot captured 124 pools with TVL ≥ $90K, of which 2 fall below the $100K threshold (USDC/RIZE $93.58K, wstETH/WETH $91.55K) and are not shown. An AERO APR of “—” means the pool has no AERO emissions and counts as 0 in totals and sorting; “<0.01” is the official display and counts as 0.005 for sorting. LEGACY marks legacy pools in the official app. Some pools show abnormally high APRs due to small TVL and short-term volume spikes — judge together with TVL and 48-hour volume.",
+          lp_src_live: "Source: on-chain data (data/lp.json){t}, updated hourly; TVL is computed from the pool's two token balances × prices, AERO APR is annualised gauge emissions, and Fees APR is annualised fees over the past 48 hours — these may differ from the official app's methodology. Live mode has no Volume 48H source, so it is not shown. If live data cannot be loaded, the page falls back to the official app Liquidity snapshot (2026-10-24 18:45 HKT).",
+          lp_sum: "<b>{chain}</b> · <b>{n}</b> qualifying pools · total TVL <b>{tvl}</b> · sorted by {name} descending",
+          lp_sort_total: "Total APR", lp_sort_aero: "AERO emissions APR", lp_sort_fees: "Fee APR",
+          lp_empty: "No pool on this chain currently has TVL ≥ $100K.",
+          ov_px_k: "AERO price", ov_px_snap: "Coinbase spot · 10-23 12:50 HKT", ov_px_live: "Coinbase spot · refreshed just now {t}",
+          ov_px_feed: "On-chain feed · generated {t}",
+          ov_cool_k: "Predictive Allocation cooldown", ov_cool_v: "47 hours", ov_cool_s: "Official cooldown for changing an allocation · measured on-chain at 169,200 seconds",
+          ov_supply_k: "New AERO estimated total supply", ov_supply_v: "2.124B", ov_supply_s: "Estimated from the new contract · on-chain totalSupply basis",
+          ov_nft_k: "Total sAERO position NFTs", ov_nft_s: "VotingEscrow totalSupply · read on-chain 10-23 (settled on Base)",
+          ov_tvl_k_snap: "TVL (system-wide)", ov_tvl_s_snap: "Source: app.aero.xyz official app snapshot · 2026-10-24 17:00 HKT",
+          ov_vol_k_snap: "Volume, last 7 days", ov_rev_k_snap: "Revenue, last 7 days",
+          ov_chains_k: "Chains covered", ov_chains_v_snap: "7 chains", ov_chains_s_snap: "Base / Ethereum / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO settles on Base",
+          ov_tvl_k_live: "Total TVL (qualifying pools)", ov_tvl_s_live: "Pools with TVL ≥ $100K · on-chain data (data/lp.json) · updated hourly",
+          ov_fees_k_live: "Total fees, 48H", ov_fees_s_live: "Qualifying pools (TVL ≥ $100K) · derived as Fees APR × TVL ÷ 18250",
+          ov_wall_k_live: "Pools on the voting wall", ov_wall_s_live: "Rows in data/pools.json (on-chain data)", ov_wall_s_snap: "Pools in the embedded snapshot (pools.json not loaded)",
+          ov_chains_v_live: "{n} chains", ov_chains_s_live: "{n} listed pools (TVL ≥ $100K) · sAERO settles on Base",
+          cs_h2: "Per-Chain Stats", cs_note_snap: "Aggregated from the LP snapshot · TVL ≥ $100K basis", cs_note_live: "Aggregated from live LP data · TVL ≥ $100K basis · on-chain data",
+          cs_th_chain: "Chain", cs_th_count: "Qualifying pools", cs_th_tvl: "Total TVL", cs_th_fees: "Total Fees 48H", cs_th_apr: "Avg. total APR (TVL-weighted)",
+          cs_total: "Network total",
+          cs_src_snap: "Basis: the same snapshot as the LP Rewards tab (official app Liquidity page, 2026-10-24 18:45 HKT), counting only the 122 pools with TVL ≥ $100,000; average total APR = each pool's total APR (AERO APR + Fees APR) weighted by TVL; “—” emissions count as 0 and “<0.01” as 0.005. The TVL total here covers qualifying pools only and differs from the system-wide TVL above (official app, all pools).",
+          cs_src_live: "Basis: the same live data as the LP Rewards tab (on-chain data, updated hourly), counting only pools with TVL ≥ $100,000; total Fees 48H is derived per pool as Fees APR × TVL ÷ 18250; average total APR = each pool's total APR (AERO APR + Fees APR) weighted by TVL. The TVL total here covers qualifying pools only.",
+          mech_h2: "New Reward Mechanics", mech_note: "Based on on-chain decoding as of 2026-10-23",
+          old_title: "Legacy ve(3,3) ", old_tag: "Ended",
+          old_li: "<li>Weekly votes directed emissions; income = <b>trading fees + bribes</b> from voted pools, settled per epoch</li><li><b>Rebase</b> paid weekly to offset dilution from emissions; had to be claimed manually</li><li>A wrong pick cost at most one week; re-vote the next week</li><li>Relay vaults could vote and auto-compound on your behalf</li>",
+          new_title: "New sAERO + Predictive Allocation ", new_tag: "Current",
+          new_li: "<li>sAERO has <b>no rebase, is transferable, and has a fixed face value</b>; rewards come only from <b>fee share + incentives</b> — no anti-dilution rebase safety net</li><li>An allocation, once set, <b>stays in effect</b>; changing it has a <b>47-hour cooldown</b></li><li><b>allocate only allocates — it does not claim rewards</b>: rewards accrue per checkpoint in each leaf chain's rewards manager and must be claimed separately via claimRewards <b>per chain</b>; reallocating does not trigger a claim either</li><li>One allocation can span <b>7 chains</b> (Base / Ethereum / Optimism / Arbitrum / Ink / Arc / Robinhood Chain); gas is paid on Base only</li><li>Emissions are rate-set by the AER Engine in USD terms, subject to per-gauge caps and a global inflation cap (mechanism parameters; actual rates pending data)</li>",
+          contract1: "Allocator (allocation entry point)", contract2: "sAERO VotingEscrow (position certificate)", contract3: "Sample hot pool WETH/cbBTC",
+          copy: "Copy", copied: "Copied",
+          src_h2: "Methodology & Sources",
+          src_li1: "<b>Voting Rewards</b>: snapshot read directly from the official app's Markets page at app.aero.xyz/markets/pools (all 473 pools, 2026-10-24 17:13–17:15 HKT); fields Fees / Incentives / Rewards 48H, Stake APR, Allocation; afterwards updated hourly by the on-chain pipeline (data/pools.json), loaded automatically when the page opens, with the embedded snapshot as fallback.",
+          src_li2: "<b>LP Rewards</b>: official app Liquidity page snapshot (2026-10-24 18:45 HKT); 124 pools with TVL ≥ $90K captured, only the 122 with TVL ≥ $100K shown; TVL, Volume 48H, Fees 48H, AERO APR and Fees APR are all official display values.",
+          src_li3: "<b>Overview</b>: TVL, 7-day volume and revenue are official app snapshots (2026-10-24 17:00 HKT); the AERO price is Coinbase spot; supply, cooldown (169,200 seconds) and position NFT count are read on-chain from the official contracts (Allocator / VotingEscrow) via Base public RPC.",
+          footer_1: "<b>Unofficial notice</b>: this is a community-run, unofficial data dashboard, not affiliated with Aerodrome. It offers no trading, swapping or allocation execution — use official channels for any action.",
+          footer_2: "Sources: Voting Rewards from the official app Markets snapshot (473 pools, 2026-10-24 17:13–17:15 HKT); LP Rewards from the official app Liquidity snapshot (124 pools, 2026-10-24 18:45 HKT; the 122 pools with TVL ≥ $100K are shown); Overview TVL, 7-day volume and revenue from the official app snapshot (2026-10-24 17:00 HKT); prices from Coinbase; supply and cooldown parameters read on-chain from the official contracts (Allocator / VotingEscrow) via Base public RPC.",
+          footer_3: "All reward figures are historical records or official estimates; they do not represent future returns and are not investment advice.",
+          footer_src_label: "Source code: ",
+          footer_credit: "Built by Meta Muse",
+          unit_yi: "00M", unit_wan: "0K",
+          movers_title: "Allocation Movers — Past 24 Hours", movers_up: "Top 5 gainers", movers_down: "Top 5 losers", movers_none: "None",
+          status_fail: "Run status: this run failed the quality check; the previous data was kept{hf}",
+          status_ok: "Run status: OK{t}", status_gen: " · generated {t}", status_warn: " · Note: {w}",
+          sa_pos_summary: "<b>Position #{id}</b> · Balance <span class=\"mono\">{bal} AERO</span> · Allocated <span class=\"mono\">{alloc} AERO</span> · Unallocated <span class=\"mono\">{rem} AERO</span>",
+          sa_votes_h: "Current allocation", sa_rewards_h: "Current rewards · Est. Claimable", sa_cool_h: "Cooldown", sa_advice_h: "Allocation Suggestions",
+          sa_read_fail: "Read failed — retry available", sa_retry: "Retry", sa_retrying: "Retrying…",
+          sa_chain_alloc: "Allocated on this chain <span class=\"mono\">{amt} AERO</span> ({pct} of position)",
+          sa_idle: "Idle (allocated to this chain, no pool specified)",
+          sa_no_alloc: "This position is not currently allocated to any pool.",
+          sa_rewards_calc: "Calculating rewards…",
+          sa_rewards_note: "Est. Claimable: ended incentive programs may be swept by their creators; fees are estimated over the most recent 255 checkpoints and the actual claimable amount is determined at claim time. Only AERO is valued in the total; other tokens are listed by amount only.",
+          sa_cd_none: "Not allocated · Ready to allocate",
+          sa_cd_cooling: "Cooling down · ",
+          sa_cd_ready: "Ready to reallocate (last allocation {t})",
+          sa_cd_done: "Cooldown ended · Ready to reallocate",
+          sa_cd_left: "{hms} left · reallocatable from {t}",
+          sa_no_gauges_rewards: "This position has no allocated pools, so there are no claimable rewards.",
+          sa_gauge_rewards_fail: "Failed to read rewards for this pool.",
+          sa_fees_line: "Fees: ",
+          sa_inc_line: "Incentive (program #{pid} · {status}): ",
+          inc_active: "Active", inc_ended: "Ended",
+          sa_no_claimable: "No claimable rewards yet.",
+          sa_claim_total: "Total claimable", sa_approx: " (approx. {v})",
+          sa_pool_token: "Pool token",
+          sa_advice_unavail: "Live data unavailable — suggestions can't be generated right now (data/pools.json not loaded).",
+          sa_advice_cooling_note: " is cooling down and won't be moved this time (see the cooldown section above for time left).",
+          sa_advice_summary: "Movable <b class=\"mono\">{mov} AERO</b> (unallocated + idle + allocations on chains whose cooldown has ended) · Current est. 48H rewards <b class=\"mono\">{cur}</b> · Suggested est. <b class=\"mono\">{sug}</b>{diff}",
+          sa_advice_diff: " · Difference <b class=\"mono\">{v}%</b>",
+          sa_advice_th_pool: "Suggested pool", sa_advice_th_chain: "Chain", sa_advice_th_alloc: "Suggested allocation (AERO)", sa_advice_th_share: "Share of position", sa_advice_th_est: "Est. 48H rewards",
+          sa_advice_empty: "Nothing movable right now, or no suitable candidate pool in the feed.",
+          sa_advice_unknown: "Some held pools are not in the live feed; their current rewards are not counted in the current est.",
+          sa_advice_note: "Estimates based on {t} data: candidates are filled greedily by Stake APR descending, capped at 25% of each pool's current Allocation value per pool (anti-dilution), and est. rewards are adjusted for post-entry dilution; APR floats with allocation and is not a guaranteed return. This page is read-only — execute allocations with your own tooling.",
+          sa_advice_feed_time: "live feed",
+          sa_prog_chains: "Reading allocations on all chains… (7 chains in parallel)",
+          sa_prog_enum: "Enumerating positions… (Base VotingEscrow)",
+          sa_no_positions: "This address has no sAERO positions.",
+          sa_prog_enum_n: "Enumerating positions… {n} found, reading balances",
+          sa_err_enum: "Failed to enumerate positions — please retry.",
+          sa_err_enum_rpc: "Failed to enumerate positions: Base RPC read error — please retry.",
+          sa_prog_token: "Reading balance of position #{id}…",
+          sa_err_token_zero: "No balance read for this tokenId (the position may not exist or its balance is 0).",
+          sa_err_rpc: "Read failed: Base RPC error — please retry.",
+          sa_err_addr: "Invalid address format: it must be a 42-character address starting with 0x.",
+          sa_err_tokenid: "tokenId must be a positive integer.",
+          radar_none: "No positions", radar_ok: "OK", radar_fail: "Read failed", radar_bad: "Invalid address format",
+          radar_need_input: "Paste addresses first, one per line.",
+          radar_scanning: "Scanning {i} / {n} …",
+          radar_th_addr: "Address", radar_th_count: "Positions", radar_th_total: "Total sAERO", radar_th_cooling: "Chains cooling", radar_th_earliest: "Earliest reallocatable", radar_th_status: "Status",
+          radar_all_ready: "All ready to allocate",
+          radar_note: "Click a row with status “OK” to view that address's single-address details."
+        }
+      };
+      function t(k) { var d = I18N[LANG] || I18N.zh; return (d && d[k] !== undefined) ? d[k] : (I18N.zh[k] !== undefined ? I18N.zh[k] : k); }
+      function tf(k, m) { var s = t(k); if (m) Object.keys(m).forEach(function (x) { s = s.split("{" + x + "}").join(m[x]); }); return s; }
+      function localeTag() { return LANG === "en" ? "en-GB" : "zh-CN"; }
+      function chainDisp(c) { return c === "全部" ? t("all_chains") : c; }
+      function tierName(n) { if (LANG !== "en") return n; if (n === "100K 以下") return t("tier_under"); if (n === "10M 以上") return t("tier_over"); return n; }
+      function radarStatusLabel(code) { return code === "ok" ? t("radar_ok") : code === "none" ? t("radar_none") : code === "fail" ? t("radar_fail") : code === "bad" ? t("radar_bad") : code; }
+      function setText(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+      function setHTML(id, v) { var e = document.getElementById(id); if (e) e.innerHTML = v; }
+      function applyStatic() {
+        document.documentElement.lang = LANG === "en" ? "en" : "zh-CN";
+        if (document.body) document.body.classList.toggle("lang-en", LANG === "en");
+        document.title = t("title");
+        setText("pageTitle", t("title"));
+        setHTML("ledeText", t("lede"));
+        var sp = document.getElementById("stampPrefix"); if (sp) sp.textContent = t("stamp_prefix");
+        var lbZh = document.getElementById("langZh"), lbEn = document.getElementById("langEn");
+        if (lbZh) lbZh.setAttribute("aria-pressed", LANG === "zh" ? "true" : "false");
+        if (lbEn) lbEn.setAttribute("aria-pressed", LANG === "en" ? "true" : "false");
+        var nav = document.querySelector(".tabbar"); if (nav) nav.setAttribute("aria-label", t("tablist_label"));
+        var tb = { vote: "tab_vote", mine: "tab_mine", lp: "tab_lp", overview: "tab_overview" };
+        Object.keys(tb).forEach(function (k) { var b = document.querySelector('.tabbar [data-tab="' + k + '"]'); if (b) b.textContent = t(tb[k]); });
+        setText("voteH2", t("vote_h2")); setText("voteNote", t("vote_note"));
+        setText("basisTier", ""); setHTML("basisTier", t("basis_tier"));
+        setHTML("basisFormula", t("basis_formula")); setHTML("basisDust", t("basis_dust"));
+        setHTML("wallSrc", t("wall_src"));
+        if (!(window.__liveStateRef && window.__liveStateRef.poolsGen)) {
+          setText("basisTitle", t("basis_title_snap")); setHTML("basisSource", t("basis_source_snap")); setHTML("basisRefresh", t("basis_refresh_snap"));
+          setText("dtVote", t("dt_vote_snap")); setText("dtLp", t("dt_lp_snap")); setText("dtOv", t("dt_ov_snap"));
+        }
+        setText("mineH2", t("mine_h2")); setText("mineNote", t("mine_note"));
+        setText("modeLbl", t("mode_label"));
+        var ms = document.querySelector('#saMode [data-mode="single"]'); if (ms) ms.textContent = t("mode_single");
+        var mb = document.querySelector('#saMode [data-mode="batch"]'); if (mb) mb.textContent = t("mode_batch");
+        setText("saAddrLbl", t("wallet_label")); setText("saGo", t("query_btn"));
+        setText("saTokenLbl", t("tokenid_label")); var ti = document.getElementById("saTokenId"); if (ti) ti.placeholder = t("tokenid_ph");
+        setText("saGoId", t("tokenid_btn")); setText("saAddrsLbl", t("batch_label")); setText("saBatchGo", t("batch_btn"));
+        setHTML("mineSrc", t("mine_src"));
+        setText("lpH2", t("lp_h2")); setText("chainLbl", t("chain_label")); setText("sortLbl", t("sort_label"));
+        var sT = document.querySelector('#lpSort [data-sort="total"]'); if (sT) sT.textContent = t("sort_total");
+        var sA = document.querySelector('#lpSort [data-sort="aero"]'); if (sA) sA.textContent = t("sort_aero");
+        var sF = document.querySelector('#lpSort [data-sort="fees"]'); if (sF) sF.textContent = t("sort_fees");
+        if (!(window.__lpLiveRef && window.__lpLiveRef())) {
+          setText("lpHeadNote", t("lp_head_snap")); setText("lpSrc", t("lp_src_snap"));
+          setText("csNote", t("cs_note_snap")); setText("csSrc", t("cs_src_snap"));
+        }
+        setText("ovPxK", t("ov_px_k"));
+        var pxT = document.getElementById("pxTime");
+        if (pxT && !window.__pxLive) pxT.textContent = t("ov_px_snap");
+        setText("ovCoolK", t("ov_cool_k")); setText("ovCoolV", t("ov_cool_v")); setText("ovCoolS", t("ov_cool_s"));
+        setText("ovSupplyK", t("ov_supply_k")); setText("ovSupplyV", t("ov_supply_v")); setText("ovSupplyS", t("ov_supply_s"));
+        setText("ovNftK", t("ov_nft_k")); setText("ovNftS", t("ov_nft_s"));
+        if (!(window.__lpLiveRef && window.__lpLiveRef())) {
+          setText("kTvl", t("ov_tvl_k_snap")); setText("sTvl", t("ov_tvl_s_snap"));
+          setText("kVol7", t("ov_vol_k_snap")); setText("sVol7", t("ov_tvl_s_snap"));
+          setText("kRev7", t("ov_rev_k_snap")); setText("sRev7", t("ov_tvl_s_snap"));
+          setText("ovChainsK", t("ov_chains_k")); setText("stChains", t("ov_chains_v_snap")); setText("sChains", t("ov_chains_s_snap"));
+        } else { setText("ovChainsK", t("ov_chains_k")); }
+        setText("csH2", t("cs_h2"));
+        var ths = document.querySelectorAll("#csTable thead th");
+        var thKeys = ["cs_th_chain", "cs_th_count", "cs_th_tvl", "cs_th_fees", "cs_th_apr"];
+        ths.forEach(function (th, i) { if (thKeys[i]) th.textContent = t(thKeys[i]); });
+        setText("mechH2", t("mech_h2")); setText("mechNote", t("mech_note"));
+        setHTML("oldTitle", t("old_title") + '<span class="tag">' + t("old_tag") + "</span>");
+        setHTML("oldList", t("old_li"));
+        setHTML("newTitle", t("new_title") + '<span class="tag new">' + t("new_tag") + "</span>");
+        setHTML("newList", t("new_li"));
+        setText("contract1Name", t("contract1")); setText("contract2Name", t("contract2")); setText("contract3Name", t("contract3"));
+        document.querySelectorAll("[data-copy]").forEach(function (b) { if (!b.dataset.copiedNow) b.textContent = t("copy"); });
+        setText("srcH2", t("src_h2"));
+        setHTML("srcLi1", t("src_li1")); setHTML("srcLi2", t("src_li2")); setHTML("srcLi3", t("src_li3"));
+        setHTML("footer1", t("footer_1")); setText("footer2", t("footer_2")); setText("footer3", t("footer_3"));
+        var fl = document.getElementById("footerSrcLbl"); if (fl) fl.textContent = t("footer_src_label");
+        var fc = document.getElementById("footerCredit"); if (fc) fc.textContent = t("footer_credit");
+      }
+      function rerenderAll() {
+        applyStatic();
+        try { if (typeof window.__rerenderDynamic === "function") window.__rerenderDynamic(); } catch (e) {}
+      }
+      function setLang(l) {
+        if (l !== "en" && l !== "zh") return;
+        LANG = l;
+        try { localStorage.setItem("aero-lang", l); } catch (e) {}
+        rerenderAll();
+      }
+    </script>
+    <script>
       var AERO_PX = 0.79016;
       /* 实时 feed 状态：pools.json / lp.json 任一加载成功后写入，驱动数据时间行与总览 */
       var liveState = { poolsGen: null, poolsCount: 0, lpGen: null, poolsData: null };
+      window.__liveStateRef = liveState;
+      window.__lpLiveRef = function () { return typeof lpLiveMode !== "undefined" && lpLiveMode; };
       /* gauge 地址（小写）→ feed 池信息，供「我的 sAERO」按 gauge 匹配池名 / APR / 池地址 */
       var feedByGauge = {};
       function $(id) { return document.getElementById(id); }
@@ -444,8 +811,9 @@
       }
       function fmtCompact(n) {
         if (!n) return "—";
-        if (n >= 1e8) return "$" + (n / 1e8).toFixed(2) + "亿";
-        if (n >= 1e4) return "$" + (n / 1e4).toFixed(1) + "万";
+        if (LANG === "en") { if (n >= 1e9) return "$" + (n / 1e9).toFixed(2) + "B"; if (n >= 1e6) return "$" + (n / 1e6).toFixed(2) + "M"; if (n >= 1e3) return "$" + (n / 1e3).toFixed(1) + "K"; return fmtUSD(n); }
+        if (n >= 1e8) return "$" + (n / 1e8).toFixed(2) + t("unit_yi");
+        if (n >= 1e4) return "$" + (n / 1e4).toFixed(1) + t("unit_wan");
         return fmtUSD(n);
       }
       function fmtNum(n, dec) {
@@ -486,17 +854,19 @@
 
       /* ---------- 分页 1：投票收益卡片墙 ---------- */
       var VOTE_WALL = {"snapshot": "2026-10-24 17:13–17:15 HKT", "source": "https://app.aero.xyz/markets/pools", "totalPools": 473, "tiers": [{"name": "100K 以下", "top": [{"name": "WETH/PONS", "fee": "0.61%", "chain": "Robinhood", "type": "CL100", "fees": "$18.67", "incentives": "$0.00", "rewards": "$18.67", "apr": 27.9, "alloc": "17.12K"}, {"name": "USDG/AMD", "fee": "0.31%", "chain": "Robinhood", "type": "CL50", "fees": "$47.08", "incentives": "$0.00", "rewards": "$47.08", "apr": 26.5, "alloc": "45.60K"}, {"name": "USDC/AMDc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$17.13", "incentives": "$0.00", "rewards": "$17.13", "apr": 25.3, "alloc": "17.33K"}, {"name": "TIG/USDC", "fee": "0.15%", "chain": "Base", "type": "CL200", "fees": "$11.27", "incentives": "$0.00", "rewards": "$11.27", "apr": 24.7, "alloc": "11.71K"}, {"name": "USDG/INTC", "fee": "0.45%", "chain": "Robinhood", "type": "CL50", "fees": "$37.98", "incentives": "$0.00", "rewards": "$37.98", "apr": 24.1, "alloc": "40.44K"}, {"name": "PAXG/USDC", "fee": "0.02%", "chain": "Ethereum", "type": "CL10", "fees": "$14.42", "incentives": "$0.00", "rewards": "$14.42", "apr": 22.1, "alloc": "16.68K"}, {"name": "WETH/SPCX", "fee": "0.02%", "chain": "Robinhood", "type": "CL50", "fees": "$24.79", "incentives": "$0.00", "rewards": "$24.79", "apr": 22.0, "alloc": "28.86K"}, {"name": "CASHCAT/USDG", "fee": "0.57%", "chain": "Robinhood", "type": "CL100", "fees": "$36.91", "incentives": "$0.00", "rewards": "$36.91", "apr": 21.0, "alloc": "44.93K"}, {"name": "EURC/USDC", "fee": "&lt;0.01%", "chain": "Base", "type": "CL50", "fees": "$24.41", "incentives": "$0.00", "rewards": "$24.41", "apr": 21.0, "alloc": "29.79K"}, {"name": "WETH/LCAP", "fee": "0.29%", "chain": "Base", "type": "CL200", "fees": "$27.10", "incentives": "$0.00", "rewards": "$27.10", "apr": 19.9, "alloc": "34.94K"}]}, {"name": "100K – 500K", "top": [{"name": "FLOCK/USDC", "fee": "0.12%", "chain": "Base", "type": "CL100", "fees": "$8.81", "incentives": "$127.64", "rewards": "$136.45", "apr": 16.9, "alloc": "207.28K"}, {"name": "USDC/LAPTOP", "fee": "0.8%", "chain": "Base", "type": "CL200", "fees": "$54.10", "incentives": "$127.64", "rewards": "$181.74", "apr": 16.9, "alloc": "275.25K"}, {"name": "cbBTC/ZEN", "fee": "0.18%", "chain": "Base", "type": "CL200", "fees": "$9.91", "incentives": "$127.64", "rewards": "$137.55", "apr": 16.7, "alloc": "211.50K"}, {"name": "LFI/USDC", "fee": "0.95%", "chain": "Base", "type": "CL100", "fees": "$83.75", "incentives": "$127.64", "rewards": "$211.40", "apr": 16.6, "alloc": "325.93K"}, {"name": "WETH/EDEL", "fee": "0.7%", "chain": "Base", "type": "Basic Volatile", "fees": "$37.84", "incentives": "$127.64", "rewards": "$165.48", "apr": 16.6, "alloc": "254.96K"}, {"name": "USDC/alUSD", "fee": "0.05%", "chain": "OP Mainnet", "type": "Basic Stable", "fees": "$8.69", "incentives": "$231.65", "rewards": "$240.34", "apr": 16.5, "alloc": "373.51K"}, {"name": "WETH/SERV", "fee": "1.5%", "chain": "Base", "type": "CL200", "fees": "$21.76", "incentives": "$127.64", "rewards": "$149.41", "apr": 16.4, "alloc": "234.01K"}, {"name": "USDC/NOCK", "fee": "0.3%", "chain": "Base", "type": "Basic Volatile", "fees": "$2.19", "incentives": "$127.64", "rewards": "$129.83", "apr": 16.4, "alloc": "202.62K"}, {"name": "ZORA/USDC", "fee": "0.24%", "chain": "Base", "type": "CL100", "fees": "$68.13", "incentives": "$127.64", "rewards": "$195.77", "apr": 16.4, "alloc": "306.61K"}, {"name": "WETH/BRETT", "fee": "0.21%", "chain": "Base", "type": "CL200", "fees": "$30.93", "incentives": "$127.64", "rewards": "$158.58", "apr": 16.4, "alloc": "247.33K"}]}, {"name": "500K – 1M", "top": [{"name": "USDC/BIDUc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$6.00", "incentives": "$377.14", "rewards": "$383.14", "apr": 17.2, "alloc": "571.31K"}, {"name": "USDC/ULc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$9.34", "incentives": "$377.14", "rewards": "$386.48", "apr": 17.1, "alloc": "580.30K"}, {"name": "USDC/VALEc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$15.90", "incentives": "$377.14", "rewards": "$393.04", "apr": 16.7, "alloc": "601.74K"}, {"name": "USDC/INFYc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$10.45", "incentives": "$377.12", "rewards": "$387.58", "apr": 16.7, "alloc": "593.46K"}, {"name": "USDC/BUDc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$9.70", "incentives": "$377.14", "rewards": "$386.84", "apr": 16.5, "alloc": "600.57K"}, {"name": "USDC/NIOc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$15.38", "incentives": "$377.14", "rewards": "$392.52", "apr": 16.4, "alloc": "615.07K"}, {"name": "USDC/LIc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$4.96", "incentives": "$377.14", "rewards": "$382.10", "apr": 16.4, "alloc": "596.27K"}, {"name": "USDC/SANc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$6.63", "incentives": "$377.14", "rewards": "$383.78", "apr": 16.3, "alloc": "603.32K"}, {"name": "USDC/NOKc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$5.26", "incentives": "$377.14", "rewards": "$382.40", "apr": 16.1, "alloc": "607.31K"}, {"name": "alETH/WETH", "fee": "0.05%", "chain": "OP Mainnet", "type": "Basic Stable", "fees": "$6.46", "incentives": "$595.67", "rewards": "$602.13", "apr": 16.1, "alloc": "959.36K"}]}, {"name": "1M – 5M", "top": [{"name": "CHIP/USDC", "fee": "0.21%", "chain": "Base", "type": "CL200", "fees": "$580.65", "incentives": "$127.64", "rewards": "$708.29", "apr": 15.7, "alloc": "1.15M"}, {"name": "WETH/ZEN", "fee": "0.11%", "chain": "Base", "type": "CL100", "fees": "$414.27", "incentives": "$1.67K", "rewards": "$2.08K", "apr": 15.0, "alloc": "3.55M"}, {"name": "WETH/msETH", "fee": "0.03%", "chain": "Base", "type": "CL50", "fees": "$606.52", "incentives": "$714.29", "rewards": "$1.32K", "apr": 15.0, "alloc": "2.25M"}, {"name": "WETH/SPY", "fee": "0.02%", "chain": "Robinhood", "type": "CL50", "fees": "$1.79K", "incentives": "$0.00", "rewards": "$1.79K", "apr": 15.0, "alloc": "3.05M"}, {"name": "WBTC/WETH", "fee": "0.02%", "chain": "Ethereum", "type": "CL10", "fees": "$715.98", "incentives": "$0.00", "rewards": "$715.98", "apr": 15.0, "alloc": "1.22M"}, {"name": "USDC/WHUF", "fee": "0.3%", "chain": "Base", "type": "CL200", "fees": "$356.96", "incentives": "$306.14", "rewards": "$663.10", "apr": 14.9, "alloc": "1.14M"}, {"name": "USDC/MUSD", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$25.56", "incentives": "$595.65", "rewards": "$621.21", "apr": 14.8, "alloc": "1.07M"}, {"name": "msUSD/USDC", "fee": "0.05%", "chain": "Base", "type": "CL50", "fees": "$846.37", "incentives": "$714.29", "rewards": "$1.56K", "apr": 14.6, "alloc": "2.74M"}, {"name": "EURC/USDC", "fee": "&lt;0.01%", "chain": "Base", "type": "CL1", "fees": "$347.01", "incentives": "$225.73", "rewards": "$572.74", "apr": 14.6, "alloc": "1.00M"}, {"name": "WETH/USDC", "fee": "0.3%", "chain": "Base", "type": "Basic Volatile", "fees": "$343.95", "incentives": "$453.62", "rewards": "$797.57", "apr": 14.1, "alloc": "1.44M"}]}, {"name": "5M – 10M", "top": [{"name": "USDC/SPCXc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$3.26K", "incentives": "$1.34K", "rewards": "$4.60K", "apr": 15.4, "alloc": "7.67M"}, {"name": "USDC/AMZNc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$4.06K", "incentives": "$1.59K", "rewards": "$5.65K", "apr": 14.9, "alloc": "9.72M"}, {"name": "WETH/AAVE", "fee": "0.25%", "chain": "Base", "type": "CL200", "fees": "$1.73K", "incentives": "$1.49K", "rewards": "$3.22K", "apr": 14.6, "alloc": "5.64M"}, {"name": "SOL/cbBTC", "fee": "0.04%", "chain": "Base", "type": "CL10", "fees": "$1.81K", "incentives": "$1.15K", "rewards": "$2.96K", "apr": 13.9, "alloc": "5.44M"}, {"name": "WETH/ZRO", "fee": "0.11%", "chain": "Base", "type": "CL100", "fees": "$1.55K", "incentives": "$1.36K", "rewards": "$2.91K", "apr": 13.6, "alloc": "5.48M"}, {"name": "msUSD/USDC", "fee": "0.05%", "chain": "Base", "type": "Basic Stable", "fees": "$49.07", "incentives": "$2.86K", "rewards": "$2.91K", "apr": 12.8, "alloc": "5.84M"}, {"name": "USDC/cbHYPE", "fee": "0.19%", "chain": "Base", "type": "CL100", "fees": "$4.28K", "incentives": "$127.64", "rewards": "$4.41K", "apr": 12.8, "alloc": "8.83M"}, {"name": "USDC/NVDAc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$4.26K", "incentives": "$220.97", "rewards": "$4.48K", "apr": 12.2, "alloc": "9.41M"}, {"name": "WETH/VVV", "fee": "0.71%", "chain": "Base", "type": "CL200", "fees": "$1.98K", "incentives": "$0.00", "rewards": "$1.98K", "apr": 8.8, "alloc": "5.76M"}, {"name": "WETH/USDT", "fee": "0.04%", "chain": "Base", "type": "CL100", "fees": "$2.09K", "incentives": "$0.00", "rewards": "$2.09K", "apr": 8.5, "alloc": "6.30M"}]}, {"name": "10M 以上", "top": [{"name": "USDC/MSTRc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$11.92K", "incentives": "$0.00", "rewards": "$11.92K", "apr": 17.3, "alloc": "17.63M"}, {"name": "USDC/SNDKc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$4.89K", "incentives": "$1.95K", "rewards": "$6.84K", "apr": 15.3, "alloc": "11.46M"}, {"name": "USDC/MUc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$4.11K", "incentives": "$2.23K", "rewards": "$6.34K", "apr": 15.1, "alloc": "10.78M"}, {"name": "WETH/USDC", "fee": "0.05%", "chain": "Base", "type": "CL100", "fees": "$14.10K", "incentives": "$0.00", "rewards": "$14.10K", "apr": 14.4, "alloc": "25.00M"}, {"name": "USDC/cbZEC", "fee": "0.16%", "chain": "Base", "type": "CL200", "fees": "$4.15K", "incentives": "$1.51K", "rewards": "$5.65K", "apr": 14.3, "alloc": "10.16M"}, {"name": "USDC/cbBTC", "fee": "0.01%", "chain": "Base", "type": "CL50", "fees": "$7.99K", "incentives": "$0.00", "rewards": "$7.99K", "apr": 14.2, "alloc": "14.38M"}, {"name": "WETH/cbBTC", "fee": "&lt;0.01%", "chain": "Base", "type": "CL1", "fees": "$5.32K", "incentives": "$0.00", "rewards": "$5.32K", "apr": 13.5, "alloc": "10.12M"}, {"name": "WETH/VVV", "fee": "0.27%", "chain": "Base", "type": "CL100", "fees": "$18.15K", "incentives": "$0.00", "rewards": "$18.15K", "apr": 13.2, "alloc": "35.34M"}, {"name": "WETH/USDC", "fee": "0.04%", "chain": "Base", "type": "CL50", "fees": "$27.12K", "incentives": "$0.00", "rewards": "$27.12K", "apr": 12.9, "alloc": "53.69M"}, {"name": "AERO/cbBTC", "fee": "0.27%", "chain": "Base", "type": "CL200", "fees": "$8.31K", "incentives": "$0.00", "rewards": "$8.31K", "apr": 12.8, "alloc": "16.64M"}]}]};
+      var currentWall = null;
       function renderWall(wall) {
+        currentWall = wall;
         $("tiers").innerHTML = wall.tiers.map(function (t) {
-          var head = '<div class="tier-head"><span class="tn">' + t.name + '</span><span class="tc">共 ' + wall.totalPools + ' 池中本档前 10</span></div>';
-          var sum = t.top.length ? '<div class="tier-sum">最高 Stake APR ' + fmtNum(t.top[0].apr) + '% · 按 Allocation 分档</div>' : '';
+          var head = '<div class="tier-head"><span class="tn">' + tierName(t.name) + '</span><span class="tc">' + tf("tier_top", { n: wall.totalPools }) + '</span></div>';
+          var sum = t.top.length ? '<div class="tier-sum">' + tf("tier_highest", { apr: fmtNum(t.top[0].apr) }) + '</div>' : '';
           var body = t.top.length ? t.top.map(function (p, i) {
             return '<div class="vrow"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
               '<span class="vsym">' + p.name + '</span>' +
               '<span class="vapr">' + fmtNum(p.apr) + '%</span><span class="vvotes">Alloc ' + p.alloc + '</span></div>' +
-              '<div class="vsub">' + p.type + ' · 费率 ' + p.fee + ' · ' + chainBadge(p.chain) + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div></div>';
-          }).join("") : '<div class="tempty">本档暂无达到 Rewards 48H \u2265 $10 门槛的池。</div>';
-          var foot = '<div class="tier-foot">仅显示前 10 · 门槛 Rewards 48H \u2265 $10 · Stake APR 降序</div>';
+              '<div class="vsub">' + p.type + ' · ' + tf("fee_rate") + ' ' + p.fee + ' · ' + chainBadge(p.chain) + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div></div>';
+           }).join("") : '<div class="tempty">' + tf("tier_empty") + '</div>';
+          var foot = '<div class="tier-foot">' + tf("tier_foot") + '</div>';
           return '<div class="tier">' + head + sum + body + foot + '</div>';
         }).join("");
       }
@@ -530,13 +900,13 @@
       function fmtGenTime(iso) {
         var d = new Date(iso);
         if (isNaN(d.getTime())) return iso;
-        return d.toLocaleString("zh-CN", { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }) + " HKT";
+        return d.toLocaleString(localeTag(), { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }) + " HKT";
       }
       /* 数据时间行：哪个 feed 加载成功就动态化哪一行；总览任一 feed 成功即切实时聚合标注 */
       function updateStamp() {
-        if (liveState.poolsGen) $("dtVote").textContent = "投票墙：链上直读 · 生成于 " + fmtGenTime(liveState.poolsGen) + " · 每小时更新";
-        if (liveState.lpGen) $("dtLp").textContent = "LP 排名：链上直读 · 生成于 " + fmtGenTime(liveState.lpGen) + " · 每小时更新";
-        if (liveState.poolsGen || liveState.lpGen) $("dtOv").textContent = "总览：由实时数据聚合";
+        if (liveState.poolsGen) $("dtVote").textContent = tf("dt_vote_live", { t: fmtGenTime(liveState.poolsGen) });
+        if (liveState.lpGen) $("dtLp").textContent = tf("dt_lp_live", { t: fmtGenTime(liveState.lpGen) });
+        if (liveState.poolsGen || liveState.lpGen) $("dtOv").textContent = t("dt_ov_live");
       }
       function setAeroPx(px, label) {
         AERO_PX = px;
@@ -593,16 +963,16 @@
         data.pools.forEach(function (p) { if (p.gauge) feedByGauge[p.gauge] = { pair: p.pair, chain: p.chain, stake_apr: p.stake_apr, rewards48h: p.rewards48h, allocation: p.allocation, pool: p.pool }; });
         liveState.poolsGen = data.generated_at;
         liveState.poolsCount = data.pools.length;
-        if (isFinite(data.aero_price_usd) && data.aero_price_usd > 0) setAeroPx(data.aero_price_usd, "链上 feed · 生成于 " + fmtGenTime(data.generated_at));
+        if (isFinite(data.aero_price_usd) && data.aero_price_usd > 0) setAeroPx(data.aero_price_usd, tf("ov_px_feed", { t: fmtGenTime(data.generated_at) }));
         updateStamp();
         if (typeof updateOverview === "function") updateOverview();
-        $("basisTitle").textContent = "数据口径：链上直读";
-        $("basisSource").innerHTML = "来源：<b>链上直读（PoolTape / CLPoolTape + LeafVoter）</b>——PoolTape / CLPoolTape 读取各池过去 48 小时费用、LeafVoter 读取 Allocation，经公开 RPC 直读官方合约生成；生成时间 <b>" + fmtGenTime(data.generated_at) + "</b>，共 <b>" + data.pools.length + " 个池</b>。分档、排序与防尘门槛与下方说明一致。";
-        $("basisRefresh").innerHTML = "刷新节奏：本墙由链上直读管线按<b>每小时</b>更新，上方生成时间即最近一次更新时间；页面打开时自动加载最新一期数据，加载不到时显示内嵌快照。";
+        $("basisTitle").textContent = t("basis_title_live");
+        $("basisSource").innerHTML = tf("basis_source_live", { t: fmtGenTime(data.generated_at), n: data.pools.length });
+        $("basisRefresh").innerHTML = t("basis_refresh_live");
         var incEl = $("basisInc");
         if (data.pools.some(function (p) { return p.incentives48h === null; })) {
           incEl.style.display = "";
-          incEl.innerHTML = "注：部分池的 <b>Incentives 48H 暂未纳入</b>，该池 Incentives 按 $0 显示；Rewards 48H 与 Stake APR 以读取器产出为准。";
+          incEl.innerHTML = t("basis_inc_note");
         } else {
           incEl.style.display = "none";
           incEl.innerHTML = "";
@@ -613,16 +983,17 @@
         if (!r.ok) throw new Error("no live data");
         return r.json();
       }).then(function (j) {
+        window.__lastPoolsRaw = j;
         applyLiveData(j);
-      }).catch(function () { /* 静默回退内嵌快照 */ });
+      }).catch(function () { });
 
       /* copy buttons */
       document.querySelectorAll("[data-copy]").forEach(function (b) {
         b.addEventListener("click", function () {
-          var t = b.getAttribute("data-copy");
-          if (navigator.clipboard) navigator.clipboard.writeText(t);
-          b.textContent = "已复制";
-          setTimeout(function () { b.textContent = "复制"; }, 1500);
+          var txt = b.getAttribute("data-copy");
+          if (navigator.clipboard) navigator.clipboard.writeText(txt);
+          b.dataset.copiedNow = "1"; b.textContent = t("copied");
+          setTimeout(function () { delete b.dataset.copiedNow; b.textContent = t("copy"); }, 1500);
         });
       });
 
@@ -779,7 +1150,7 @@
         Object.keys(counts).forEach(function (c) { if (chains.indexOf(c) < 0) chains.push(c); });
         $("lpChains").innerHTML = chains.map(function (c) {
           var n = c === "全部" ? q.length : counts[c];
-          return '<button type="button" data-chain="' + escHtml(c) + '" aria-pressed="' + (lpState.chain === c) + '">' + (c === "全部" ? "" : chainDot(c)) + escHtml(c) + " · " + n + "</button>";
+          return '<button type="button" data-chain="' + escHtml(c) + '" aria-pressed="' + (lpState.chain === c) + '">' + (c === "全部" ? "" : chainDot(c)) + escHtml(chainDisp(c)) + " · " + n + "</button>";
         }).join("");
         $("lpChains").querySelectorAll("[data-chain]").forEach(function (b) {
           b.addEventListener("click", function () {
@@ -796,15 +1167,15 @@
           : lpTotal;
         list.sort(function (a, b) { return key(b) - key(a) || b[3] - a[3]; });
         var tvlSum = list.reduce(function (s, p) { return s + p[3]; }, 0);
-        var sortName = lpState.sort === "aero" ? "AERO 排放 APR" : lpState.sort === "fees" ? "手续费 APR" : "合计 APR";
-        $("lpSum").innerHTML = "<b>" + escHtml(lpState.chain) + "</b> · 达标池 <b>" + list.length + "</b> 个 · TVL 合计 <b>" + fmtUSD(tvlSum) + "</b> · 按" + sortName + "降序";
+        var sortName = lpState.sort === "aero" ? t("lp_sort_aero") : lpState.sort === "fees" ? t("lp_sort_fees") : t("lp_sort_total");
+        $("lpSum").innerHTML = tf("lp_sum", { chain: escHtml(chainDisp(lpState.chain)), n: list.length, tvl: fmtUSD(tvlSum), name: sortName });
         $("lpList").innerHTML = list.length ? list.map(function (p, i) {
           return '<div class="vrow lp-row"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
             '<span class="vsym">' + escHtml(p[0]) + '</span>' +
             '<span class="vapr">' + fmtPct(lpTotal(p)) + '%</span></div>' +
             '<div class="vsub">' + escHtml(p[2]) + " · " + chainBadge(p[1]) + " · TVL " + fmtCompact(p[3]) + " · AERO " + aprDisp(p[6]) + " · Fees " + aprDisp(p[7]) + '</div>' +
             (p[4] === null || p[4] === undefined ? "" : '<div class="vsub">Volume 48H ' + fmtCompact(p[4]) + " · Fees 48H " + fmtUSD(p[5], p[5] < 10 ? 2 : 0) + '</div>') + '</div>';
-        }).join("") : '<div class="tempty">该链暂无 TVL ≥ $100K 的池。</div>';
+         }).join("") : '<div class="tempty">' + t("lp_empty") + '</div>';
       }
       $("lpSort").querySelectorAll("[data-sort]").forEach(function (b) {
         b.addEventListener("click", function () {
@@ -832,7 +1203,7 @@
           var label = (cls === "total" ? "" : chainDot(name)) + escHtml(name);
           return '<tr' + (cls ? ' class="' + cls + '"' : "") + '><td>' + label + '</td><td class="num mono">' + s.n + '</td><td class="num mono">' + fmtUSD(s.tvl) + '</td><td class="num mono">' + fmtUSD(s.fees) + '</td><td class="num mono">' + fmtPct(s.tvl ? s.w / s.tvl : 0) + "%</td></tr>";
         }
-        $("chainStatsBody").innerHTML = order.map(function (c) { return row(c, byChain[c], ""); }).join("") + row("全网合计", tot, "total");
+        $("chainStatsBody").innerHTML = order.map(function (c) { return row(c, byChain[c], ""); }).join("") + row(t("cs_total"), tot, "total");
       }
       renderChainStats();
 
@@ -848,17 +1219,17 @@
         var q = lpQualifying();
         var tvl = 0, fees = 0, chains = {};
         q.forEach(function (p) { tvl += p[3]; fees += feesOf(p); chains[p[1]] = 1; });
-        $("kTvl").textContent = "TVL 合计（达标池）";
+        $("kTvl").textContent = t("ov_tvl_k_live");
         $("stTvl").textContent = fmtM(tvl);
-        $("sTvl").textContent = "TVL ≥ $100K 池 · 链上直读（data/lp.json）· 每小时更新";
-        $("kVol7").textContent = "48H 手续费合计";
+        $("sTvl").textContent = t("ov_tvl_s_live");
+        $("kVol7").textContent = t("ov_fees_k_live");
         $("stVol7").textContent = fmtM(fees);
-        $("sVol7").textContent = "TVL ≥ $100K 池口径 · 由 Fees APR × TVL ÷ 18250 反推";
-        $("kRev7").textContent = "投票墙池数";
+        $("sVol7").textContent = t("ov_fees_s_live");
+        $("kRev7").textContent = t("ov_wall_k_live");
         $("stRev7").textContent = fmtNum(liveState.poolsCount || VOTE_WALL.totalPools, 0);
-        $("sRev7").textContent = liveState.poolsCount ? "data/pools.json 链上直读条数" : "内嵌快照池数（pools.json 未加载）";
-        $("stChains").textContent = Object.keys(chains).length + " 链";
-        $("sChains").textContent = "上榜池 " + q.length + " 个（TVL ≥ $100K）· sAERO 结算在 Base";
+        $("sRev7").textContent = liveState.poolsCount ? t("ov_wall_s_live") : t("ov_wall_s_snap");
+        $("stChains").textContent = tf("ov_chains_v_live", { n: Object.keys(chains).length });
+        $("sChains").textContent = tf("ov_chains_s_live", { n: q.length });
       }
 
       /* ---------- LP 双层数据：内嵌快照兜底，data/lp.json（链上读取器产出）优先 ---------- */
@@ -900,12 +1271,12 @@
         buildChainButtons();
         renderLP();
         renderChainStats();
-        if (isFinite(data.aero_price_usd) && data.aero_price_usd > 0) setAeroPx(data.aero_price_usd, "链上 feed · 生成于 " + fmtGenTime(data.generated_at));
+        if (isFinite(data.aero_price_usd) && data.aero_price_usd > 0) setAeroPx(data.aero_price_usd, tf("ov_px_feed", { t: fmtGenTime(data.generated_at) }));
         var genTxt = data.generated_at ? fmtGenTime(data.generated_at) : "";
-        $("lpHeadNote").textContent = "链上直读" + (genTxt ? " · " + genTxt : "") + " · 每小时更新 · 仅 TVL ≥ $100K 的池";
-        $("lpSrc").textContent = "数据来源：链上直读（data/lp.json）" + (genTxt ? "，生成于 " + genTxt : "") + "，每小时更新；TVL 为池内两种代币余额 × 价格直算，AERO APR 为 gauge 排放年化，Fees APR 为过去 48 小时手续费年化，与官方应用口径可能不同。实时模式无 Volume 48H 数据源，该项不显示。加载不到实时数据时回落官方应用 Liquidity 快照（2026-10-24 18:45 HKT）。";
-        $("csNote").textContent = "由 LP 实时数据聚合 · TVL ≥ $100K 口径 · 链上直读";
-        $("csSrc").textContent = "口径：与「LP 收益」分页同一实时数据（链上直读，每小时更新），仅统计 TVL ≥ $100,000 的池；48H 手续费合计由各池 Fees APR × TVL ÷ 18250 反推；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均。此处 TVL 合计仅覆盖达标池。";
+        $("lpHeadNote").textContent = tf("lp_head_live", { t: genTxt ? " · " + genTxt : "" });
+        $("lpSrc").textContent = tf("lp_src_live", { t: genTxt ? (LANG === "en" ? ", generated " + genTxt : "，生成于 " + genTxt) : "" });
+        $("csNote").textContent = t("cs_note_live");
+        $("csSrc").textContent = t("cs_src_live");
         updateOverview();
         updateStamp();
         return true;
@@ -914,8 +1285,9 @@
         if (!r.ok) throw new Error("no live lp data");
         return r.json();
       }).then(function (j) {
+        window.__lastLPRaw = j;
         applyLiveLP(j);
-      }).catch(function () { /* 静默回退内嵌快照 */ });
+      }).catch(function () { });
 
       /* best-effort live price refresh from Coinbase (falls back to baked values) */
       fetch("https://api.coinbase.com/v2/prices/AERO-USD/spot").then(function (r) { return r.json(); })
@@ -926,7 +1298,7 @@
             $("stAeroPx").textContent = "$" + AERO_PX.toFixed(4);
             var now = new Date();
             var hh = String(now.getHours()).padStart(2, "0"), mm = String(now.getMinutes()).padStart(2, "0");
-            $("pxTime").textContent = "Coinbase 现货 · 刚刚刷新 " + hh + ":" + mm;
+            window.__pxLive = true; $("pxTime").textContent = tf("ov_px_live", { t: hh + ":" + mm });
           }
         }).catch(function () { /* keep baked snapshot values */ });
     </script>
@@ -1088,7 +1460,7 @@
       function fmtUnixHKT(sec) {
         var d = new Date(sec * 1000);
         if (isNaN(d.getTime())) return "—";
-        return d.toLocaleString("zh-CN", { timeZone: "Asia/Hong_Kong", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }) + " HKT";
+        return d.toLocaleString(localeTag(), { timeZone: "Asia/Hong_Kong", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }) + " HKT";
       }
       function aeroNum(wei) { return Number(BigInt(wei)) / 1e18; }
 
@@ -1223,7 +1595,7 @@
         saState.current = tokenId;
         renderChips();
         setSaErr("");
-        setSaProg("读取各链分配中…（7 条链并行）");
+        setSaProg(t("sa_prog_chains"));
         $("saResult").innerHTML = "";
         Promise.all(SA_CHAINS.map(function (c) { return readChainPosition(c, tokenId); })).then(function (cds) {
           saState.chainData = cds;
@@ -1261,18 +1633,18 @@
         var sumAlloc = 0n;
         cds.forEach(function (c) { if (c.ok) sumAlloc += c.chainAlloc; });
         var remainder = bal > sumAlloc ? bal - sumAlloc : 0n;
-        var html = '<div class="sa-block"><div class="card"><b>仓位 #' + tokenId + '</b> · 余额 <span class="mono">' + fmtTok(bal, 18, 6) + ' AERO</span> · 已分配 <span class="mono">' + fmtTok(sumAlloc, 18, 6) + ' AERO</span> · 未派发余量 <span class="mono">' + fmtTok(remainder, 18, 6) + " AERO</span></div></div>";
-        html += '<div class="sa-block"><h3>当前投票所在</h3><div class="card">';
+        var html = '<div class="sa-block"><div class="card">' + tf("sa_pos_summary", { id: tokenId, bal: fmtTok(bal, 18, 6), alloc: fmtTok(sumAlloc, 18, 6), rem: fmtTok(remainder, 18, 6) }) + '</div></div>';
+        html += '<div class="sa-block"><h3>' + t("sa_votes_h") + '</h3><div class="card">';
         var any = false;
         cds.forEach(function (c) {
           if (!c.ok) {
-            html += '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) + '<span style="color:var(--danger);font-size:13px">读取失败，可重试</span><button type="button" class="mini-btn" data-retry="' + c.chain.key + '">重试</button></div></div>';
+            html += '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) + '<span style="color:var(--danger);font-size:13px">' + t("sa_read_fail") + '</span><button type="button" class="mini-btn" data-retry="' + c.chain.key + '">' + t("sa_retry") + '</button></div></div>';
             return;
           }
           if (!c.gauges.length && c.chainAlloc === 0n) return;
           any = true;
           html += '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) +
-            '<span class="amt">本链分配 <span class="mono">' + fmtTok(c.chainAlloc, 18, 6) + " AERO</span>（占仓位 " + sharePct(c.chainAlloc, bal) + "）</span></div>";
+            '<span class="amt">' + tf("sa_chain_alloc", { amt: fmtTok(c.chainAlloc, 18, 6), pct: sharePct(c.chainAlloc, bal) }) + '</span></div>';
           c.gauges.forEach(function (g) {
             var nm = g.info ? g.info.name : (g.feed ? g.feed.pair : shortAddr(g.addr));
             var apr = (g.feed && g.feed.stake_apr !== null && g.feed.stake_apr !== undefined)
@@ -1280,18 +1652,18 @@
             html += '<div class="sa-g-row"><span class="nm">' + escHtml(nm) + '</span><span class="al mono">' + fmtTok(g.alloc, 18, 6) + " AERO · " + sharePct(g.alloc, bal) + "</span>" + apr + "</div>";
           });
           if (c.idle > 0n) {
-            html += '<div class="sa-g-row"><span class="nm" style="font-weight:400;color:var(--ink-2)">闲置（已分配到本链、未指定池）</span><span class="al mono">' + fmtTok(c.idle, 18, 6) + " AERO · " + sharePct(c.idle, bal) + "</span></div>";
+            html += '<div class="sa-g-row"><span class="nm" style="font-weight:400;color:var(--ink-2)">' + t("sa_idle") + '</span><span class="al mono">' + fmtTok(c.idle, 18, 6) + " AERO · " + sharePct(c.idle, bal) + "</span></div>";
           }
           html += "</div>";
         });
-        if (!any && !cds.some(function (c) { return !c.ok; })) html += '<p class="tempty">该仓位目前没有分配到任何池。</p>';
+        if (!any && !cds.some(function (c) { return !c.ok; })) html += '<p class="tempty">' + t("sa_no_alloc") + '</p>';
         html += "</div></div>";
         /* 收益区（异步填充） */
-        html += '<div class="sa-block"><h3>当前收益 · 待领估算</h3><div class="card" id="saRewards"><p class="tempty">计算收益中…</p></div><p class="sa-note">待领估算：已结束的激励计划可能被发起方回收；手续费按最近 255 个检查点估算，实际可领以领取时为准。汇总只对 AERO 计价，其余币种只列数量。</p></div>';
+        html += '<div class="sa-block"><h3>' + t("sa_rewards_h") + '</h3><div class="card" id="saRewards"><p class="tempty">' + t("sa_rewards_calc") + '</p></div><p class="sa-note">' + t("sa_rewards_note") + '</p></div>';
         /* 冷却区 */
-        html += '<div class="sa-block"><h3>冷却时间</h3><div class="card" id="saCooldown"></div></div>';
+        html += '<div class="sa-block"><h3>' + t("sa_cool_h") + '</h3><div class="card" id="saCooldown"></div></div>';
         /* 建议区 */
-        html += '<div class="sa-block"><h3>投票建议</h3><div class="card" id="saAdvice"></div></div>';
+        html += '<div class="sa-block"><h3>' + t("sa_advice_h") + '</h3><div class="card" id="saAdvice"></div></div>';
         $("saResult").innerHTML = html;
       }
 
@@ -1299,12 +1671,12 @@
         var el = $("saCooldown");
         if (!el) return;
         el.innerHTML = cds.map(function (c) {
-          if (!c.ok) return '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) + '<span style="color:var(--danger);font-size:13px">读取失败，可重试</span><button type="button" class="mini-btn" data-retry="' + c.chain.key + '">重试</button></div></div>';
+          if (!c.ok) return '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) + '<span style="color:var(--danger);font-size:13px">' + t("sa_read_fail") + '</span><button type="button" class="mini-btn" data-retry="' + c.chain.key + '">' + t("sa_retry") + '</button></div></div>';
           var st = cdStatus(c);
           var txt;
-          if (st.kind === "none") txt = "未分配 · 可立即分配";
-          else if (st.kind === "cooling") txt = '冷却中 · <span class="mono" data-cd="' + st.end + '"></span>';
-          else txt = "可再分配（上次分配 " + fmtUnixHKT(c.lastAllocated) + "）";
+          if (st.kind === "none") txt = t("sa_cd_none");
+          else if (st.kind === "cooling") txt = t("sa_cd_cooling") + '<span class="mono" data-cd="' + st.end + '"></span>';
+          else txt = tf("sa_cd_ready", { t: fmtUnixHKT(c.lastAllocated) });
           return '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) + '<span style="font-size:13.5px">' + txt + "</span></div></div>";
         }).join("");
       }
@@ -1316,7 +1688,7 @@
           document.querySelectorAll("[data-cd]").forEach(function (el) {
             var end = Number(el.getAttribute("data-cd"));
             var r = end - now;
-            el.textContent = r <= 0 ? "已到期 · 可再分配" : "剩余 " + fmtHMS(r) + " · " + fmtUnixHKT(end) + " 起可再分配";
+            el.textContent = r <= 0 ? t("sa_cd_done") : tf("sa_cd_left", { hms: fmtHMS(r), t: fmtUnixHKT(end) });
           });
         };
         tick();
@@ -1339,8 +1711,8 @@
                 if (a0 > 0n) fees.push({ symbol: info.tokens[0].symbol, dec: info.tokens[0].decimals, amount: a0 });
                 if (a1 > 0n) fees.push({ symbol: info.tokens[1].symbol, dec: info.tokens[1].decimals, amount: a1 });
               } else {
-                if (a0 > 0n) fees.push({ symbol: "池 token0", dec: 18, amount: a0 });
-                if (a1 > 0n) fees.push({ symbol: "池 token1", dec: 18, amount: a1 });
+                if (a0 > 0n) fees.push({ symbol: t("sa_pool_token") + "0", dec: 18, amount: a0 });
+                if (a1 > 0n) fees.push({ symbol: t("sa_pool_token") + "1", dec: 18, amount: a1 });
               }
             }
             var result = { fees: fees, incentives: [] };
@@ -1369,7 +1741,7 @@
                   start: Number(wUint(w2[b + 3])),
                   end: Number(wUint(w2[b + 4])),
                   earned: rs2[1 + i2] ? wUint(hexWords(rs2[1 + i2])[0]) : 0n,
-                  status: Number(wUint(w2[b + 4])) > now ? "进行中" : "已结束",
+                  status: Number(wUint(w2[b + 4])) > now ? "active" : "ended",
                   symbol: "", dec: 18
                 });
               }
@@ -1396,7 +1768,7 @@
         });
         var el = $("saRewards");
         if (!el) return;
-        if (!jobs.length) { el.innerHTML = '<p class="tempty">该仓位暂无已分配的池，无待领收益。</p>'; return; }
+        if (!jobs.length) { el.innerHTML = '<p class="tempty">' + t("sa_no_gauges_rewards") + '</p>'; return; }
         Promise.all(jobs).then(function (list) { renderRewards(list); });
       }
 
@@ -1416,21 +1788,21 @@
           var nm = item.gauge.info ? item.gauge.info.name : (item.gauge.feed ? item.gauge.feed.pair : shortAddr(item.gauge.addr));
           html += '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(item.chain.name) + '<span style="font-weight:600;font-size:13.5px">' + escHtml(nm) + "</span></div>";
           if (!item.res) {
-            html += '<p class="sa-note" style="margin:0;color:var(--danger)">该池收益读取失败。</p>';
+            html += '<p class="sa-note" style="margin:0;color:var(--danger)">' + t("sa_gauge_rewards_fail") + '</p>';
           } else {
             var lines = [];
             if (item.res.fees.length) {
-              lines.push("手续费：" + item.res.fees.map(function (f) { return fmtTok(f.amount, f.dec, 12) + " " + escHtml(f.symbol); }).join(" + "));
+              lines.push(t("sa_fees_line") + item.res.fees.map(function (f) { return fmtTok(f.amount, f.dec, 12) + " " + escHtml(f.symbol); }).join(" + "));
               item.res.fees.forEach(function (f) { add(f.symbol, f.dec, f.amount); });
             }
             item.res.incentives.forEach(function (pr) {
               if (pr.earned <= 0n) return;
-              lines.push("激励（计划 #" + pr.pid + " · " + pr.status + "）：" + fmtTok(pr.earned, pr.dec, 12) + " " + escHtml(pr.symbol));
+              lines.push(tf("sa_inc_line", { pid: pr.pid, status: pr.status === "active" ? t("inc_active") : t("inc_ended") }) + fmtTok(pr.earned, pr.dec, 12) + " " + escHtml(pr.symbol));
               add(pr.symbol, pr.dec, pr.earned);
             });
             html += lines.length
               ? lines.map(function (l) { return '<p style="font-size:13.5px;margin:2px 0 2px 10px" class="mono">' + l + "</p>"; }).join("")
-              : '<p class="sa-note" style="margin:0">暂无待领收益。</p>';
+              : '<p class="sa-note" style="margin:0">' + t("sa_no_claimable") + '</p>';
           }
           html += "</div>";
         });
@@ -1439,10 +1811,10 @@
           var parts = totalOrder.map(function (k) {
             var t = totals[k];
             var s = fmtTok(t.amount, t.dec, 12) + " " + escHtml(t.symbol);
-            if (t.symbol === "AERO" && t.dec === 18) s += "（约 " + fmtUSD(aeroNum(t.amount) * AERO_PX, 2) + "）";
+            if (t.symbol === "AERO" && t.dec === 18) s += tf("sa_approx", { v: fmtUSD(aeroNum(t.amount) * AERO_PX, 2) });
             return s;
           });
-          sum = '<div class="sa-chain" style="border-bottom:0"><b>待领汇总</b> · <span class="mono">' + parts.join(" · ") + "</span></div>";
+          sum = '<div class="sa-chain" style="border-bottom:0"><b>' + t("sa_claim_total") + '</b> · <span class="mono">' + parts.join(" · ") + "</span></div>";
         }
         el.innerHTML = sum + html;
       }
@@ -1453,7 +1825,7 @@
         if (!el) return;
         var feed = liveState.poolsData;
         if (!feed || !feed.length) {
-          el.innerHTML = '<p class="tempty">实时数据不可用，暂无法生成建议（data/pools.json 未加载）。</p>';
+          el.innerHTML = '<p class="tempty">' + t("sa_advice_unavail") + '</p>';
           return;
         }
         var px = AERO_PX;
@@ -1501,21 +1873,20 @@
         cds.forEach(function (c) {
           if (!c.ok) return;
           if (cdStatus(c).kind === "cooling" && c.gauges.length) {
-            html += '<p class="sa-note" style="margin-top:0">' + chainBadge(c.chain.name) + ' 冷却中，本次不动（剩余时间见上方冷却区）。</p>';
+            html += '<p class="sa-note" style="margin-top:0">' + chainBadge(c.chain.name) + t("sa_advice_cooling_note") + '</p>';
           }
         });
-        html += '<p style="font-size:13.5px;margin-bottom:8px">可移动额 <b class="mono">' + fmtNum(movableAERO) + ' AERO</b>（未派发余量 + 闲置 + 已到期链现持分配）· 当前预计 48H 收益 <b class="mono">' + fmtUSD(curEst, 2) + '</b> · 建议预计 <b class="mono">' + fmtUSD(suggTotal, 2) + "</b>" +
-          (curEst > 0 ? ' · 差值 <b class="mono">' + ((suggTotal - curEst) / curEst * 100 >= 0 ? "+" : "") + fmtNum((suggTotal - curEst) / curEst * 100) + "%</b>" : "") + "</p>";
+        html += '<p style="font-size:13.5px;margin-bottom:8px">' + tf("sa_advice_summary", { mov: fmtNum(movableAERO), cur: fmtUSD(curEst, 2), sug: fmtUSD(suggTotal, 2), diff: (curEst > 0 ? tf("sa_advice_diff", { v: ((suggTotal - curEst) / curEst * 100 >= 0 ? "+" : "") + fmtNum((suggTotal - curEst) / curEst * 100) }) : "") }) + "</p>";
         if (sugg.length) {
-          html += '<div class="tblwrap"><table class="pools"><thead><tr><th>建议池</th><th>链</th><th class="num">建议分配（AERO）</th><th class="num">占仓位</th><th class="num">预计 48H 收益</th></tr></thead><tbody>' +
+          html += '<div class="tblwrap"><table class="pools"><thead><tr><th>' + t("sa_advice_th_pool") + '</th><th>' + t("sa_advice_th_chain") + '</th><th class="num">' + t("sa_advice_th_alloc") + '</th><th class="num">' + t("sa_advice_th_share") + '</th><th class="num">' + t("sa_advice_th_est") + '</th></tr></thead><tbody>' +
             sugg.map(function (s) {
               return "<tr><td>" + escHtml(s.pair) + '</td><td>' + chainBadge(s.chain) + '</td><td class="num mono">' + fmtNum(s.aero) + '</td><td class="num mono">' + fmtNum(s.pct) + '%</td><td class="num mono">' + fmtUSD(s.est, 2) + "</td></tr>";
             }).join("") + "</tbody></table></div>";
         } else {
-          html += '<p class="tempty">当前无可移动额，或 feed 中暂无合适候选池。</p>';
+          html += '<p class="tempty">' + t("sa_advice_empty") + '</p>';
         }
-        if (unknownHeld) html += '<p class="sa-note">部分现持池不在实时 feed 中，其当前收益未计入「当前预计」。</p>';
-        html += '<p class="sa-note">估算基于 ' + (liveState.poolsGen ? fmtGenTime(liveState.poolsGen) : "实时 feed") + ' 数据：候选按 Stake APR 降序贪心填充，单池上限为该池当前 Allocation 值的 25%（防稀释），预计收益已按进场后稀释折算；APR 随分配浮动，非保证收益。本页只读，执行分配请用你自己的工具。</p>';
+        if (unknownHeld) html += '<p class="sa-note">' + t("sa_advice_unknown") + '</p>';
+        html += '<p class="sa-note">' + tf("sa_advice_note", { t: (liveState.poolsGen ? fmtGenTime(liveState.poolsGen) : t("sa_advice_feed_time")) }) + '</p>';
         el.innerHTML = html;
       }
 
@@ -1529,17 +1900,17 @@
         $("saChips").innerHTML = "";
         $("saResult").innerHTML = "";
         setSaErr("");
-        setSaProg("枚举仓位中…（Base VotingEscrow）");
+        setSaProg(t("sa_prog_enum"));
         $("saGo").disabled = true;
         ethCall(BASE_CHAIN, VE_ADDR, mkData(SEL.balanceOf, [encAddr(addr)])).then(function (h) {
           var n = Number(wUint(hexWords(h)[0]));
           if (!n) {
             setSaProg("");
             $("saGo").disabled = false;
-            $("saResult").innerHTML = '<div class="card"><p>该地址没有 sAERO 仓位。</p></div>';
+            $("saResult").innerHTML = '<div class="card"><p>' + t("sa_no_positions") + '</p></div>';
             return;
           }
-          setSaProg("枚举仓位中…共 " + n + " 个，读取余额");
+          setSaProg(tf("sa_prog_enum_n", { n: n }));
           var calls = [];
           for (var i = 0; i < n; i++) calls.push({ to: VE_ADDR, data: mkData(SEL.tokenOfOwnerByIndex, [encAddr(addr), encUint(i)]) });
           return ethBatch(BASE_CHAIN, calls).then(function (rs) {
@@ -1552,13 +1923,13 @@
               $("saGo").disabled = false;
               setSaProg("");
               if (saState.positions.length) loadPosition(saState.positions[0].tokenId);
-              else { setSaErr("仓位枚举失败，请重试。"); renderChips(); }
+              else { setSaErr(t("sa_err_enum")); renderChips(); }
             });
           });
         }).catch(function () {
           setSaProg("");
           $("saGo").disabled = false;
-          setSaErr("仓位枚举失败：Base RPC 读取出错，请重试。");
+          setSaErr(t("sa_err_enum_rpc"));
         });
       }
       function queryTokenId(id) {
@@ -1567,31 +1938,31 @@
         $("saChips").innerHTML = "";
         $("saResult").innerHTML = "";
         setSaErr("");
-        setSaProg("读取仓位 #" + id + " 余额中…");
+        setSaProg(tf("sa_prog_token", { id: id }));
         $("saGoId").disabled = true;
         ethCall(BASE_CHAIN, VE_ADDR, mkData(SEL.balanceOfNFT, [encUint(id)])).then(function (h) {
           var bal = wUint(hexWords(h)[0]);
           $("saGoId").disabled = false;
           setSaProg("");
-          if (bal === 0n) { setSaErr("未读到该 tokenId 的仓位余额（仓位可能不存在或余额为 0）。"); return; }
+          if (bal === 0n) { setSaErr(t("sa_err_token_zero")); return; }
           saState.positions = [{ tokenId: id, balance: bal }];
           loadPosition(id);
         }).catch(function () {
           $("saGoId").disabled = false;
           setSaProg("");
-          setSaErr("读取失败：Base RPC 出错，请重试。");
+          setSaErr(t("sa_err_rpc"));
         });
       }
       $("saGo").addEventListener("click", function () {
         var v = $("saAddr").value.trim();
-        if (!ADDR_RE.test(v)) { setSaErr("地址格式错误：应为 0x 开头的 42 位地址。"); return; }
+        if (!ADDR_RE.test(v)) { setSaErr(t("sa_err_addr")); return; }
         queryAddress(v.toLowerCase());
       });
       $("saAddr").addEventListener("keydown", function (e) { if (e.key === "Enter") $("saGo").click(); });
       $("saAddr").addEventListener("input", function () { setSaErr(""); });
       $("saGoId").addEventListener("click", function () {
         var v = $("saTokenId").value.trim();
-        if (!/^\d+$/.test(v)) { setSaErr("tokenId 应为正整数。"); return; }
+        if (!/^\d+$/.test(v)) { setSaErr(t("sa_err_tokenid")); return; }
         queryTokenId(Number(v));
       });
       $("saTokenId").addEventListener("keydown", function (e) { if (e.key === "Enter") $("saGoId").click(); });
@@ -1605,7 +1976,7 @@
         SA_CHAINS.forEach(function (c) { if (c.key === key) chain = c; });
         if (!chain) return;
         b.disabled = true;
-        b.textContent = "重试中…";
+        b.textContent = tf("sa_retrying");
         readChainPosition(chain, saState.current).then(function (ncd) {
           saState.chainData = saState.chainData.map(function (c) { return c.chain.key === key ? ncd : c; });
           renderAllPosition();
@@ -1629,7 +2000,7 @@
         var now = Math.floor(Date.now() / 1000);
         return ethCall(BASE_CHAIN, VE_ADDR, mkData(SEL.balanceOf, [encAddr(addr)])).then(function (h) {
           var n = Number(wUint(hexWords(h)[0]));
-          if (!n) return { addr: addr, status: "无仓位", count: 0, total: 0n, cooling: 0, earliest: null };
+          if (!n) return { addr: addr, status: "none", count: 0, total: 0n, cooling: 0, earliest: null };
           var calls = [];
           for (var i = 0; i < n; i++) calls.push({ to: VE_ADDR, data: mkData(SEL.tokenOfOwnerByIndex, [encAddr(addr), encUint(i)]) });
           return ethBatch(BASE_CHAIN, calls).then(function (rs) {
@@ -1659,17 +2030,17 @@
                   });
                 }).catch(function () { return null; });
               })).then(function () {
-                return { addr: addr, status: "正常", count: ids.length, total: total, cooling: Object.keys(coolingSet).length, earliest: earliest };
+                return { addr: addr, status: "ok", count: ids.length, total: total, cooling: Object.keys(coolingSet).length, earliest: earliest };
               });
             });
           });
         }).catch(function () {
-          return { addr: addr, status: "读取失败", count: null, total: null, cooling: null, earliest: null };
+          return { addr: addr, status: "fail", count: null, total: null, cooling: null, earliest: null };
         });
       }
       $("saBatchGo").addEventListener("click", function () {
         var lines = $("saAddrs").value.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
-        if (!lines.length) { $("saBatchProg").hidden = false; $("saBatchProg").textContent = "请先粘贴地址，一行一个。"; return; }
+        if (!lines.length) { $("saBatchProg").hidden = false; $("saBatchProg").textContent = t("radar_need_input"); return; }
         if (lines.length > 50) lines = lines.slice(0, 50);
         var rows = [];
         var prog = $("saBatchProg");
@@ -1679,9 +2050,9 @@
         var seq = Promise.resolve();
         lines.forEach(function (line, idx) {
           seq = seq.then(function () {
-            prog.textContent = "扫描中 " + (idx + 1) + " / " + lines.length + " …";
+            prog.textContent = tf("radar_scanning", { i: idx + 1, n: lines.length });
             if (!ADDR_RE.test(line)) {
-              rows.push({ addr: line, status: "地址格式错误", count: null, total: null, cooling: null, earliest: null });
+              rows.push({ addr: line, status: "bad", count: null, total: null, cooling: null, earliest: null });
               return null;
             }
             return radarOne(line.toLowerCase()).then(function (r) { rows.push(r); });
@@ -1692,14 +2063,15 @@
           $("saBatchGo").disabled = false;
           var body = rows.map(function (r) {
             var okAddr = ADDR_RE.test(r.addr);
-            return '<tr class="' + (okAddr && r.status === "正常" ? "clickable" : "") + '" data-addr="' + escHtml(r.addr) + '"><td class="mono">' + escHtml(shortAddr(r.addr)) + '</td>' +
+            return '<tr class="' + (okAddr && r.status === "ok" ? "clickable" : "") + '" data-addr="' + escHtml(r.addr) + '"><td class="mono">' + escHtml(shortAddr(r.addr)) + '</td>' +
               '<td class="num mono">' + (r.count === null ? "—" : r.count) + '</td>' +
               '<td class="num mono">' + (r.total === null ? "—" : fmtTok(r.total, 18, 4)) + '</td>' +
               '<td class="num mono">' + (r.cooling === null ? "—" : r.cooling) + '</td>' +
-              "<td>" + (r.status !== "正常" ? "—" : (r.earliest ? fmtUnixHKT(r.earliest) : "全部可分配")) + '</td>' +
-              "<td>" + escHtml(r.status) + "</td></tr>";
+              "<td>" + (r.status !== "ok" ? "—" : (r.earliest ? fmtUnixHKT(r.earliest) : t("radar_all_ready"))) + '</td>' +
+              "<td>" + escHtml(radarStatusLabel(r.status)) + "</td></tr>";
           }).join("");
-          $("saBatchResult").innerHTML = '<div class="tblwrap"><table class="pools"><thead><tr><th>地址</th><th class="num">仓位数</th><th class="num">sAERO 总额</th><th class="num">冷却中链数</th><th>最早可再分配</th><th>状态</th></tr></thead><tbody>' + body + '</tbody></table></div><p class="sa-note">点击状态为「正常」的行，查看该地址的单地址详情。</p>';
+          window.__lastBatchRows = rows;
+          $("saBatchResult").innerHTML = '<div class="tblwrap"><table class="pools"><thead><tr><th>' + t("radar_th_addr") + '</th><th class="num">' + t("radar_th_count") + '</th><th class="num">' + t("radar_th_total") + '</th><th class="num">' + t("radar_th_cooling") + '</th><th>' + t("radar_th_earliest") + '</th><th>' + t("radar_th_status") + '</th></tr></thead><tbody>' + body + '</tbody></table></div><p class="sa-note">' + t("radar_note") + '</p>';
         });
       });
       $("saBatchResult").addEventListener("click", function (ev) {
@@ -1714,21 +2086,10 @@
       });
 
       /* ================= B：投票页异动条（data/movers.json） ================= */
-      fetch("data/movers.json", { cache: "no-store" }).then(function (r) {
-        if (!r.ok) throw new Error("no movers");
-        return r.json();
-      }).then(function (j) {
+      window.renderMovers = function (j) {
         if (!j || j.ready !== true) return;
-        function pickArr(o, keys) {
-          for (var i = 0; i < keys.length; i++) if (Array.isArray(o[keys[i]])) return o[keys[i]];
-          return [];
-        }
-        function pickNum(o, keys) {
-          for (var i = 0; i < keys.length; i++) {
-            if (o[keys[i]] !== null && o[keys[i]] !== undefined && isFinite(Number(o[keys[i]]))) return Number(o[keys[i]]);
-          }
-          return null;
-        }
+        function pickArr(o, keys) { for (var i = 0; i < keys.length; i++) if (Array.isArray(o[keys[i]])) return o[keys[i]]; return []; }
+        function pickNum(o, keys) { for (var i = 0; i < keys.length; i++) { if (o[keys[i]] !== null && o[keys[i]] !== undefined && isFinite(Number(o[keys[i]]))) return Number(o[keys[i]]); } return null; }
         var g = pickArr(j, ["gainers", "up", "top_gainers", "gainers24h"]);
         var l = pickArr(j, ["losers", "down", "top_losers", "losers24h"]);
         if (!g.length && !l.length) return;
@@ -1736,35 +2097,57 @@
           var name = m.pair || m.name || m.symbol || "";
           var pct = pickNum(m, ["pct", "change_pct", "delta_pct", "pct_change", "changePct"]);
           var d = pickNum(m, ["delta", "delta_aero", "change", "delta_alloc", "delta_allocation"]);
-          return '<div class="mv-row"><span class="mv-name">' + escHtml(name) + "</span>" +
-            (m.chain ? chainBadge(m.chain) : "") +
-            '<span class="mv-pct ' + (down ? "down" : "up") + ' mono">' + (pct === null ? "—" : (pct > 0 ? "+" : "") + fmtNum(pct) + "%") + "</span>" +
-            '<span class="mv-delta mono">' + (d === null ? "" : (d > 0 ? "+" : "") + fmtAlloc(d) + " AERO") + "</span></div>";
+          return '<div class="mv-row"><span class="mv-name">' + escHtml(name) + "</span>" + (m.chain ? chainBadge(m.chain) : "") + '<span class="mv-pct ' + (down ? "down" : "up") + ' mono">' + (pct === null ? "—" : (pct > 0 ? "+" : "") + fmtNum(pct) + "%") + "</span>" + '<span class="mv-delta mono">' + (d === null ? "" : (d > 0 ? "+" : "") + fmtAlloc(d) + " AERO") + "</span></div>";
         }
-        $("moversStrip").innerHTML = '<h3 style="margin:0 0 8px;font-size:15.5px">过去 24 小时 Allocation 异动</h3><div class="movers">' +
-          '<div class="mv-card"><h4>涨幅前 5</h4>' + (g.slice(0, 5).map(function (m) { return row(m, false); }).join("") || '<p class="tempty">暂无</p>') + "</div>" +
-          '<div class="mv-card"><h4>跌幅前 5</h4>' + (l.slice(0, 5).map(function (m) { return row(m, true); }).join("") || '<p class="tempty">暂无</p>') + "</div></div>";
+        $("moversStrip").innerHTML = '<h3 style="margin:0 0 8px;font-size:15.5px">' + t("movers_title") + '</h3><div class="movers">' + '<div class="mv-card"><h4>' + t("movers_up") + '</h4>' + (g.slice(0, 5).map(function (m) { return row(m, false); }).join("") || '<p class="tempty">' + t("movers_none") + '</p>') + "</div>" + '<div class="mv-card"><h4>' + t("movers_down") + '</h4>' + (l.slice(0, 5).map(function (m) { return row(m, true); }).join("") || '<p class="tempty">' + t("movers_none") + '</p>') + "</div></div>";
         $("moversStrip").hidden = false;
-      }).catch(function () { /* 文件不存在或未就绪：整条不显示 */ });
+      };
+      fetch("data/movers.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no movers"); return r.json(); }).then(function (j) { window.__moversData = j; window.renderMovers(j); }).catch(function () { });
 
       /* ================= C：运行状态行（data/status.json） ================= */
-      fetch("data/status.json", { cache: "no-store" }).then(function (r) {
-        if (!r.ok) throw new Error("no status");
-        return r.json();
-      }).then(function (j) {
+      window.renderStatus = function (j) {
         if (!j || typeof j !== "object") return;
         var txt;
         if (j.deployed === false) {
           var hf = (Array.isArray(j.hard_failures) && j.hard_failures.length) ? String(j.hard_failures[0]) : "";
-          txt = "运行状态：本轮未通过质量检查，已保留上一轮数据" + (hf ? "（" + hf + "）" : "");
+          txt = tf("status_fail", { hf: hf ? (LANG === "en" ? " (" + hf + ")" : "（" + hf + "）") : "" });
         } else {
-          txt = "运行状态：正常" + (j.generated_at ? " · 生成于 " + fmtGenTime(j.generated_at) : "");
+          txt = tf("status_ok", { t: j.generated_at ? tf("status_gen", { t: fmtGenTime(j.generated_at) }) : "" });
         }
-        if (Array.isArray(j.warnings) && j.warnings.length) txt += " · 提示：" + String(j.warnings[0]);
-        var el = $("runStatus");
-        el.textContent = txt;
-        el.hidden = false;
-      }).catch(function () { /* 文件不存在：不显示此行 */ });
+        if (Array.isArray(j.warnings) && j.warnings.length) txt += tf("status_warn", { w: String(j.warnings[0]) });
+        var el = $("runStatus"); el.textContent = txt; el.hidden = false;
+      };
+      fetch("data/status.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no status"); return r.json(); }).then(function (j) { window.__statusData = j; window.renderStatus(j); }).catch(function () { });
+    </script>
+  
+    <script>
+      window.__rerenderDynamic = function () {
+        if (typeof currentWall !== "undefined" && currentWall) renderWall(currentWall);
+        if (window.__lastPoolsRaw) { try { applyLiveData(window.__lastPoolsRaw); } catch (e) {} }
+        if (typeof buildChainButtons === "function") { buildChainButtons(); renderLP(); renderChainStats(); }
+        if (window.__lastLPRaw) { try { applyLiveLP(window.__lastLPRaw); } catch (e) {} }
+        if (typeof updateOverview === "function") updateOverview();
+        if (typeof updateStamp === "function") updateStamp();
+        if (window.__moversData && typeof window.renderMovers === "function") window.renderMovers(window.__moversData);
+        if (window.__statusData && typeof window.renderStatus === "function") window.renderStatus(window.__statusData);
+        if (typeof saState !== "undefined" && saState && saState.chainData && saState.current !== null && typeof renderAllPosition === "function") renderAllPosition();
+        else if (typeof renderChips === "function" && typeof saState !== "undefined" && saState.positions && saState.positions.length) renderChips();
+        if (window.__lastBatchRows && window.__lastBatchRows.length) {
+          var rows = window.__lastBatchRows;
+          var body = rows.map(function (r) {
+            var okAddr = /^0x[0-9a-fA-F]{40}$/.test(r.addr);
+            return '<tr class="' + (okAddr && r.status === "ok" ? "clickable" : "") + '" data-addr="' + escHtml(r.addr) + '"><td class="mono">' + escHtml(shortAddr(r.addr)) + '</td>' + '<td class="num mono">' + (r.count === null ? "—" : r.count) + '</td>' + '<td class="num mono">' + (r.total === null ? "—" : fmtTok(r.total, 18, 4)) + '</td>' + '<td class="num mono">' + (r.cooling === null ? "—" : r.cooling) + '</td>' + "<td>" + (r.status !== "ok" ? "—" : (r.earliest ? fmtUnixHKT(r.earliest) : t("radar_all_ready"))) + '</td>' + "<td>" + escHtml(radarStatusLabel(r.status)) + "</td></tr>";
+          }).join("");
+          $("saBatchResult").innerHTML = '<div class="tblwrap"><table class="pools"><thead><tr><th>' + t("radar_th_addr") + '</th><th class="num">' + t("radar_th_count") + '</th><th class="num">' + t("radar_th_total") + '</th><th class="num">' + t("radar_th_cooling") + '</th><th>' + t("radar_th_earliest") + '</th><th>' + t("radar_th_status") + '</th></tr></thead><tbody>' + body + '</tbody></table></div><p class="sa-note">' + t("radar_note") + '</p>';
+        }
+        if (window.__pxLive) { var el = document.getElementById("pxTime"); }
+      };
+      (function () {
+        var z = document.getElementById("langZh"), e2 = document.getElementById("langEn");
+        if (z) z.addEventListener("click", function () { setLang("zh"); });
+        if (e2) e2.addEventListener("click", function () { setLang("en"); });
+        applyStatic();
+      })();
     </script>
   </body>
 </html>
