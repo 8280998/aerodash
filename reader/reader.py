@@ -80,9 +80,10 @@ UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
 CHAINS = {
     "base": {"chain_id": 8453, "registry": "0x7b2A2c12dC5Ea2a31455952a05031C3E4BB28F3E",
              "cl_factory": "0x9CB220581b91b0C83223012FE69688b92aD07a76", "chunk": 50,
-             "rpcs": ["https://base-rpc.publicnode.com", "https://mainnet.base.org",
+             "rpcs": ["https://base-rpc.publicnode.com",
                       "https://base.drpc.org", "https://1rpc.io/base",
-                      "https://base-mainnet.public.blastapi.io"]},
+                      "https://base-mainnet.public.blastapi.io",
+                      "https://mainnet.base.org"]},
     "optimism": {"chain_id": 10, "registry": "0xb6F9705A631CC1C0E8570FFde48882C95E2Df408",
                  "cl_factory": "0xfeaB42D90055db3a0616249f76B6002D72266778",
                  "rpcs": ["https://mainnet.optimism.io", "https://optimism-rpc.publicnode.com",
@@ -215,6 +216,21 @@ def _get_session():
     return s
 
 
+# F2: if more than this share of one batch's items come back with
+# rate-limit errors, the endpoint is metering batch items against a
+# per-second budget (mainnet.base.org counts every item of a JSON-RPC
+# batch against 25/s, so a 50-item chunk deterministically loses its
+# back half to -32007). Item-level errors never raise, so without this
+# check the endpoint index would stick on the throttling endpoint for
+# the whole run; advancing idx moves the remaining chunks on.
+BATCH_LIMIT_ROTATE_SHARE = 0.25
+
+# Item-error substrings (lowercase) counted as rate limiting for F2.
+LIMIT_ERROR_HINTS = ("-32007", "-32005", "limit reached", "limit exceeded",
+                     "rate limit", "too many", "over capacity",
+                     "compute units", "429")
+
+
 class RPC:
     """JSON-RPC client with endpoint rotation, retries, browser UA."""
 
@@ -305,6 +321,15 @@ class RPC:
                     else:
                         res.append((o.get("result"), None))
                 self.calls += len(items)
+                # F2: too many rate-limited items in this batch means
+                # the endpoint meters batch items; rotate so the next
+                # chunks do not stick on it (failed items themselves
+                # are recovered by multicall's retry rounds).
+                n_limit = sum(1 for _, err in res
+                              if err and any(h in err.lower()
+                                             for h in LIMIT_ERROR_HINTS))
+                if res and n_limit / len(res) > BATCH_LIMIT_ROTATE_SHARE:
+                    self.idx += 1
                 return res
             except Exception as e:
                 self.errors += 1
@@ -338,9 +363,9 @@ class Call:
         return dec(self.out_types, raw)
 
 
-TRANSIENT = ("rate limit", "limit exceeded", "timeout", "timed out",
-             "-32005", "429", "too many", "-32603", "over capacity",
-             "compute units", "capacity", "exceeded")
+TRANSIENT = ("rate limit", "limit exceeded", "limit reached", "timeout",
+             "timed out", "-32005", "-32007", "429", "too many", "-32603",
+             "over capacity", "compute units", "capacity", "exceeded")
 
 
 def multicall(rpc, calls, chunk=None):
