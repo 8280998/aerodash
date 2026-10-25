@@ -49,14 +49,19 @@ Soft warnings (deploy proceeds with the new data, deployed=true):
 - Coinbase priced-symbol coverage < 130 (raw coinbase_symbols_priced);
 - LP feed pool count drifted > 30% versus the previous valid lp feed;
 - a previous feed file exists but is not a valid baseline;
+- v15 price gate activity: token prices corrected to their spot
+  consensus, or pools flagged price_unverified (the adapter excludes
+  those from both feeds) -- informational, never a hard failure;
 - any lines passed via --warnings-file (the workflow's archive step
   writes "history archive failed: ..." lines there).
 
 Always writes status.json with the page contract:
 {generated_at, deployed, hard_failures, warnings, feed_pools,
  prev_feed_pools, lp_pools, gauge_losses, coinbase_symbols,
- raw_pools, raw_gauged, prev_raw_pools}
-(v2 only appends fields; missing values are null; existing field
+ raw_pools, raw_gauged, prev_raw_pools,
+ price_tokens_corrected, price_tokens_unverified,
+ price_pools_unverified}
+(v2/v15 only append fields; missing values are null; existing field
 names/order are contractual). feed_pools / lp_pools are THIS run's
 produced counts (before any restore); prev_feed_pools is the live
 feed count fetched at job start (null when no valid baseline).
@@ -139,18 +144,22 @@ def rel_drift(new, old):
 
 def raw_health(raw_path):
     """-> (gauge_losses, coinbase_symbols, raw_pools, raw_gauged,
-    error). Reads the raw reader output: gauge losses = records
-    carrying a 'gaugeStates failed' error; coinbase_symbols =
-    top-level coinbase_symbols_priced; raw_pools = top-level
-    pool_count (fallback: record count / chain_stats pools_found sum);
-    raw_gauged = records with a gauge, from chain_stats / records."""
+    pg_corrected, pg_unverified_tokens, pg_unverified_pools, error).
+    Reads the raw reader output: gauge losses = records carrying a
+    'gaugeStates failed' error; coinbase_symbols = top-level
+    coinbase_symbols_priced; raw_pools = top-level pool_count
+    (fallback: record count / chain_stats pools_found sum);
+    raw_gauged = records with a gauge, from chain_stats / records;
+    pg_* = the v15 price gate's top-level summary (absent on
+    pre-v15 raw output -> None)."""
     if not raw_path or not os.path.exists(raw_path):
-        return None, None, None, None, "missing"
+        return None, None, None, None, None, None, None, "missing"
     try:
         with open(raw_path) as f:
             raw = json.load(f)
     except Exception as e:
-        return None, None, None, None, f"unparsable ({e.__class__.__name__})"
+        return (None, None, None, None, None, None, None,
+                f"unparsable ({e.__class__.__name__})")
     records = raw.get("pools")
     losses = 0
     gauged = 0
@@ -180,7 +189,15 @@ def raw_health(raw_path):
             raw_pools = total or None
     if records is None:
         gauged = None
-    return losses, cs, raw_pools, gauged, None
+    pg = raw.get("price_gate")
+    if isinstance(pg, dict):
+        pg_corrected = pg.get("tokens_corrected")
+        pg_unv_tokens = pg.get("tokens_unverified")
+        pg_unv_pools = pg.get("pools_unverified")
+    else:
+        pg_corrected = pg_unv_tokens = pg_unv_pools = None
+    return (losses, cs, raw_pools, gauged, pg_corrected, pg_unv_tokens,
+            pg_unv_pools, None)
 
 
 def fetch_prev_raw_pools(url, local_file):
@@ -275,12 +292,20 @@ def main():
 
     # --- raw reader health + universe ---
     (gauge_losses, coinbase_symbols, raw_pools, raw_gauged,
+     pg_corrected, pg_unverified_tokens, pg_unverified_pools,
      rerr) = raw_health(args.raw)
     if rerr:
         warnings.append(f"raw reader output {rerr}; gauge/coinbase/raw "
                         f"checks skipped")
     if gauge_losses:
         warnings.append(f"gaugeStates read losses: {gauge_losses} pools")
+    if pg_corrected:
+        warnings.append(f"price gate: {pg_corrected} token price(s) "
+                        f"corrected to pool-spot consensus")
+    if pg_unverified_pools:
+        warnings.append(f"price gate: {pg_unverified_tokens} token(s) "
+                        f"price-unverified; {pg_unverified_pools} "
+                        f"pool(s) flagged and excluded by the adapter")
     coinbase_low = (coinbase_symbols is not None
                     and coinbase_symbols < COINBASE_MIN)
     if coinbase_low:
@@ -394,6 +419,9 @@ def main():
         "raw_pools": raw_pools,
         "raw_gauged": raw_gauged,
         "prev_raw_pools": prev_raw_pools,
+        "price_tokens_corrected": pg_corrected,
+        "price_tokens_unverified": pg_unverified_tokens,
+        "price_pools_unverified": pg_unverified_pools,
     }
     out_dir = os.path.dirname(os.path.abspath(args.status_out))
     os.makedirs(out_dir, exist_ok=True)
