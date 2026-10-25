@@ -35,7 +35,12 @@ Field mapping:
                 tolerates an empty fee string).
 
 Trust filter (a pool is emitted only if ALL hold):
-- pair present; allocation > 0; stake_apr present (the reader only
+- pair present; NOT price_unverified (v15 price gate: one of the
+  pool's tokens has an adopted price that disagrees >2x with its
+  pool-spot implied prices and no reliable consensus could settle
+  it -- the pool is excluded from BOTH feeds and counted in the
+  feed's "price_gate" meta and in status.json);
+- allocation > 0; stake_apr present (the reader only
   computes APR when fees AND incentives were fully priced);
 - BOTH tokens priced via Coinbase: price_via.token0 == "coinbase" and
   price_via.token1 == "coinbase". Single-pool on-chain spot prices are
@@ -59,8 +64,15 @@ fees_apr, price_via, pool, gauge}]} for every pool with a pair and a computable
 TVL >= $90K (the page displays >= $100K; the lower cut leaves
 buffer). No Coinbase-trust filter here — the LP page's caliber is
 pool-level TVL/APR, and each row carries price_via so consumers can
-weigh on-chain-priced rows. Pools with a gauge but no computable
+weigh on-chain-priced rows. The v15 price_unverified exclusion DOES
+apply here too (an unsettled >2x price conflict poisons the TVL
+itself). Pools with a gauge but no computable
 emission rate / APR, or with unread fees, are dropped and counted.
+
+Both feeds carry a top-level "price_gate" meta object
+{tokens_corrected, tokens_unverified, dropped_price_unverified}
+echoing the reader's gate summary plus this feed's own exclusion
+count.
 
 Run: python to_page_json.py [--in pools.json] [--out page_pools.json]
      [--lp-out lp.json]
@@ -108,6 +120,9 @@ def convert(doc):
         if not r.get("pair"):
             drop("no_pair")
             continue
+        if r.get("price_unverified"):
+            drop("price_unverified")
+            continue
         alloc = r.get("allocation")
         if not alloc or alloc <= 0:
             drop("no_allocation")
@@ -154,8 +169,18 @@ def convert(doc):
     gen = (datetime.fromtimestamp(ts, timezone.utc).strftime(
         "%Y-%m-%dT%H:%M:%SZ") if ts else "")
     page = {"generated_at": gen, "source": "onchain",
-            "aero_price_usd": aero, "pools": out}
+            "aero_price_usd": aero, "pools": out,
+            "price_gate": _gate_meta(doc, drops)}
     return page, drops
+
+
+def _gate_meta(doc, drops):
+    """Feed-level price-gate meta: the reader's run summary (when the
+    raw doc carries one) plus this feed's own unverified exclusions."""
+    pg = doc.get("price_gate") or {}
+    return {"tokens_corrected": pg.get("tokens_corrected"),
+            "tokens_unverified": pg.get("tokens_unverified"),
+            "dropped_price_unverified": drops.get("price_unverified", 0)}
 
 
 LP_MIN_TVL = 90000.0
@@ -172,6 +197,9 @@ def convert_lp(doc):
     for r in doc.get("pools", []):
         if not r.get("pair"):
             drop("no_pair")
+            continue
+        if r.get("price_unverified"):
+            drop("price_unverified")
             continue
         tvl = r.get("tvl_usd")
         if tvl is None:
@@ -206,7 +234,8 @@ def convert_lp(doc):
     gen = (datetime.fromtimestamp(ts, timezone.utc).strftime(
         "%Y-%m-%dT%H:%M:%SZ") if ts else "")
     page = {"generated_at": gen, "source": "onchain",
-            "aero_price_usd": doc.get("aero_usd"), "pools": out}
+            "aero_price_usd": doc.get("aero_usd"), "pools": out,
+            "price_gate": _gate_meta(doc, drops)}
     return page, drops
 
 
