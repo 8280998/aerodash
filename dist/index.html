@@ -126,6 +126,28 @@
       .vs h3 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
       .tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--ink-2); }
       .tag.new { background: var(--accent); color: #fff; }
+      /* chain color badges */
+      .chain-badge { display: inline-block; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 1.65; white-space: nowrap; background: var(--cb-bg, #e7edf5); color: var(--cb-ink, #43536b); }
+      .chain-badge .cdot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--cb-dot, #98a2b3); margin-right: 4px; vertical-align: 1px; }
+      .chain-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--cb-dot, #98a2b3); margin-right: 6px; vertical-align: baseline; }
+      .cb-base { --cb-bg: #dfeaff; --cb-ink: #003fbe; --cb-dot: #0052FF; }
+      .cb-ethereum { --cb-bg: #e3e8fd; --cb-ink: #3a4fb8; --cb-dot: #627EEA; }
+      .cb-op { --cb-bg: #ffe1e4; --cb-ink: #c20018; --cb-dot: #FF0420; }
+      .cb-arbitrum { --cb-bg: #ddf1fe; --cb-ink: #0a6cb4; --cb-dot: #28A0F0; }
+      .cb-robinhood { --cb-bg: #d8f9da; --cb-ink: #00690a; --cb-dot: #00C805; }
+      .cb-arc { --cb-bg: #d5f4f0; --cb-ink: #067064; --cb-dot: #12B5A5; }
+      .cb-ink { --cb-bg: #e8e0fd; --cb-ink: #4d1ec4; --cb-dot: #7132F5; }
+      .cb-default { --cb-bg: #e7edf5; --cb-ink: #43536b; --cb-dot: #98a2b3; }
+      @media (prefers-color-scheme: dark) {
+        .cb-base { --cb-bg: rgba(0, 82, 255, .26); --cb-ink: #9dbdff; }
+        .cb-ethereum { --cb-bg: rgba(98, 126, 234, .26); --cb-ink: #b3c0f7; }
+        .cb-op { --cb-bg: rgba(255, 4, 32, .22); --cb-ink: #ff96a0; }
+        .cb-arbitrum { --cb-bg: rgba(40, 160, 240, .22); --cb-ink: #8bcefa; }
+        .cb-robinhood { --cb-bg: rgba(0, 200, 5, .20); --cb-ink: #5ce662; }
+        .cb-arc { --cb-bg: rgba(18, 181, 165, .22); --cb-ink: #63ddd0; }
+        .cb-ink { --cb-bg: rgba(113, 50, 245, .30); --cb-ink: #c0a6ff; }
+        .cb-default { --cb-bg: #1a2637; --cb-ink: #a9b8cc; }
+      }
       .vs ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink-2); font-size: 14px; }
       .vs li { margin: 5px 0; }
       .vs li b { color: var(--ink); }
@@ -184,6 +206,47 @@
       footer p { margin: 5px 0; }
       footer a { color: var(--accent-ink); }
       .src { font-size: 11.5px; color: var(--ink-3); margin-top: 8px; }
+      /* movers strip */
+      .movers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+      @media (max-width: 640px) { .movers { grid-template-columns: 1fr; } }
+      .mv-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; min-width: 0; }
+      .mv-card h4 { margin: 0 0 4px; font-size: 13px; color: var(--ink-2); }
+      .mv-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13px; min-width: 0; }
+      .mv-row:last-child { border-bottom: 0; }
+      .mv-name { flex: 1 1 auto; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .mv-pct { font-weight: 700; white-space: nowrap; }
+      .mv-pct.up { color: var(--pos); }
+      .mv-pct.down { color: var(--danger); }
+      .mv-delta { color: var(--ink-3); white-space: nowrap; font-size: 12px; }
+      /* 我的 sAERO */
+      .sa-lbl { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-3); margin-bottom: 4px; }
+      .sa-input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; }
+      .sa-input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
+      textarea.sa-input { resize: vertical; }
+      .sa-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+      .sa-grow { flex: 1 1 220px; min-width: 0; }
+      .sa-btn { appearance: none; border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 600; padding: 10px 18px; min-height: 44px; cursor: pointer; white-space: nowrap; }
+      .sa-btn.ghost { background: var(--surface); color: var(--accent-ink); }
+      .sa-btn[disabled] { opacity: .55; cursor: default; }
+      .sa-err { color: var(--danger); font-size: 13px; margin-top: 8px; }
+      .sa-prog { color: var(--ink-3); font-size: 13px; margin-top: 8px; }
+      .sa-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .sa-chip { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; min-height: 40px; }
+      .sa-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+      .sa-block { margin-top: 16px; }
+      .sa-block > h3 { font-size: 15.5px; margin-bottom: 8px; }
+      .sa-note { font-size: 12px; color: var(--ink-3); margin-top: 8px; }
+      .sa-chain { padding: 9px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+      .sa-chain:last-child { border-bottom: 0; }
+      .sa-chain-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+      .sa-chain-head .amt { margin-left: auto; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+      .sa-g-row { display: flex; align-items: baseline; gap: 8px; padding: 4px 0 4px 10px; min-width: 0; font-size: 13.5px; }
+      .sa-g-row .nm { flex: 1 1 auto; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sa-g-row .al { white-space: nowrap; }
+      .sa-g-row .ap { white-space: nowrap; color: var(--pos); font-weight: 700; }
+      table.pools tr.clickable { cursor: pointer; }
+      table.pools tr.clickable:hover td { background: var(--surface-2); }
+      @media (max-width: 480px) { .tabbar button { font-size: 13px; padding: 8px 2px; } }
       img, svg { max-width: 100%; }
       @media (max-width: 640px) {
         .mini-btn { min-height: 40px; padding: 8px 12px; display: inline-flex; align-items: center; }
@@ -194,11 +257,14 @@
   <body>
     <main>
       <h1>AERO 分析看板</h1>
-      <p class="lede">迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain 共 7 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 7 链。本页为独立的新系统数据看板，下方三个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。</p>
-      <p class="stamp">数据时间 — 投票墙：2026-10-24 17:13–17:15 HKT · app.aero.xyz Markets 直读（473 池）；LP 排名：2026-10-24 18:45 HKT · app.aero.xyz Liquidity 快照（124 池）；总览：2026-10-24 17:00 HKT 官方应用快照 · 价格 Coinbase · 链上参数 Base 公共 RPC 直读</p>
+      <p class="lede">迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain 共 7 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 7 链。本页为独立的新系统数据看板，下方四个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>我的 sAERO</b>（输入地址查仓位的当前分配、待领收益与冷却，并给出投票建议）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。</p>
+      <p class="stamp">数据时间 — <span id="dtVote">投票墙：2026-10-24 17:13–17:15 HKT · app.aero.xyz Markets 直读（473 池）</span>；<span id="dtLp">LP 排名：2026-10-24 18:45 HKT · app.aero.xyz Liquidity 快照（124 池）</span>；<span id="dtOv">总览：2026-10-24 17:00 HKT 官方应用快照 · 价格 Coinbase · 链上参数 Base 公共 RPC 直读</span></p>
+
+      <p class="stamp" id="runStatus" hidden></p>
 
       <nav class="tabbar" role="tablist" aria-label="分页">
         <button type="button" role="tab" data-tab="vote" aria-selected="true">投票收益</button>
+        <button type="button" role="tab" data-tab="mine" aria-selected="false">我的 sAERO</button>
         <button type="button" role="tab" data-tab="lp" aria-selected="false">LP 收益</button>
         <button type="button" role="tab" data-tab="overview" aria-selected="false">数据总览</button>
       </nav>
@@ -219,17 +285,57 @@
             <p>防尘门槛：为防尘埃池虚高 APR 霸榜，排名设门槛 <b>Rewards 48H ≥ $10</b>，未达门槛的池不进前 10（与防尘口径一致，本框披露）。每卡仅显示前 10，不分页。窗口为官方 48H 口径。</p>
             <p id="basisRefresh">刷新节奏：数据将按<b>每小时</b>节奏由链上直读更新——PoolTape / CLPoolTape 读取 48 小时费用、LeafVoter 读取 Allocation，公开 RPC 直读官方合约（管线接入后生效）；管线接入前，本墙仍为上述 2026-10-24 17:13–17:15 HKT 官方应用快照，不自动刷新。</p>
           </div>
+          <div id="moversStrip" hidden></div>
           <div class="tiers" id="tiers"></div>
           <p class="src">每行小字为 48 小时构成：Fees 48H（交易费）· Incentives 48H（激励）· Rewards 48H（合计）。数据为 app.aero.xyz Markets 页 2026-10-24 17:13–17:15 HKT 快照直读。Stake APR 为过去 48 小时收益年化的预测值，非保证收益；48 小时窗口波动较大，请结合池深与持续性判断，勿据单窗尖峰追高。</p>
         </section>
       </div>
 
-      <!-- 分页 2：LP 收益 -->
+      <!-- 分页 2：我的 sAERO -->
+      <div class="panel" id="panel-mine" hidden>
+        <section style="margin-top:20px">
+          <div class="sec-head">
+            <h2>我的 sAERO</h2>
+            <span class="note">浏览器直连 7 链公共 RPC 只读查询 · 无需连钱包 · 不签名、不发交易</span>
+          </div>
+          <div class="ctl-row">
+            <span class="lbl">模式</span>
+            <div class="seg" id="saMode">
+              <button type="button" data-mode="single" aria-pressed="true">单地址详情</button>
+              <button type="button" data-mode="batch" aria-pressed="false">批量雷达</button>
+            </div>
+          </div>
+          <div id="saSingle">
+            <div class="sa-form">
+              <div class="sa-grow"><label class="sa-lbl" for="saAddr">钱包地址</label><input class="sa-input mono" id="saAddr" type="text" placeholder="0x…" autocomplete="off" spellcheck="false" /></div>
+              <button class="sa-btn" type="button" id="saGo">查询</button>
+            </div>
+            <div class="sa-form" style="margin-top:10px">
+              <div class="sa-grow"><label class="sa-lbl" for="saTokenId">或直接输入仓位 tokenId</label><input class="sa-input mono" id="saTokenId" type="text" inputmode="numeric" placeholder="如 6032" autocomplete="off" spellcheck="false" /></div>
+              <button class="sa-btn ghost" type="button" id="saGoId">按 tokenId 查询</button>
+            </div>
+            <p class="sa-err" id="saErr" hidden></p>
+            <p class="sa-prog" id="saProg" hidden></p>
+            <div class="sa-chips" id="saChips"></div>
+            <div id="saResult"></div>
+          </div>
+          <div id="saBatch" hidden>
+            <label class="sa-lbl" for="saAddrs">地址列表（一行一个，最多 50 个）</label>
+            <textarea class="sa-input mono" id="saAddrs" rows="6" placeholder="0x…&#10;0x…"></textarea>
+            <div style="margin-top:10px"><button class="sa-btn" type="button" id="saBatchGo">开始扫描</button></div>
+            <p class="sa-prog" id="saBatchProg" hidden></p>
+            <div id="saBatchResult" style="margin-top:12px"></div>
+          </div>
+          <p class="src">读取口径：仓位与余额读 Base 上的 VotingEscrow；各链当前分配、闲置额与冷却读各链 LeafVoter 的 tokenStates / allocatedGauges / allocations（冷却逐链读 allocationCooldown()，读取失败时回落 169,200 秒）；待领收益读各池 gauge 的 rewards manager（earnedFees / earnedIncentives，按最近 255 个检查点）。查询由你的浏览器直连公共 RPC 完成，地址与仓位均为链上公开数据。</p>
+        </section>
+      </div>
+
+      <!-- 分页 3：LP 收益 -->
       <div class="panel" id="panel-lp" hidden>
         <section style="margin-top:20px">
           <div class="sec-head">
             <h2>LP 收益排名 · 按链</h2>
-            <span class="note">快照 2026-10-24 18:45 HKT · 仅 TVL ≥ $100K 的池</span>
+            <span class="note" id="lpHeadNote">快照 2026-10-24 18:45 HKT · 仅 TVL ≥ $100K 的池</span>
           </div>
           <div class="ctl-row">
             <span class="lbl">链</span>
@@ -245,25 +351,25 @@
           </div>
           <p class="lp-sum" id="lpSum"></p>
           <div class="lp-card" id="lpList"></div>
-          <p class="src">数据来源：Aero 官方应用 Liquidity 页快照，2026-10-24 18:45 HKT；仅含 TVL ≥ $100,000 的池（122 / 全网 1,040）；AERO APR 为官方显示的排放年化，Fees APR 为手续费年化，均为官方估算口径。快照共抓取 124 个 TVL ≥ $90K 的池，其中 2 个低于 $100K 门槛（USDC/RIZE $93.58K、wstETH/WETH $91.55K）不展示。AERO APR 显示「—」表示该池无 AERO 排放，按 0 参与合计与排序；「&lt;0.01」为官方原显示，按 0.005 参与排序。LEGACY 为官方应用中的旧版池标记。个别池因 TVL 较小、短期成交放大，APR 会异常高，请结合 TVL 与 48 小时成交量判断。</p>
+          <p class="src" id="lpSrc">数据来源：Aero 官方应用 Liquidity 页快照，2026-10-24 18:45 HKT；仅含 TVL ≥ $100,000 的池（122 / 全网 1,040）；AERO APR 为官方显示的排放年化，Fees APR 为手续费年化，均为官方估算口径。快照共抓取 124 个 TVL ≥ $90K 的池，其中 2 个低于 $100K 门槛（USDC/RIZE $93.58K、wstETH/WETH $91.55K）不展示。AERO APR 显示「—」表示该池无 AERO 排放，按 0 参与合计与排序；「&lt;0.01」为官方原显示，按 0.005 参与排序。LEGACY 为官方应用中的旧版池标记。个别池因 TVL 较小、短期成交放大，APR 会异常高，请结合 TVL 与 48 小时成交量判断。</p>
         </section>
       </div>
 
       <!-- 分页 3：数据总览 -->
       <div class="panel" id="panel-overview" hidden>
         <div class="strip" id="strip">
-          <div class="stat"><div class="k">AERO 价格</div><div class="v mono" id="stAeroPx">$0.7902</div><div class="s">Coinbase 现货 · <span id="pxTime">10-23 12:50 HKT</span></div></div>
+          <div class="stat"><div class="k">AERO 价格</div><div class="v mono" id="stAeroPx">$0.7902</div><div class="s"><span id="pxTime">Coinbase 现货 · 10-23 12:50 HKT</span></div></div>
           <div class="stat"><div class="k">Predictive Allocation 冷却</div><div class="v mono">47 小时</div><div class="s">调整分配的官方冷却 · 链上实测 169,200 秒</div></div>
           <div class="stat"><div class="k">新 AERO 推算总供应</div><div class="v mono">21.24 亿</div><div class="s">新合约供应推算 · 链上 totalSupply 口径</div></div>
           <div class="stat"><div class="k">sAERO 仓位 NFT 总数</div><div class="v mono">11,916</div><div class="s">VotingEscrow totalSupply · 10-23 链上直读（结算在 Base）</div></div>
-          <div class="stat"><div class="k">TVL（全系统）</div><div class="v mono">$344.13M</div><div class="s">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
-          <div class="stat"><div class="k">近 7 天交易量</div><div class="v mono">$2.63B</div><div class="s">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
-          <div class="stat"><div class="k">近 7 天 Revenue</div><div class="v mono">$1.74M</div><div class="s">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
-          <div class="stat"><div class="k">覆盖链数</div><div class="v mono">7 链</div><div class="s">Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO 结算在 Base</div></div>
+          <div class="stat"><div class="k" id="kTvl">TVL（全系统）</div><div class="v mono" id="stTvl">$344.13M</div><div class="s" id="sTvl">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
+          <div class="stat"><div class="k" id="kVol7">近 7 天交易量</div><div class="v mono" id="stVol7">$2.63B</div><div class="s" id="sVol7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
+          <div class="stat"><div class="k" id="kRev7">近 7 天 Revenue</div><div class="v mono" id="stRev7">$1.74M</div><div class="s" id="sRev7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
+          <div class="stat"><div class="k">覆盖链数</div><div class="v mono" id="stChains">7 链</div><div class="s" id="sChains">Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO 结算在 Base</div></div>
         </div>
 
         <section>
-          <div class="sec-head"><h2>分链数据统计</h2><span class="note">由 LP 快照聚合 · TVL ≥ $100K 口径</span></div>
+          <div class="sec-head"><h2>分链数据统计</h2><span class="note" id="csNote">由 LP 快照聚合 · TVL ≥ $100K 口径</span></div>
           <div class="card">
             <div class="tblwrap">
               <table class="pools">
@@ -271,7 +377,7 @@
                 <tbody id="chainStatsBody"></tbody>
               </table>
             </div>
-            <p class="src">口径：与「LP 收益」分页同一快照（官方应用 Liquidity 页，2026-10-24 18:45 HKT），仅统计 TVL ≥ $100,000 的 122 个池；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均；「—」排放按 0、「&lt;0.01」按 0.005 计。此处 TVL 合计仅覆盖达标池，与上方全系统 TVL（官方应用全口径）不同。</p>
+            <p class="src" id="csSrc">口径：与「LP 收益」分页同一快照（官方应用 Liquidity 页，2026-10-24 18:45 HKT），仅统计 TVL ≥ $100,000 的 122 个池；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均；「—」排放按 0、「&lt;0.01」按 0.005 计。此处 TVL 合计仅覆盖达标池，与上方全系统 TVL（官方应用全口径）不同。</p>
           </div>
         </section>
 
@@ -321,11 +427,16 @@
         <p><b>非官方声明</b>：本站为社区非官方（unofficial）数据看板，与 Aerodrome 官方无关，不提供交易、兑换或分配执行功能，所有操作请以官方渠道为准。</p>
         <p>数据来源：投票收益为官方应用 Markets 页直读快照（473 池，2026-10-24 17:13–17:15 HKT）；LP 收益为官方应用 Liquidity 页快照（124 池，2026-10-24 18:45 HKT，展示 TVL ≥ $100K 的 122 池）；总览 TVL、近 7 天交易量与 Revenue 为官方应用快照（2026-10-24 17:00 HKT）；价格 Coinbase；供应与冷却参数为 Base 公共 RPC 链上直读官方合约（Allocator / VotingEscrow）。</p>
         <p>收益数字均为历史记录或官方估算，不代表未来收益，不构成投资建议。</p>
+        <p>源码：<a href="https://github.com/8280998/aerodash" target="_blank" rel="noopener">github.com/8280998/aerodash</a> · 本站由 Meta Muse 开发</p>
       </footer>
     </main>
 
     <script>
       var AERO_PX = 0.79016;
+      /* 实时 feed 状态：pools.json / lp.json 任一加载成功后写入，驱动数据时间行与总览 */
+      var liveState = { poolsGen: null, poolsCount: 0, lpGen: null, poolsData: null };
+      /* gauge 地址（小写）→ feed 池信息，供「我的 sAERO」按 gauge 匹配池名 / APR / 池地址 */
+      var feedByGauge = {};
       function $(id) { return document.getElementById(id); }
       function fmtUSD(n, dec) {
         if (n === null || n === undefined || isNaN(n)) return "—";
@@ -342,10 +453,29 @@
         return Number(n).toLocaleString("en-US", { minimumFractionDigits: dec || 0, maximumFractionDigits: dec === undefined ? 2 : dec });
       }
 
+      /* ---------- 链色块：全站统一链色板（徽章 / 圆点） ---------- */
+      function chainSlug(name) {
+        var k = String(name === null || name === undefined ? "" : name).toLowerCase().replace(/\s+/g, " ").trim();
+        if (k === "base") return "base";
+        if (k === "ethereum" || k === "ethereum mainnet" || k === "eth" || k === "mainnet") return "ethereum";
+        if (k === "op mainnet" || k === "optimism" || k === "optimism mainnet" || k === "op") return "op";
+        if (k === "arbitrum" || k === "arbitrum one" || k === "arb") return "arbitrum";
+        if (k === "robinhood" || k === "robinhood chain") return "robinhood";
+        if (k === "arc") return "arc";
+        if (k === "ink") return "ink";
+        return "default";
+      }
+      function chainBadge(name) {
+        return '<span class="chain-badge cb-' + chainSlug(name) + '"><span class="cdot"></span>' + escHtml(name) + '</span>';
+      }
+      function chainDot(name) {
+        return '<span class="chain-dot cb-' + chainSlug(name) + '" aria-hidden="true"></span>';
+      }
+
       /* ---------- 分页切换 ---------- */
       var tabBtns = document.querySelectorAll(".tabbar [data-tab]");
       function showTab(name) {
-        ["vote", "lp", "overview"].forEach(function (t) {
+        ["vote", "mine", "lp", "overview"].forEach(function (t) {
           $("panel-" + t).hidden = t !== name;
         });
         tabBtns.forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === name ? "true" : "false"); });
@@ -364,7 +494,7 @@
             return '<div class="vrow"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
               '<span class="vsym">' + p.name + '</span>' +
               '<span class="vapr">' + fmtNum(p.apr) + '%</span><span class="vvotes">Alloc ' + p.alloc + '</span></div>' +
-              '<div class="vsub">' + p.type + ' · 费率 ' + p.fee + ' · ' + p.chain + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div></div>';
+              '<div class="vsub">' + p.type + ' · 费率 ' + p.fee + ' · ' + chainBadge(p.chain) + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div></div>';
           }).join("") : '<div class="tempty">本档暂无达到 Rewards 48H \u2265 $10 门槛的池。</div>';
           var foot = '<div class="tier-foot">仅显示前 10 · 门槛 Rewards 48H \u2265 $10 · Stake APR 降序</div>';
           return '<div class="tier">' + head + sum + body + foot + '</div>';
@@ -402,6 +532,17 @@
         if (isNaN(d.getTime())) return iso;
         return d.toLocaleString("zh-CN", { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }) + " HKT";
       }
+      /* 数据时间行：哪个 feed 加载成功就动态化哪一行；总览任一 feed 成功即切实时聚合标注 */
+      function updateStamp() {
+        if (liveState.poolsGen) $("dtVote").textContent = "投票墙：链上直读 · 生成于 " + fmtGenTime(liveState.poolsGen) + " · 每小时更新";
+        if (liveState.lpGen) $("dtLp").textContent = "LP 排名：链上直读 · 生成于 " + fmtGenTime(liveState.lpGen) + " · 每小时更新";
+        if (liveState.poolsGen || liveState.lpGen) $("dtOv").textContent = "总览：由实时数据聚合";
+      }
+      function setAeroPx(px, label) {
+        AERO_PX = px;
+        $("stAeroPx").textContent = "$" + px.toFixed(4);
+        if (label) $("pxTime").textContent = label;
+      }
       function wallFromPools(pools) {
         var tiers = TIER_DEFS.map(function (d) {
           var list = pools.filter(function (p) {
@@ -409,7 +550,7 @@
           }).sort(function (a, b) { return b.stake_apr - a.stake_apr; }).slice(0, 10);
           return { name: d.name, top: list.map(function (p) {
             return {
-              name: escHtml(p.pair), fee: escHtml(p.fee), chain: escHtml(p.chain), type: escHtml(p.type),
+              name: escHtml(p.pair), fee: escHtml(p.fee), chain: p.chain, type: escHtml(p.type),
               fees: fmtMoney(p.fees48h), incentives: fmtMoney(p.incentives48h), rewards: fmtMoney(p.rewards48h),
               apr: p.stake_apr, alloc: fmtAlloc(p.allocation)
             };
@@ -434,7 +575,9 @@
             type: p.type === null || p.type === undefined ? "" : String(p.type),
             fees48h: isFinite(fees) ? fees : 0,
             incentives48h: inc,
-            rewards48h: rew, stake_apr: apr, allocation: alloc
+            rewards48h: rew, stake_apr: apr, allocation: alloc,
+            gauge: typeof p.gauge === "string" ? p.gauge.toLowerCase() : null,
+            pool: typeof p.pool === "string" ? p.pool.toLowerCase() : null
           });
         });
         if (!clean.length) return null;
@@ -446,7 +589,13 @@
         var wall = wallFromPools(data.pools);
         if (!wall.tiers.some(function (t) { return t.top.length; })) return false;
         renderWall(wall);
-        if (isFinite(data.aero_price_usd) && data.aero_price_usd > 0) AERO_PX = data.aero_price_usd;
+        liveState.poolsData = data.pools;
+        data.pools.forEach(function (p) { if (p.gauge) feedByGauge[p.gauge] = { pair: p.pair, chain: p.chain, stake_apr: p.stake_apr, rewards48h: p.rewards48h, allocation: p.allocation, pool: p.pool }; });
+        liveState.poolsGen = data.generated_at;
+        liveState.poolsCount = data.pools.length;
+        if (isFinite(data.aero_price_usd) && data.aero_price_usd > 0) setAeroPx(data.aero_price_usd, "链上 feed · 生成于 " + fmtGenTime(data.generated_at));
+        updateStamp();
+        if (typeof updateOverview === "function") updateOverview();
         $("basisTitle").textContent = "数据口径：链上直读";
         $("basisSource").innerHTML = "来源：<b>链上直读（PoolTape / CLPoolTape + LeafVoter）</b>——PoolTape / CLPoolTape 读取各池过去 48 小时费用、LeafVoter 读取 Allocation，经公开 RPC 直读官方合约生成；生成时间 <b>" + fmtGenTime(data.generated_at) + "</b>，共 <b>" + data.pools.length + " 个池</b>。分档、排序与防尘门槛与下方说明一致。";
         $("basisRefresh").innerHTML = "刷新节奏：本墙由链上直读管线按<b>每小时</b>更新，上方生成时间即最近一次更新时间；页面打开时自动加载最新一期数据，加载不到时显示内嵌快照。";
@@ -608,6 +757,8 @@
       var LP_MIN_TVL = 100000;
       var LP_CHAIN_ORDER = ["全部", "Base", "Ethereum", "OP Mainnet", "Arbitrum", "Robinhood", "Arc", "Ink"];
       function aprVal(x) { return x === null || x === undefined ? 0 : (x === "<0.01" ? 0.005 : Number(x)); }
+      /* 48H 手续费美元额：快照行自带 fees48h 字段；实时行无此字段，由 Fees APR × TVL ÷ 18250（=365÷2 天年化因子）反推 */
+      function feesOf(p) { return (p[5] === null || p[5] === undefined) ? aprVal(p[7]) * p[3] / 18250 : p[5]; }
       function aprDisp(x) { return x === null || x === undefined ? "—" : (x === "<0.01" ? "<0.01%" : fmtPct(x) + "%"); }
       function fmtPct(v) {
         v = Number(v);
@@ -619,14 +770,16 @@
       function lpTotal(p) { return aprVal(p[6]) + aprVal(p[7]); }
       function lpQualifying() { return LP_POOLS.filter(function (p) { return p[3] >= LP_MIN_TVL; }); }
       var lpState = { chain: "全部", sort: "total" };
+      var lpLiveMode = false;
       function buildChainButtons() {
         var q = lpQualifying();
         var counts = {};
         q.forEach(function (p) { counts[p[1]] = (counts[p[1]] || 0) + 1; });
         var chains = LP_CHAIN_ORDER.filter(function (c) { return c === "全部" || counts[c]; });
+        Object.keys(counts).forEach(function (c) { if (chains.indexOf(c) < 0) chains.push(c); });
         $("lpChains").innerHTML = chains.map(function (c) {
           var n = c === "全部" ? q.length : counts[c];
-          return '<button type="button" data-chain="' + escHtml(c) + '" aria-pressed="' + (lpState.chain === c) + '">' + escHtml(c) + " · " + n + "</button>";
+          return '<button type="button" data-chain="' + escHtml(c) + '" aria-pressed="' + (lpState.chain === c) + '">' + (c === "全部" ? "" : chainDot(c)) + escHtml(c) + " · " + n + "</button>";
         }).join("");
         $("lpChains").querySelectorAll("[data-chain]").forEach(function (b) {
           b.addEventListener("click", function () {
@@ -649,8 +802,8 @@
           return '<div class="vrow lp-row"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
             '<span class="vsym">' + escHtml(p[0]) + '</span>' +
             '<span class="vapr">' + fmtPct(lpTotal(p)) + '%</span></div>' +
-            '<div class="vsub">' + escHtml(p[2]) + " · " + escHtml(p[1]) + " · TVL " + fmtCompact(p[3]) + " · AERO " + aprDisp(p[6]) + " · Fees " + aprDisp(p[7]) + '</div>' +
-            '<div class="vsub">Volume 48H ' + fmtCompact(p[4]) + " · Fees 48H " + fmtUSD(p[5], p[5] < 10 ? 2 : 0) + '</div></div>';
+            '<div class="vsub">' + escHtml(p[2]) + " · " + chainBadge(p[1]) + " · TVL " + fmtCompact(p[3]) + " · AERO " + aprDisp(p[6]) + " · Fees " + aprDisp(p[7]) + '</div>' +
+            (p[4] === null || p[4] === undefined ? "" : '<div class="vsub">Volume 48H ' + fmtCompact(p[4]) + " · Fees 48H " + fmtUSD(p[5], p[5] < 10 ? 2 : 0) + '</div>') + '</div>';
         }).join("") : '<div class="tempty">该链暂无 TVL ≥ $100K 的池。</div>';
       }
       $("lpSort").querySelectorAll("[data-sort]").forEach(function (b) {
@@ -669,18 +822,100 @@
         var byChain = {};
         q.forEach(function (p) {
           var c = byChain[p[1]] || (byChain[p[1]] = { n: 0, tvl: 0, fees: 0, w: 0 });
-          c.n += 1; c.tvl += p[3]; c.fees += p[5]; c.w += lpTotal(p) * p[3];
+          c.n += 1; c.tvl += p[3]; c.fees += feesOf(p); c.w += lpTotal(p) * p[3];
         });
-        var order = LP_CHAIN_ORDER.slice(1).filter(function (c) { return byChain[c]; });
+        var order = Object.keys(byChain);
         order.sort(function (a, b) { return byChain[b].tvl - byChain[a].tvl; });
         var tot = { n: 0, tvl: 0, fees: 0, w: 0 };
         order.forEach(function (c) { var s = byChain[c]; tot.n += s.n; tot.tvl += s.tvl; tot.fees += s.fees; tot.w += s.w; });
         function row(name, s, cls) {
-          return '<tr' + (cls ? ' class="' + cls + '"' : "") + '><td>' + escHtml(name) + '</td><td class="num mono">' + s.n + '</td><td class="num mono">' + fmtUSD(s.tvl) + '</td><td class="num mono">' + fmtUSD(s.fees) + '</td><td class="num mono">' + fmtPct(s.tvl ? s.w / s.tvl : 0) + "%</td></tr>";
+          var label = (cls === "total" ? "" : chainDot(name)) + escHtml(name);
+          return '<tr' + (cls ? ' class="' + cls + '"' : "") + '><td>' + label + '</td><td class="num mono">' + s.n + '</td><td class="num mono">' + fmtUSD(s.tvl) + '</td><td class="num mono">' + fmtUSD(s.fees) + '</td><td class="num mono">' + fmtPct(s.tvl ? s.w / s.tvl : 0) + "%</td></tr>";
         }
         $("chainStatsBody").innerHTML = order.map(function (c) { return row(c, byChain[c], ""); }).join("") + row("全网合计", tot, "total");
       }
       renderChainStats();
+
+      /* ---------- 分页 3：总览实时聚合（lp.json 可用时；聚合全部基于护栏过滤后的达标行） ---------- */
+      function fmtM(n) {
+        if (!isFinite(n)) return "—";
+        if (n >= 1e6) return "$" + (n / 1e6).toFixed(2) + "M";
+        if (n >= 1e3) return "$" + (n / 1e3).toFixed(1) + "K";
+        return fmtUSD(n);
+      }
+      function updateOverview() {
+        if (!lpLiveMode) return;
+        var q = lpQualifying();
+        var tvl = 0, fees = 0, chains = {};
+        q.forEach(function (p) { tvl += p[3]; fees += feesOf(p); chains[p[1]] = 1; });
+        $("kTvl").textContent = "TVL 合计（达标池）";
+        $("stTvl").textContent = fmtM(tvl);
+        $("sTvl").textContent = "TVL ≥ $100K 池 · 链上直读（data/lp.json）· 每小时更新";
+        $("kVol7").textContent = "48H 手续费合计";
+        $("stVol7").textContent = fmtM(fees);
+        $("sVol7").textContent = "TVL ≥ $100K 池口径 · 由 Fees APR × TVL ÷ 18250 反推";
+        $("kRev7").textContent = "投票墙池数";
+        $("stRev7").textContent = fmtNum(liveState.poolsCount || VOTE_WALL.totalPools, 0);
+        $("sRev7").textContent = liveState.poolsCount ? "data/pools.json 链上直读条数" : "内嵌快照池数（pools.json 未加载）";
+        $("stChains").textContent = Object.keys(chains).length + " 链";
+        $("sChains").textContent = "上榜池 " + q.length + " 个（TVL ≥ $100K）· sAERO 结算在 Base";
+      }
+
+      /* ---------- LP 双层数据：内嵌快照兜底，data/lp.json（链上读取器产出）优先 ---------- */
+      /* 安全护栏：tvl 非有限、为负或 > $5 亿（真实最大池约 $27M；feed 混有定价毒化行 tvl 高达 ~10^40）
+         以及 apr 非有限的行，在渲染与一切聚合之前一律剔除，避免毒化行霸榜并污染合计。 */
+      function sanitizeLP(j) {
+        if (!j || typeof j !== "object" || !Array.isArray(j.pools)) return null;
+        var rows = [];
+        var gauges = [];
+        j.pools.forEach(function (p) {
+          if (!p || typeof p.pair !== "string" || !p.pair) return;
+          var tvl = Number(p.tvl);
+          var aero = (p.aero_apr === null || p.aero_apr === undefined) ? 0 : Number(p.aero_apr);
+          var fees = (p.fees_apr === null || p.fees_apr === undefined) ? 0 : Number(p.fees_apr);
+          if (!isFinite(tvl) || tvl < 0 || tvl > 5e8) return;
+          if (!isFinite(aero) || !isFinite(fees)) return;
+          var type = p.type ? String(p.type) : "";
+          var fee = p.fee ? String(p.fee) : "";
+          var label = fee && type.indexOf(fee) < 0 ? (type ? type + " " + fee : fee) : type;
+          rows.push([p.pair, p.chain ? String(p.chain) : "", label, tvl, null, null, aero, fees]);
+          gauges.push(typeof p.gauge === "string" ? p.gauge.toLowerCase() : null);
+        });
+        if (!rows.length) return null;
+        return {
+          generated_at: typeof j.generated_at === "string" ? j.generated_at : "",
+          aero_price_usd: Number(j.aero_price_usd),
+          rows: rows,
+          gauges: gauges
+        };
+      }
+      function applyLiveLP(raw) {
+        var data = sanitizeLP(raw);
+        if (!data) return false;
+        LP_POOLS = data.rows;
+        data.gauges.forEach(function (g, i) { if (g && !feedByGauge[g]) { var r = data.rows[i]; feedByGauge[g] = { pair: r[0], chain: r[1], stake_apr: null, rewards48h: null, allocation: null, pool: null }; } });
+        lpLiveMode = true;
+        liveState.lpGen = data.generated_at;
+        if (lpState.chain !== "全部" && !LP_POOLS.some(function (p) { return p[1] === lpState.chain && p[3] >= LP_MIN_TVL; })) lpState.chain = "全部";
+        buildChainButtons();
+        renderLP();
+        renderChainStats();
+        if (isFinite(data.aero_price_usd) && data.aero_price_usd > 0) setAeroPx(data.aero_price_usd, "链上 feed · 生成于 " + fmtGenTime(data.generated_at));
+        var genTxt = data.generated_at ? fmtGenTime(data.generated_at) : "";
+        $("lpHeadNote").textContent = "链上直读" + (genTxt ? " · " + genTxt : "") + " · 每小时更新 · 仅 TVL ≥ $100K 的池";
+        $("lpSrc").textContent = "数据来源：链上直读（data/lp.json）" + (genTxt ? "，生成于 " + genTxt : "") + "，每小时更新；TVL 为池内两种代币余额 × 价格直算，AERO APR 为 gauge 排放年化，Fees APR 为过去 48 小时手续费年化，与官方应用口径可能不同。实时模式无 Volume 48H 数据源，该项不显示。加载不到实时数据时回落官方应用 Liquidity 快照（2026-10-24 18:45 HKT）。";
+        $("csNote").textContent = "由 LP 实时数据聚合 · TVL ≥ $100K 口径 · 链上直读";
+        $("csSrc").textContent = "口径：与「LP 收益」分页同一实时数据（链上直读，每小时更新），仅统计 TVL ≥ $100,000 的池；48H 手续费合计由各池 Fees APR × TVL ÷ 18250 反推；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均。此处 TVL 合计仅覆盖达标池。";
+        updateOverview();
+        updateStamp();
+        return true;
+      }
+      fetch("data/lp.json", { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error("no live lp data");
+        return r.json();
+      }).then(function (j) {
+        applyLiveLP(j);
+      }).catch(function () { /* 静默回退内嵌快照 */ });
 
       /* best-effort live price refresh from Coinbase (falls back to baked values) */
       fetch("https://api.coinbase.com/v2/prices/AERO-USD/spot").then(function (r) { return r.json(); })
@@ -691,9 +926,845 @@
             $("stAeroPx").textContent = "$" + AERO_PX.toFixed(4);
             var now = new Date();
             var hh = String(now.getHours()).padStart(2, "0"), mm = String(now.getMinutes()).padStart(2, "0");
-            $("pxTime").textContent = "刚刚刷新 " + hh + ":" + mm;
+            $("pxTime").textContent = "Coinbase 现货 · 刚刚刷新 " + hh + ":" + mm;
           }
         }).catch(function () { /* keep baked snapshot values */ });
+    </script>
+
+    <script>
+      /* ================= 我的 sAERO：浏览器直连公共 RPC 只读查询 ================= */
+      var VE_ADDR = "0xbf7977e1521e9a3032bf7243ee4712f311f13915";
+      var LEAF_ADDR = "0x382409fad8503fbcdbb27a4211551fa03e884078";
+      var ZERO_ADDR = "0x0000000000000000000000000000000000000000";
+      var MAX_CHECKPOINTS = 255;
+      var COOLDOWN_FALLBACK = 169200;
+      var SEL = {
+        balanceOf: "70a08231", tokenOfOwnerByIndex: "2f745c59", balanceOfNFT: "e7e242d4",
+        tokenStates: "aa9f3eca", allocatedGauges: "d596efe1", allocations: "1c3a964f",
+        allocationCooldown: "6f5aa6ab", gaugeToRewards: "58f096ca", gaugeToTarget: "6a01acc7",
+        earnedFees: "2dd842e6", incentiveCount: "069def88", incentives: "64142ee4",
+        earnedIncentives: "c06b187e", token0: "0dfe1681", token1: "d21220a7",
+        symbol: "95d89b41", decimals: "313ce567"
+      };
+      var SA_CHAINS = [
+        { key: "base", name: "Base", rpc: ["https://base-rpc.publicnode.com", "https://mainnet.base.org"], registry: "0x7b2a2c12dc5ea2a31455952a05031c3e4bb28f3e" },
+        { key: "ethereum", name: "Ethereum", rpc: ["https://ethereum-rpc.publicnode.com", "https://eth.drpc.org"], registry: "0xdd1705e23762f4d6e44d8c31bd8ea80c54612239" },
+        { key: "op", name: "OP Mainnet", rpc: ["https://optimism-rpc.publicnode.com", "https://mainnet.optimism.io"], registry: "0xb6f9705a631cc1c0e8570ffde48882c95e2df408" },
+        { key: "arbitrum", name: "Arbitrum", rpc: ["https://arbitrum-one-rpc.publicnode.com", "https://arb1.arbitrum.io/rpc"], registry: "0x9e635b2c689fc52201df7ef1c9fa607c2f58f666" },
+        { key: "ink", name: "Ink", rpc: ["https://rpc-gel.inkonchain.com", "https://ink.drpc.org"], registry: "0xdd1705e23762f4d6e44d8c31bd8ea80c54612239" },
+        { key: "arc", name: "Arc", rpc: ["https://rpc.mainnet.arc.io", "https://arc.drpc.org"], registry: "0xce44907dc45d3bfa3f5f6035b0e6e8b22d780a42" },
+        { key: "robinhood", name: "Robinhood", rpc: ["https://robinhood.drpc.org", "https://robinhood-rpc.publicnode.com"], registry: "0xdd1705e23762f4d6e44d8c31bd8ea80c54612239" }
+      ];
+      var BASE_CHAIN = SA_CHAINS[0];
+
+      /* ---------- RPC 客户端：双端点自动切换、batch、并发上限 6、单请求超时 15s ---------- */
+      var rpcSem = { n: 0, q: [] };
+      function rpcAcquire() {
+        return new Promise(function (res) {
+          if (rpcSem.n < 6) { rpcSem.n++; res(); }
+          else rpcSem.q.push(res);
+        });
+      }
+      function rpcRelease() {
+        rpcSem.n--;
+        var nxt = rpcSem.q.shift();
+        if (nxt) { rpcSem.n++; nxt(); }
+      }
+      var rpcIdSeq = 1;
+      function rpcFetch(url, payload) {
+        return rpcAcquire().then(function () {
+          var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+          var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : null;
+          return fetch(url, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: ctrl ? ctrl.signal : undefined
+          }).then(function (r) {
+            if (!r.ok) throw new Error("http " + r.status);
+            return r.json();
+          }).then(function (j) {
+            if (timer) clearTimeout(timer);
+            rpcRelease();
+            return j;
+          }, function (e) {
+            if (timer) clearTimeout(timer);
+            rpcRelease();
+            throw e;
+          });
+        });
+      }
+      function rpcTry(chain, idx, payload) {
+        if (idx >= chain.rpc.length) return Promise.reject(new Error("rpc unavailable"));
+        return rpcFetch(chain.rpc[idx], payload).catch(function () { return rpcTry(chain, idx + 1, payload); });
+      }
+      function ethCall(chain, to, data) {
+        var payload = { jsonrpc: "2.0", id: rpcIdSeq++, method: "eth_call", params: [{ to: to, data: data }, "latest"] };
+        return rpcTry(chain, 0, payload).then(function (res) {
+          if (!res || res.error || typeof res.result !== "string") throw new Error("eth_call failed");
+          return res.result;
+        });
+      }
+      function ethBatch(chain, calls) {
+        if (!calls.length) return Promise.resolve([]);
+        var payload = calls.map(function (c) {
+          return { jsonrpc: "2.0", id: rpcIdSeq++, method: "eth_call", params: [{ to: c.to, data: c.data }, "latest"] };
+        });
+        return rpcTry(chain, 0, payload).then(function (res) {
+          if (!Array.isArray(res)) throw new Error("batch unsupported");
+          var byId = {};
+          res.forEach(function (r) { if (r && r.id !== undefined) byId[r.id] = r; });
+          return payload.map(function (p) {
+            var r = byId[p.id];
+            return (r && !r.error && typeof r.result === "string") ? r.result : null;
+          });
+        }).catch(function () {
+          var out = [];
+          var seq = Promise.resolve();
+          calls.forEach(function (c) {
+            seq = seq.then(function () {
+              return ethCall(chain, c.to, c.data).then(function (v) { out.push(v); }, function () { out.push(null); });
+            });
+          });
+          return seq.then(function () { return out; });
+        });
+      }
+
+      /* ---------- ABI 编解码 ---------- */
+      function encUint(n) { return BigInt(n).toString(16).padStart(64, "0"); }
+      function encAddr(a) { return "000000000000000000000000" + String(a).replace(/^0x/i, "").toLowerCase(); }
+      function mkData(sel, parts) { return "0x" + sel + (parts || []).join(""); }
+      function hexWords(hex) {
+        var h = String(hex || "").replace(/^0x/i, "");
+        var out = [];
+        for (var i = 0; i + 64 <= h.length; i += 64) out.push(h.slice(i, i + 64));
+        return out;
+      }
+      function wUint(w) { return BigInt("0x" + (w || "0")); }
+      function wAddr(w) { return "0x" + String(w || "").slice(24).toLowerCase(); }
+      function hexToUtf8(hex) {
+        var bytes = [];
+        for (var i = 0; i + 2 <= hex.length; i += 2) bytes.push(parseInt(hex.slice(i, i + 2), 16));
+        try { return new TextDecoder("utf-8").decode(new Uint8Array(bytes)); } catch (e) { return ""; }
+      }
+      function decodeSymbol(hex) {
+        var words = hexWords(hex);
+        if (!words.length) return "";
+        var first = wUint(words[0]);
+        if (first === 32n && words.length >= 2) {
+          var len = Number(wUint(words[1]));
+          var raw = String(hex).replace(/^0x/i, "").slice(128, 128 + len * 2);
+          return hexToUtf8(raw);
+        }
+        /* bytes32 形态 */
+        return hexToUtf8(words[0].replace(/(00)+$/, ""));
+      }
+      function decodeAddrArray(hex) {
+        var words = hexWords(hex);
+        if (words.length < 2) return [];
+        var len = Number(wUint(words[1]));
+        var out = [];
+        for (var i = 0; i < len && (2 + i) < words.length; i++) out.push(wAddr(words[2 + i]));
+        return out;
+      }
+      function shortAddr(a) { return a ? a.slice(0, 6) + "…" + a.slice(-4) : ""; }
+      function fmtTok(v, dec, dp) {
+        v = BigInt(v);
+        if (dec === undefined) dec = 18;
+        if (dp === undefined) dp = 6;
+        var neg = v < 0n;
+        if (neg) v = -v;
+        var base = 10n ** BigInt(dec);
+        var ip = v / base, fp = v % base;
+        var fs = fp.toString().padStart(dec, "0").slice(0, dp).replace(/0+$/, "");
+        var ips = ip.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return (neg ? "-" : "") + ips + (fs ? "." + fs : "");
+      }
+      function fmtHMS(s) {
+        s = Math.max(0, Math.floor(s));
+        function p(n) { return String(n).padStart(2, "0"); }
+        return p(Math.floor(s / 3600)) + ":" + p(Math.floor(s % 3600 / 60)) + ":" + p(s % 60);
+      }
+      function fmtUnixHKT(sec) {
+        var d = new Date(sec * 1000);
+        if (isNaN(d.getTime())) return "—";
+        return d.toLocaleString("zh-CN", { timeZone: "Asia/Hong_Kong", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }) + " HKT";
+      }
+      function aeroNum(wei) { return Number(BigInt(wei)) / 1e18; }
+
+      /* ---------- 缓存：代币元数据 / 池信息 / 冷却 ---------- */
+      var tokenMetaCache = {};
+      function tokenMeta(chain, addr) {
+        var k = chain.key + "|" + addr;
+        if (!tokenMetaCache[k]) {
+          tokenMetaCache[k] = ethBatch(chain, [
+            { to: addr, data: "0x" + SEL.symbol },
+            { to: addr, data: "0x" + SEL.decimals }
+          ]).then(function (rs) {
+            var sym = rs[0] ? decodeSymbol(rs[0]) : "";
+            var dec = rs[1] ? Number(wUint(hexWords(rs[1])[0])) : 18;
+            return { symbol: sym || shortAddr(addr), decimals: (isFinite(dec) && dec >= 0 && dec <= 36) ? dec : 18 };
+          }).catch(function () { return { symbol: shortAddr(addr), decimals: 18 }; });
+        }
+        return tokenMetaCache[k];
+      }
+      var cdCache = {};
+      function chainCooldown(chain) {
+        if (!cdCache[chain.key]) {
+          cdCache[chain.key] = ethCall(chain, LEAF_ADDR, "0x" + SEL.allocationCooldown).then(function (h) {
+            var v = Number(wUint(hexWords(h)[0]));
+            return (isFinite(v) && v > 0) ? v : COOLDOWN_FALLBACK;
+          }).catch(function () { return COOLDOWN_FALLBACK; });
+        }
+        return cdCache[chain.key];
+      }
+      function poolTokens(chain, pool) {
+        return ethBatch(chain, [
+          { to: pool, data: "0x" + SEL.token0 },
+          { to: pool, data: "0x" + SEL.token1 }
+        ]).then(function (rs) {
+          if (!rs[0] || !rs[1]) return null;
+          var t0 = wAddr(hexWords(rs[0])[0]), t1 = wAddr(hexWords(rs[1])[0]);
+          return Promise.all([tokenMeta(chain, t0), tokenMeta(chain, t1)]).then(function (ms) {
+            return [
+              { addr: t0, symbol: ms[0].symbol, decimals: ms[0].decimals },
+              { addr: t1, symbol: ms[1].symbol, decimals: ms[1].decimals }
+            ];
+          });
+        }).catch(function () { return null; });
+      }
+      var poolInfoCache = {};
+      function poolInfo(chain, gauge) {
+        var k = chain.key + "|" + gauge;
+        if (poolInfoCache[k]) return poolInfoCache[k];
+        var feed = feedByGauge[gauge] || null;
+        var getPool = (feed && feed.pool)
+          ? Promise.resolve(feed.pool)
+          : ethCall(chain, chain.registry, mkData(SEL.gaugeToTarget, [encAddr(gauge)])).then(function (h) {
+              return wAddr(hexWords(h)[0]);
+            }).catch(function () { return null; });
+        var p = getPool.then(function (pa) {
+          if (!pa || pa === ZERO_ADDR) return { name: feed ? feed.pair : shortAddr(gauge), pool: null, tokens: null, feed: feed };
+          return poolTokens(chain, pa).then(function (tks) {
+            return {
+              name: feed ? feed.pair : (tks ? tks[0].symbol + "/" + tks[1].symbol : shortAddr(gauge)),
+              pool: pa, tokens: tks, feed: feed
+            };
+          });
+        });
+        poolInfoCache[k] = p;
+        return p;
+      }
+
+      /* ---------- 状态 ---------- */
+      var saState = { addr: null, positions: [], current: null, chainData: null };
+      var cdTimer = null;
+      function setSaErr(t) { var e = $("saErr"); e.hidden = !t; e.textContent = t || ""; }
+      function setSaProg(t) { var e = $("saProg"); e.hidden = !t; e.textContent = t || ""; }
+      function curBalance() {
+        for (var i = 0; i < saState.positions.length; i++) {
+          if (saState.positions[i].tokenId === saState.current) return saState.positions[i].balance;
+        }
+        return 0n;
+      }
+      function cdStatus(c) {
+        var now = Math.floor(Date.now() / 1000);
+        if (c.chainAlloc === 0n && c.lastAllocated === 0) return { kind: "none" };
+        var end = c.lastAllocated + c.cooldown;
+        if (end - now > 0) return { kind: "cooling", end: end };
+        return { kind: "ready" };
+      }
+
+      /* ---------- 单仓位：逐链读取 ---------- */
+      function readChainPosition(chain, tokenId) {
+        var calls = [
+          { to: LEAF_ADDR, data: mkData(SEL.tokenStates, [encUint(tokenId)]) },
+          { to: LEAF_ADDR, data: mkData(SEL.allocatedGauges, [encUint(tokenId)]) },
+          { to: LEAF_ADDR, data: mkData(SEL.allocations, [encUint(tokenId), encAddr(ZERO_ADDR)]) }
+        ];
+        return ethBatch(chain, calls).then(function (rs) {
+          if (!rs[0]) throw new Error("chain read failed");
+          var w = hexWords(rs[0]);
+          var gauges = rs[1] ? decodeAddrArray(rs[1]) : [];
+          var idle = rs[2] ? wUint(hexWords(rs[2])[0]) : 0n;
+          return chainCooldown(chain).then(function (cdsec) {
+            var base = {
+              chain: chain, ok: true,
+              lastAllocated: Number(wUint(w[1])),
+              chainAlloc: wUint(w[3]),
+              idle: idle, cooldown: cdsec, gauges: []
+            };
+            if (!gauges.length) return base;
+            var acalls = gauges.map(function (g) {
+              return { to: LEAF_ADDR, data: mkData(SEL.allocations, [encUint(tokenId), encAddr(g)]) };
+            });
+            return ethBatch(chain, acalls).then(function (ars) {
+              base.gauges = gauges.map(function (g, i) {
+                return { addr: g, alloc: ars[i] ? wUint(hexWords(ars[i])[0]) : 0n, feed: feedByGauge[g] || null, info: null };
+              });
+              return base;
+            });
+          });
+        }).catch(function () {
+          return { chain: chain, ok: false, lastAllocated: 0, chainAlloc: 0n, idle: 0n, cooldown: COOLDOWN_FALLBACK, gauges: [] };
+        });
+      }
+
+      function renderChips() {
+        $("saChips").innerHTML = saState.positions.map(function (p) {
+          return '<button type="button" class="sa-chip" data-tid="' + p.tokenId + '" aria-pressed="' + (saState.current === p.tokenId) + '">#' + p.tokenId + " · " + fmtTok(p.balance, 18, 6) + " AERO</button>";
+        }).join("");
+        $("saChips").querySelectorAll("[data-tid]").forEach(function (b) {
+          b.addEventListener("click", function () { loadPosition(Number(b.getAttribute("data-tid"))); });
+        });
+      }
+
+      function loadPosition(tokenId) {
+        saState.current = tokenId;
+        renderChips();
+        setSaErr("");
+        setSaProg("读取各链分配中…（7 条链并行）");
+        $("saResult").innerHTML = "";
+        Promise.all(SA_CHAINS.map(function (c) { return readChainPosition(c, tokenId); })).then(function (cds) {
+          saState.chainData = cds;
+          setSaProg("");
+          renderAllPosition();
+        });
+      }
+
+      function renderAllPosition() {
+        var tokenId = saState.current, cds = saState.chainData;
+        if (!cds) return;
+        var jobs = [];
+        cds.forEach(function (c) {
+          c.gauges.forEach(function (g) {
+            jobs.push(poolInfo(c.chain, g.addr).then(function (info) { g.info = info; if (info.feed) g.feed = info.feed; }));
+          });
+        });
+        Promise.all(jobs).then(function () {
+          renderVotes(tokenId, cds);
+          renderCooldown(cds);
+          renderAdvice(tokenId, cds);
+          loadAllRewards(tokenId, cds);
+          startCountdown();
+        });
+      }
+
+      function sharePct(partWei, wholeWei) {
+        var w = aeroNum(wholeWei);
+        if (!w) return "0%";
+        return (aeroNum(partWei) / w * 100).toFixed(2) + "%";
+      }
+
+      function renderVotes(tokenId, cds) {
+        var bal = curBalance();
+        var sumAlloc = 0n;
+        cds.forEach(function (c) { if (c.ok) sumAlloc += c.chainAlloc; });
+        var remainder = bal > sumAlloc ? bal - sumAlloc : 0n;
+        var html = '<div class="sa-block"><div class="card"><b>仓位 #' + tokenId + '</b> · 余额 <span class="mono">' + fmtTok(bal, 18, 6) + ' AERO</span> · 已分配 <span class="mono">' + fmtTok(sumAlloc, 18, 6) + ' AERO</span> · 未派发余量 <span class="mono">' + fmtTok(remainder, 18, 6) + " AERO</span></div></div>";
+        html += '<div class="sa-block"><h3>当前投票所在</h3><div class="card">';
+        var any = false;
+        cds.forEach(function (c) {
+          if (!c.ok) {
+            html += '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) + '<span style="color:var(--danger);font-size:13px">读取失败，可重试</span><button type="button" class="mini-btn" data-retry="' + c.chain.key + '">重试</button></div></div>';
+            return;
+          }
+          if (!c.gauges.length && c.chainAlloc === 0n) return;
+          any = true;
+          html += '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) +
+            '<span class="amt">本链分配 <span class="mono">' + fmtTok(c.chainAlloc, 18, 6) + " AERO</span>（占仓位 " + sharePct(c.chainAlloc, bal) + "）</span></div>";
+          c.gauges.forEach(function (g) {
+            var nm = g.info ? g.info.name : (g.feed ? g.feed.pair : shortAddr(g.addr));
+            var apr = (g.feed && g.feed.stake_apr !== null && g.feed.stake_apr !== undefined)
+              ? '<span class="ap">Stake APR ' + fmtPct(g.feed.stake_apr) + "%</span>" : "";
+            html += '<div class="sa-g-row"><span class="nm">' + escHtml(nm) + '</span><span class="al mono">' + fmtTok(g.alloc, 18, 6) + " AERO · " + sharePct(g.alloc, bal) + "</span>" + apr + "</div>";
+          });
+          if (c.idle > 0n) {
+            html += '<div class="sa-g-row"><span class="nm" style="font-weight:400;color:var(--ink-2)">闲置（已分配到本链、未指定池）</span><span class="al mono">' + fmtTok(c.idle, 18, 6) + " AERO · " + sharePct(c.idle, bal) + "</span></div>";
+          }
+          html += "</div>";
+        });
+        if (!any && !cds.some(function (c) { return !c.ok; })) html += '<p class="tempty">该仓位目前没有分配到任何池。</p>';
+        html += "</div></div>";
+        /* 收益区（异步填充） */
+        html += '<div class="sa-block"><h3>当前收益 · 待领估算</h3><div class="card" id="saRewards"><p class="tempty">计算收益中…</p></div><p class="sa-note">待领估算：已结束的激励计划可能被发起方回收；手续费按最近 255 个检查点估算，实际可领以领取时为准。汇总只对 AERO 计价，其余币种只列数量。</p></div>';
+        /* 冷却区 */
+        html += '<div class="sa-block"><h3>冷却时间</h3><div class="card" id="saCooldown"></div></div>';
+        /* 建议区 */
+        html += '<div class="sa-block"><h3>投票建议</h3><div class="card" id="saAdvice"></div></div>';
+        $("saResult").innerHTML = html;
+      }
+
+      function renderCooldown(cds) {
+        var el = $("saCooldown");
+        if (!el) return;
+        el.innerHTML = cds.map(function (c) {
+          if (!c.ok) return '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) + '<span style="color:var(--danger);font-size:13px">读取失败，可重试</span><button type="button" class="mini-btn" data-retry="' + c.chain.key + '">重试</button></div></div>';
+          var st = cdStatus(c);
+          var txt;
+          if (st.kind === "none") txt = "未分配 · 可立即分配";
+          else if (st.kind === "cooling") txt = '冷却中 · <span class="mono" data-cd="' + st.end + '"></span>';
+          else txt = "可再分配（上次分配 " + fmtUnixHKT(c.lastAllocated) + "）";
+          return '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(c.chain.name) + '<span style="font-size:13.5px">' + txt + "</span></div></div>";
+        }).join("");
+      }
+
+      function startCountdown() {
+        if (cdTimer) clearInterval(cdTimer);
+        var tick = function () {
+          var now = Math.floor(Date.now() / 1000);
+          document.querySelectorAll("[data-cd]").forEach(function (el) {
+            var end = Number(el.getAttribute("data-cd"));
+            var r = end - now;
+            el.textContent = r <= 0 ? "已到期 · 可再分配" : "剩余 " + fmtHMS(r) + " · " + fmtUnixHKT(end) + " 起可再分配";
+          });
+        };
+        tick();
+        cdTimer = setInterval(tick, 1000);
+      }
+
+      /* ---------- 待领收益 ---------- */
+      function loadGaugeRewards(chain, tokenId, gauge, info) {
+        return ethCall(chain, chain.registry, mkData(SEL.gaugeToRewards, [encAddr(gauge)])).then(function (h) {
+          var manager = wAddr(hexWords(h)[0]);
+          return ethBatch(chain, [
+            { to: manager, data: mkData(SEL.earnedFees, [encUint(tokenId), encUint(MAX_CHECKPOINTS)]) },
+            { to: manager, data: "0x" + SEL.incentiveCount }
+          ]).then(function (rs) {
+            var fees = [];
+            if (rs[0]) {
+              var w = hexWords(rs[0]);
+              var a0 = wUint(w[0]), a1 = wUint(w[1]);
+              if (info.tokens) {
+                if (a0 > 0n) fees.push({ symbol: info.tokens[0].symbol, dec: info.tokens[0].decimals, amount: a0 });
+                if (a1 > 0n) fees.push({ symbol: info.tokens[1].symbol, dec: info.tokens[1].decimals, amount: a1 });
+              } else {
+                if (a0 > 0n) fees.push({ symbol: "池 token0", dec: 18, amount: a0 });
+                if (a1 > 0n) fees.push({ symbol: "池 token1", dec: 18, amount: a1 });
+              }
+            }
+            var result = { fees: fees, incentives: [] };
+            var n = rs[1] ? Number(wUint(hexWords(rs[1])[0])) : 0;
+            if (!n || n > 64) return result;
+            var ids = [];
+            for (var i = 1; i <= n; i++) ids.push(i);
+            var incData = "0x" + SEL.incentives + encUint(32) + encUint(n) + ids.map(encUint).join("");
+            var calls = [{ to: manager, data: incData }];
+            ids.forEach(function (pid) {
+              calls.push({ to: manager, data: mkData(SEL.earnedIncentives, [encUint(tokenId), encUint(pid), encUint(MAX_CHECKPOINTS)]) });
+            });
+            return ethBatch(chain, calls).then(function (rs2) {
+              if (!rs2[0]) return result;
+              var w2 = hexWords(rs2[0]);
+              if (w2.length < 2) return result;
+              var len = Number(wUint(w2[1]));
+              var now = Math.floor(Date.now() / 1000);
+              var progs = [];
+              for (var i2 = 0; i2 < len; i2++) {
+                var b = 2 + i2 * 6;
+                if (b + 5 >= w2.length) break;
+                progs.push({
+                  pid: i2 + 1,
+                  token: wAddr(w2[b]),
+                  start: Number(wUint(w2[b + 3])),
+                  end: Number(wUint(w2[b + 4])),
+                  earned: rs2[1 + i2] ? wUint(hexWords(rs2[1 + i2])[0]) : 0n,
+                  status: Number(wUint(w2[b + 4])) > now ? "进行中" : "已结束",
+                  symbol: "", dec: 18
+                });
+              }
+              return Promise.all(progs.map(function (pr) {
+                return tokenMeta(chain, pr.token).then(function (m) { pr.symbol = m.symbol; pr.dec = m.decimals; });
+              })).then(function () {
+                result.incentives = progs;
+                return result;
+              });
+            });
+          });
+        });
+      }
+
+      function loadAllRewards(tokenId, cds) {
+        var jobs = [];
+        cds.forEach(function (c) {
+          if (!c.ok) return;
+          c.gauges.forEach(function (g) {
+            jobs.push(loadGaugeRewards(c.chain, tokenId, g.addr, g.info || {}).then(function (r) {
+              return { chain: c.chain, gauge: g, res: r };
+            }).catch(function () { return { chain: c.chain, gauge: g, res: null }; }));
+          });
+        });
+        var el = $("saRewards");
+        if (!el) return;
+        if (!jobs.length) { el.innerHTML = '<p class="tempty">该仓位暂无已分配的池，无待领收益。</p>'; return; }
+        Promise.all(jobs).then(function (list) { renderRewards(list); });
+      }
+
+      function renderRewards(list) {
+        var el = $("saRewards");
+        if (!el) return;
+        var totals = {};
+        var totalOrder = [];
+        function add(sym, dec, amt) {
+          if (amt <= 0n) return;
+          var k = sym + "|" + dec;
+          if (!totals[k]) { totals[k] = { symbol: sym, dec: dec, amount: 0n }; totalOrder.push(k); }
+          totals[k].amount += amt;
+        }
+        var html = "";
+        list.forEach(function (item) {
+          var nm = item.gauge.info ? item.gauge.info.name : (item.gauge.feed ? item.gauge.feed.pair : shortAddr(item.gauge.addr));
+          html += '<div class="sa-chain"><div class="sa-chain-head">' + chainBadge(item.chain.name) + '<span style="font-weight:600;font-size:13.5px">' + escHtml(nm) + "</span></div>";
+          if (!item.res) {
+            html += '<p class="sa-note" style="margin:0;color:var(--danger)">该池收益读取失败。</p>';
+          } else {
+            var lines = [];
+            if (item.res.fees.length) {
+              lines.push("手续费：" + item.res.fees.map(function (f) { return fmtTok(f.amount, f.dec, 12) + " " + escHtml(f.symbol); }).join(" + "));
+              item.res.fees.forEach(function (f) { add(f.symbol, f.dec, f.amount); });
+            }
+            item.res.incentives.forEach(function (pr) {
+              if (pr.earned <= 0n) return;
+              lines.push("激励（计划 #" + pr.pid + " · " + pr.status + "）：" + fmtTok(pr.earned, pr.dec, 12) + " " + escHtml(pr.symbol));
+              add(pr.symbol, pr.dec, pr.earned);
+            });
+            html += lines.length
+              ? lines.map(function (l) { return '<p style="font-size:13.5px;margin:2px 0 2px 10px" class="mono">' + l + "</p>"; }).join("")
+              : '<p class="sa-note" style="margin:0">暂无待领收益。</p>';
+          }
+          html += "</div>";
+        });
+        var sum = "";
+        if (totalOrder.length) {
+          var parts = totalOrder.map(function (k) {
+            var t = totals[k];
+            var s = fmtTok(t.amount, t.dec, 12) + " " + escHtml(t.symbol);
+            if (t.symbol === "AERO" && t.dec === 18) s += "（约 " + fmtUSD(aeroNum(t.amount) * AERO_PX, 2) + "）";
+            return s;
+          });
+          sum = '<div class="sa-chain" style="border-bottom:0"><b>待领汇总</b> · <span class="mono">' + parts.join(" · ") + "</span></div>";
+        }
+        el.innerHTML = sum + html;
+      }
+
+      /* ---------- 投票建议 ---------- */
+      function renderAdvice(tokenId, cds) {
+        var el = $("saAdvice");
+        if (!el) return;
+        var feed = liveState.poolsData;
+        if (!feed || !feed.length) {
+          el.innerHTML = '<p class="tempty">实时数据不可用，暂无法生成建议（data/pools.json 未加载）。</p>';
+          return;
+        }
+        var px = AERO_PX;
+        var bal = aeroNum(curBalance());
+        var totalUSD = bal * px;
+        var sumChain = 0;
+        cds.forEach(function (c) { if (c.ok) sumChain += aeroNum(c.chainAlloc); });
+        var movableUSD = Math.max(0, bal - sumChain) * px;
+        var movableAERO = Math.max(0, bal - sumChain);
+        var curEst = 0, lockedEst = 0, unknownHeld = false;
+        cds.forEach(function (c) {
+          if (!c.ok) return;
+          var st = cdStatus(c);
+          var locked = st.kind === "cooling";
+          movableUSD += aeroNum(c.idle) * px;
+          movableAERO += aeroNum(c.idle);
+          c.gauges.forEach(function (g) {
+            var a = aeroNum(g.alloc);
+            var f = g.feed;
+            if (f && f.allocation > 0 && f.rewards48h !== null && f.rewards48h !== undefined) {
+              var est = (a * px) / (f.allocation * px) * f.rewards48h;
+              curEst += est;
+              if (locked) lockedEst += est;
+            } else if (a > 0) unknownHeld = true;
+            if (!locked) { movableUSD += a * px; movableAERO += a; }
+          });
+        });
+        var cands = feed.slice().sort(function (x, y) { return y.stake_apr - x.stake_apr; });
+        var sugg = [], left = movableUSD;
+        for (var i = 0; i < cands.length && sugg.length < 8 && left > 0.01; i++) {
+          var p = cands[i];
+          var poolUSD = p.allocation * px;
+          if (!(poolUSD > 0)) continue;
+          var take = Math.min(left, poolUSD * 0.25);
+          if (take <= 0) continue;
+          sugg.push({
+            pair: p.pair, chain: p.chain, aero: take / px,
+            pct: totalUSD > 0 ? take / totalUSD * 100 : 0,
+            est: take / (poolUSD + take) * p.rewards48h
+          });
+          left -= take;
+        }
+        var suggTotal = lockedEst + sugg.reduce(function (s, x) { return s + x.est; }, 0);
+        var html = "";
+        cds.forEach(function (c) {
+          if (!c.ok) return;
+          if (cdStatus(c).kind === "cooling" && c.gauges.length) {
+            html += '<p class="sa-note" style="margin-top:0">' + chainBadge(c.chain.name) + ' 冷却中，本次不动（剩余时间见上方冷却区）。</p>';
+          }
+        });
+        html += '<p style="font-size:13.5px;margin-bottom:8px">可移动额 <b class="mono">' + fmtNum(movableAERO) + ' AERO</b>（未派发余量 + 闲置 + 已到期链现持分配）· 当前预计 48H 收益 <b class="mono">' + fmtUSD(curEst, 2) + '</b> · 建议预计 <b class="mono">' + fmtUSD(suggTotal, 2) + "</b>" +
+          (curEst > 0 ? ' · 差值 <b class="mono">' + ((suggTotal - curEst) / curEst * 100 >= 0 ? "+" : "") + fmtNum((suggTotal - curEst) / curEst * 100) + "%</b>" : "") + "</p>";
+        if (sugg.length) {
+          html += '<div class="tblwrap"><table class="pools"><thead><tr><th>建议池</th><th>链</th><th class="num">建议分配（AERO）</th><th class="num">占仓位</th><th class="num">预计 48H 收益</th></tr></thead><tbody>' +
+            sugg.map(function (s) {
+              return "<tr><td>" + escHtml(s.pair) + '</td><td>' + chainBadge(s.chain) + '</td><td class="num mono">' + fmtNum(s.aero) + '</td><td class="num mono">' + fmtNum(s.pct) + '%</td><td class="num mono">' + fmtUSD(s.est, 2) + "</td></tr>";
+            }).join("") + "</tbody></table></div>";
+        } else {
+          html += '<p class="tempty">当前无可移动额，或 feed 中暂无合适候选池。</p>';
+        }
+        if (unknownHeld) html += '<p class="sa-note">部分现持池不在实时 feed 中，其当前收益未计入「当前预计」。</p>';
+        html += '<p class="sa-note">估算基于 ' + (liveState.poolsGen ? fmtGenTime(liveState.poolsGen) : "实时 feed") + ' 数据：候选按 Stake APR 降序贪心填充，单池上限为该池当前 Allocation 值的 25%（防稀释），预计收益已按进场后稀释折算；APR 随分配浮动，非保证收益。本页只读，执行分配请用你自己的工具。</p>';
+        el.innerHTML = html;
+      }
+
+      /* ---------- 查询入口 ---------- */
+      var ADDR_RE = /^0x[0-9a-fA-F]{40}$/;
+      function queryAddress(addr) {
+        saState.addr = addr;
+        saState.positions = [];
+        saState.current = null;
+        saState.chainData = null;
+        $("saChips").innerHTML = "";
+        $("saResult").innerHTML = "";
+        setSaErr("");
+        setSaProg("枚举仓位中…（Base VotingEscrow）");
+        $("saGo").disabled = true;
+        ethCall(BASE_CHAIN, VE_ADDR, mkData(SEL.balanceOf, [encAddr(addr)])).then(function (h) {
+          var n = Number(wUint(hexWords(h)[0]));
+          if (!n) {
+            setSaProg("");
+            $("saGo").disabled = false;
+            $("saResult").innerHTML = '<div class="card"><p>该地址没有 sAERO 仓位。</p></div>';
+            return;
+          }
+          setSaProg("枚举仓位中…共 " + n + " 个，读取余额");
+          var calls = [];
+          for (var i = 0; i < n; i++) calls.push({ to: VE_ADDR, data: mkData(SEL.tokenOfOwnerByIndex, [encAddr(addr), encUint(i)]) });
+          return ethBatch(BASE_CHAIN, calls).then(function (rs) {
+            var ids = rs.map(function (r) { return r ? Number(wUint(hexWords(r)[0])) : null; }).filter(function (x) { return x !== null; });
+            var bcalls = ids.map(function (id) { return { to: VE_ADDR, data: mkData(SEL.balanceOfNFT, [encUint(id)]) }; });
+            return ethBatch(BASE_CHAIN, bcalls).then(function (brs) {
+              saState.positions = ids.map(function (id, i2) {
+                return { tokenId: id, balance: brs[i2] ? wUint(hexWords(brs[i2])[0]) : 0n };
+              });
+              $("saGo").disabled = false;
+              setSaProg("");
+              if (saState.positions.length) loadPosition(saState.positions[0].tokenId);
+              else { setSaErr("仓位枚举失败，请重试。"); renderChips(); }
+            });
+          });
+        }).catch(function () {
+          setSaProg("");
+          $("saGo").disabled = false;
+          setSaErr("仓位枚举失败：Base RPC 读取出错，请重试。");
+        });
+      }
+      function queryTokenId(id) {
+        saState.positions = [];
+        saState.chainData = null;
+        $("saChips").innerHTML = "";
+        $("saResult").innerHTML = "";
+        setSaErr("");
+        setSaProg("读取仓位 #" + id + " 余额中…");
+        $("saGoId").disabled = true;
+        ethCall(BASE_CHAIN, VE_ADDR, mkData(SEL.balanceOfNFT, [encUint(id)])).then(function (h) {
+          var bal = wUint(hexWords(h)[0]);
+          $("saGoId").disabled = false;
+          setSaProg("");
+          if (bal === 0n) { setSaErr("未读到该 tokenId 的仓位余额（仓位可能不存在或余额为 0）。"); return; }
+          saState.positions = [{ tokenId: id, balance: bal }];
+          loadPosition(id);
+        }).catch(function () {
+          $("saGoId").disabled = false;
+          setSaProg("");
+          setSaErr("读取失败：Base RPC 出错，请重试。");
+        });
+      }
+      $("saGo").addEventListener("click", function () {
+        var v = $("saAddr").value.trim();
+        if (!ADDR_RE.test(v)) { setSaErr("地址格式错误：应为 0x 开头的 42 位地址。"); return; }
+        queryAddress(v.toLowerCase());
+      });
+      $("saAddr").addEventListener("keydown", function (e) { if (e.key === "Enter") $("saGo").click(); });
+      $("saAddr").addEventListener("input", function () { setSaErr(""); });
+      $("saGoId").addEventListener("click", function () {
+        var v = $("saTokenId").value.trim();
+        if (!/^\d+$/.test(v)) { setSaErr("tokenId 应为正整数。"); return; }
+        queryTokenId(Number(v));
+      });
+      $("saTokenId").addEventListener("keydown", function (e) { if (e.key === "Enter") $("saGoId").click(); });
+      /* 链读取失败重试（事件委托） */
+      $("saResult").addEventListener("click", function (ev) {
+        var t = ev.target;
+        var b = t && t.closest ? t.closest("[data-retry]") : null;
+        if (!b || saState.current === null || !saState.chainData) return;
+        var key = b.getAttribute("data-retry");
+        var chain = null;
+        SA_CHAINS.forEach(function (c) { if (c.key === key) chain = c; });
+        if (!chain) return;
+        b.disabled = true;
+        b.textContent = "重试中…";
+        readChainPosition(chain, saState.current).then(function (ncd) {
+          saState.chainData = saState.chainData.map(function (c) { return c.chain.key === key ? ncd : c; });
+          renderAllPosition();
+        });
+      });
+
+      /* ---------- 模式切换 ---------- */
+      function setSaMode(m) {
+        $("saMode").querySelectorAll("[data-mode]").forEach(function (b) {
+          b.setAttribute("aria-pressed", b.getAttribute("data-mode") === m ? "true" : "false");
+        });
+        $("saSingle").hidden = m !== "single";
+        $("saBatch").hidden = m !== "batch";
+      }
+      $("saMode").querySelectorAll("[data-mode]").forEach(function (b) {
+        b.addEventListener("click", function () { setSaMode(b.getAttribute("data-mode")); });
+      });
+
+      /* ---------- 批量雷达 ---------- */
+      function radarOne(addr) {
+        var now = Math.floor(Date.now() / 1000);
+        return ethCall(BASE_CHAIN, VE_ADDR, mkData(SEL.balanceOf, [encAddr(addr)])).then(function (h) {
+          var n = Number(wUint(hexWords(h)[0]));
+          if (!n) return { addr: addr, status: "无仓位", count: 0, total: 0n, cooling: 0, earliest: null };
+          var calls = [];
+          for (var i = 0; i < n; i++) calls.push({ to: VE_ADDR, data: mkData(SEL.tokenOfOwnerByIndex, [encAddr(addr), encUint(i)]) });
+          return ethBatch(BASE_CHAIN, calls).then(function (rs) {
+            var ids = rs.map(function (r) { return r ? Number(wUint(hexWords(r)[0])) : null; }).filter(function (x) { return x !== null; });
+            var bcalls = ids.map(function (id) { return { to: VE_ADDR, data: mkData(SEL.balanceOfNFT, [encUint(id)]) }; });
+            return ethBatch(BASE_CHAIN, bcalls).then(function (brs) {
+              var total = 0n;
+              brs.forEach(function (r) { if (r) total += wUint(hexWords(r)[0]); });
+              var coolingSet = {}, earliest = null;
+              return Promise.all(SA_CHAINS.map(function (chain) {
+                var tcalls = ids.map(function (id) { return { to: LEAF_ADDR, data: mkData(SEL.tokenStates, [encUint(id)]) }; });
+                if (!tcalls.length) return null;
+                return ethBatch(chain, tcalls).then(function (trs) {
+                  return chainCooldown(chain).then(function (cdsec) {
+                    trs.forEach(function (res) {
+                      if (!res) return;
+                      var w = hexWords(res);
+                      if (w.length < 4) return;
+                      var ca = wUint(w[3]), la = Number(wUint(w[1]));
+                      if (ca === 0n && la === 0) return;
+                      var end = la + cdsec;
+                      if (end > now) {
+                        coolingSet[chain.key] = 1;
+                        if (earliest === null || end < earliest) earliest = end;
+                      }
+                    });
+                  });
+                }).catch(function () { return null; });
+              })).then(function () {
+                return { addr: addr, status: "正常", count: ids.length, total: total, cooling: Object.keys(coolingSet).length, earliest: earliest };
+              });
+            });
+          });
+        }).catch(function () {
+          return { addr: addr, status: "读取失败", count: null, total: null, cooling: null, earliest: null };
+        });
+      }
+      $("saBatchGo").addEventListener("click", function () {
+        var lines = $("saAddrs").value.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+        if (!lines.length) { $("saBatchProg").hidden = false; $("saBatchProg").textContent = "请先粘贴地址，一行一个。"; return; }
+        if (lines.length > 50) lines = lines.slice(0, 50);
+        var rows = [];
+        var prog = $("saBatchProg");
+        prog.hidden = false;
+        $("saBatchGo").disabled = true;
+        $("saBatchResult").innerHTML = "";
+        var seq = Promise.resolve();
+        lines.forEach(function (line, idx) {
+          seq = seq.then(function () {
+            prog.textContent = "扫描中 " + (idx + 1) + " / " + lines.length + " …";
+            if (!ADDR_RE.test(line)) {
+              rows.push({ addr: line, status: "地址格式错误", count: null, total: null, cooling: null, earliest: null });
+              return null;
+            }
+            return radarOne(line.toLowerCase()).then(function (r) { rows.push(r); });
+          });
+        });
+        seq.then(function () {
+          prog.hidden = true;
+          $("saBatchGo").disabled = false;
+          var body = rows.map(function (r) {
+            var okAddr = ADDR_RE.test(r.addr);
+            return '<tr class="' + (okAddr && r.status === "正常" ? "clickable" : "") + '" data-addr="' + escHtml(r.addr) + '"><td class="mono">' + escHtml(shortAddr(r.addr)) + '</td>' +
+              '<td class="num mono">' + (r.count === null ? "—" : r.count) + '</td>' +
+              '<td class="num mono">' + (r.total === null ? "—" : fmtTok(r.total, 18, 4)) + '</td>' +
+              '<td class="num mono">' + (r.cooling === null ? "—" : r.cooling) + '</td>' +
+              "<td>" + (r.status !== "正常" ? "—" : (r.earliest ? fmtUnixHKT(r.earliest) : "全部可分配")) + '</td>' +
+              "<td>" + escHtml(r.status) + "</td></tr>";
+          }).join("");
+          $("saBatchResult").innerHTML = '<div class="tblwrap"><table class="pools"><thead><tr><th>地址</th><th class="num">仓位数</th><th class="num">sAERO 总额</th><th class="num">冷却中链数</th><th>最早可再分配</th><th>状态</th></tr></thead><tbody>' + body + '</tbody></table></div><p class="sa-note">点击状态为「正常」的行，查看该地址的单地址详情。</p>';
+        });
+      });
+      $("saBatchResult").addEventListener("click", function (ev) {
+        var t = ev.target;
+        var tr = t && t.closest ? t.closest("tr[data-addr]") : null;
+        if (!tr) return;
+        var addr = tr.getAttribute("data-addr");
+        if (!ADDR_RE.test(addr)) return;
+        setSaMode("single");
+        $("saAddr").value = addr;
+        queryAddress(addr.toLowerCase());
+      });
+
+      /* ================= B：投票页异动条（data/movers.json） ================= */
+      fetch("data/movers.json", { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error("no movers");
+        return r.json();
+      }).then(function (j) {
+        if (!j || j.ready !== true) return;
+        function pickArr(o, keys) {
+          for (var i = 0; i < keys.length; i++) if (Array.isArray(o[keys[i]])) return o[keys[i]];
+          return [];
+        }
+        function pickNum(o, keys) {
+          for (var i = 0; i < keys.length; i++) {
+            if (o[keys[i]] !== null && o[keys[i]] !== undefined && isFinite(Number(o[keys[i]]))) return Number(o[keys[i]]);
+          }
+          return null;
+        }
+        var g = pickArr(j, ["gainers", "up", "top_gainers", "gainers24h"]);
+        var l = pickArr(j, ["losers", "down", "top_losers", "losers24h"]);
+        if (!g.length && !l.length) return;
+        function row(m, down) {
+          var name = m.pair || m.name || m.symbol || "";
+          var pct = pickNum(m, ["pct", "change_pct", "delta_pct", "pct_change", "changePct"]);
+          var d = pickNum(m, ["delta", "delta_aero", "change", "delta_alloc", "delta_allocation"]);
+          return '<div class="mv-row"><span class="mv-name">' + escHtml(name) + "</span>" +
+            (m.chain ? chainBadge(m.chain) : "") +
+            '<span class="mv-pct ' + (down ? "down" : "up") + ' mono">' + (pct === null ? "—" : (pct > 0 ? "+" : "") + fmtNum(pct) + "%") + "</span>" +
+            '<span class="mv-delta mono">' + (d === null ? "" : (d > 0 ? "+" : "") + fmtAlloc(d) + " AERO") + "</span></div>";
+        }
+        $("moversStrip").innerHTML = '<h3 style="margin:0 0 8px;font-size:15.5px">过去 24 小时 Allocation 异动</h3><div class="movers">' +
+          '<div class="mv-card"><h4>涨幅前 5</h4>' + (g.slice(0, 5).map(function (m) { return row(m, false); }).join("") || '<p class="tempty">暂无</p>') + "</div>" +
+          '<div class="mv-card"><h4>跌幅前 5</h4>' + (l.slice(0, 5).map(function (m) { return row(m, true); }).join("") || '<p class="tempty">暂无</p>') + "</div></div>";
+        $("moversStrip").hidden = false;
+      }).catch(function () { /* 文件不存在或未就绪：整条不显示 */ });
+
+      /* ================= C：运行状态行（data/status.json） ================= */
+      fetch("data/status.json", { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error("no status");
+        return r.json();
+      }).then(function (j) {
+        if (!j || typeof j !== "object") return;
+        var txt;
+        if (j.deployed === false) {
+          var hf = (Array.isArray(j.hard_failures) && j.hard_failures.length) ? String(j.hard_failures[0]) : "";
+          txt = "运行状态：本轮未通过质量检查，已保留上一轮数据" + (hf ? "（" + hf + "）" : "");
+        } else {
+          txt = "运行状态：正常" + (j.generated_at ? " · 生成于 " + fmtGenTime(j.generated_at) : "");
+        }
+        if (Array.isArray(j.warnings) && j.warnings.length) txt += " · 提示：" + String(j.warnings[0]);
+        var el = $("runStatus");
+        el.textContent = txt;
+        el.hidden = false;
+      }).catch(function () { /* 文件不存在：不显示此行 */ });
     </script>
   </body>
 </html>
