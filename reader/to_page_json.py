@@ -6,8 +6,14 @@ Input : reader.py output {"generated_at": epoch, "aero_usd": float,
 Output: {"generated_at": ISO-8601 UTC string, "source": "onchain",
         "aero_price_usd": float, "pools": [page rows]} where each row is
         {"pair", "fee", "chain", "type", "fees48h", "incentives48h",
-         "rewards48h", "stake_apr", "allocation"} — exactly the shape the
-        dashboard's sanitizeLive() accepts (deploy/dist/index.html).
+         "rewards48h", "stake_apr", "allocation", "pool", "gauge"} — the
+        shape the dashboard's sanitizeLive() accepts
+        (deploy/dist/index.html); "pool"/"gauge" are the raw record's
+        checksummed addresses, passed through verbatim (2026-10-25) so
+        the page can resolve a wallet's allocatedGauges() output to
+        pool names for the "My sAERO" section and cite exact pools in
+        its vote suggestions. Extra keys are additive; older page
+        builds ignore them.
 
 Field mapping:
 - fees48h     = fees48h_usd + mev48h_usd. The official UI's Fees 48H
@@ -36,11 +42,28 @@ Trust filter (a pool is emitted only if ALL hold):
   off by orders of magnitude for illiquid/manipulated exotics, so any
   record touching an on-chain-propagated price is excluded from the
   wall feed (it stays in the raw pools.json for analysis).
-Sanity drop: fees48h > 10 * allocation * aero_price_usd (a pool whose
-48h fees exceed 10x the USD value of its total allocation is a pricing
-artefact, not data).
+- rewards48h >= $10: the page's anti-dust rule, sunk into the adapter
+  (2026-10-24) so the feed itself carries no dust pools; display is
+  unchanged (the page already hid them at render time).
+Sanity drop (tightened 2026-10-24 from 10x to 2x): fees48h > 2 *
+allocation * aero_price_usd. Distribution over the 2026-10-24 feed:
+legit pools top out at 0.38x (p99 = 0.38x, median 0.001x); the PEPE/
+WETH (Ethereum) incident pool sat at 9.24x — a young pool whose
+tape-lifetime fee delta annualised against a $19 allocation — which
+the old 10x line missed by 0.5x. 2x keeps >5x headroom over every
+legit pool observed while catching that failure class.
+
+LP output (--lp-out): {"generated_at", "source": "onchain",
+"aero_price_usd", "pools": [{pair, fee, chain, type, tvl, aero_apr,
+fees_apr, price_via, pool, gauge}]} for every pool with a pair and a computable
+TVL >= $90K (the page displays >= $100K; the lower cut leaves
+buffer). No Coinbase-trust filter here — the LP page's caliber is
+pool-level TVL/APR, and each row carries price_via so consumers can
+weigh on-chain-priced rows. Pools with a gauge but no computable
+emission rate / APR, or with unread fees, are dropped and counted.
 
 Run: python to_page_json.py [--in pools.json] [--out page_pools.json]
+     [--lp-out lp.json]
 Prints a summary: input count, output count, drops by reason.
 """
 import argparse
@@ -107,7 +130,10 @@ def convert(doc):
             rewards = fees
         else:
             rewards = fees + inc
-        if aero and fees > 10 * alloc * aero:
+        if rewards < 10:
+            drop("dust_rewards_below_10")
+            continue
+        if aero and fees > 2 * alloc * aero:
             drop("absurd_fees")
             continue
         out.append({
@@ -120,6 +146,8 @@ def convert(doc):
             "rewards48h": round(rewards, 2),
             "stake_apr": round(r["stake_apr_pct"], 2),
             "allocation": round(alloc, 2),
+            "pool": r.get("pool"),
+            "gauge": r.get("gauge"),
         })
     out.sort(key=lambda p: p["allocation"], reverse=True)
     ts = doc.get("generated_at")
@@ -130,12 +158,66 @@ def convert(doc):
     return page, drops
 
 
+LP_MIN_TVL = 90000.0
+
+
+def convert_lp(doc):
+    """Raw reader doc -> LP page feed (see module docstring)."""
+    drops = {}
+    out = []
+
+    def drop(reason):
+        drops[reason] = drops.get(reason, 0) + 1
+
+    for r in doc.get("pools", []):
+        if not r.get("pair"):
+            drop("no_pair")
+            continue
+        tvl = r.get("tvl_usd")
+        if tvl is None:
+            drop("no_tvl")
+            continue
+        if tvl < LP_MIN_TVL:
+            drop("below_90k")
+            continue
+        if r.get("fees_apr_pct") is None:
+            drop("no_fees_apr")
+            continue
+        aero_apr = r.get("aero_apr_pct")
+        if aero_apr is None:
+            # Gauged pool whose emission rate/APR could not be computed;
+            # ungauged pools carry aero_apr_pct == 0.0 from the reader.
+            drop("no_aero_apr")
+            continue
+        out.append({
+            "pair": r["pair"],
+            "fee": fmt_fee(r.get("fee_pct")),
+            "chain": CHAIN_NAMES.get(r["chain"], r["chain"]),
+            "type": r.get("type") or "",
+            "tvl": round(tvl, 2),
+            "aero_apr": round(aero_apr, 2),
+            "fees_apr": round(r["fees_apr_pct"], 2),
+            "price_via": r.get("price_via") or {},
+            "pool": r.get("pool"),
+            "gauge": r.get("gauge"),
+        })
+    out.sort(key=lambda p: p["tvl"], reverse=True)
+    ts = doc.get("generated_at")
+    gen = (datetime.fromtimestamp(ts, timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%SZ") if ts else "")
+    page = {"generated_at": gen, "source": "onchain",
+            "aero_price_usd": doc.get("aero_usd"), "pools": out}
+    return page, drops
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--in", dest="inp",
                     default=os.path.join(HERE, "pools.json"))
     ap.add_argument("--out", dest="outp",
                     default=os.path.join(HERE, "page_pools.json"))
+    ap.add_argument("--lp-out", dest="lp_outp", default=None,
+                    help="also write the LP feed (lp.json) to this path")
     args = ap.parse_args()
     with open(args.inp) as f:
         doc = json.load(f)
@@ -145,6 +227,12 @@ def main():
     print(f"input {len(doc.get('pools', []))} -> output "
           f"{len(page['pools'])} pools; drops: {drops}")
     print(f"wrote {args.outp}")
+    if args.lp_outp:
+        lp, ldrops = convert_lp(doc)
+        with open(args.lp_outp, "w") as f:
+            json.dump(lp, f, indent=1)
+        print(f"lp: output {len(lp['pools'])} pools; drops: {ldrops}")
+        print(f"wrote {args.lp_outp}")
 
 
 if __name__ == "__main__":
