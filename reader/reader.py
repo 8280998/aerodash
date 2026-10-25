@@ -21,14 +21,24 @@ Run: ~/workspace/hbtc-miner/venv/bin/python reader.py [--chains base,...]
 Output: pools.json (+ token_cache.json for metadata caching).
 Env: AERO_ALCHEMY_KEY (optional) — when set, per-chain Alchemy endpoints
 are prepended to each chain's public RPC list (see below).
+Parallel (2026-10-25): the chains are read concurrently (one thread per
+chain; the workload is I/O-bound) and ALL RPC traffic — every chain,
+retries included — passes through ONE global rate limiter capped in
+logical calls/sec (env AERO_RPC_RPS, default 20, the old sequential
+Base-only peak rate, so the aggregate is never more aggressive than
+the sequential version was). Per-chain read logic, endpoint rotation
+and the output structure are unchanged; the cross-chain incentive /
+pricing / finalize phases still run after all chain reads complete.
 """
 import argparse
 import json
 import os
 import sys
+import threading
 import time
 import urllib.request
 import urllib.error
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from eth_abi import encode as abi_encode, decode as abi_decode
 from web3 import Web3
@@ -120,6 +130,70 @@ class RPCError(Exception):
     pass
 
 
+class TokenBucket:
+    """Global RPC rate limiter shared by every chain thread.
+
+    Reservation scheduling on a shared clock: acquiring n logical calls
+    reserves n/rate seconds of budget, and the caller sleeps until its
+    reservation starts. The aggregate logical-call rate across all
+    chains therefore never exceeds the configured rate over any
+    sustained window, while an idle limiter lets the next request go
+    immediately. A batch POST of n items is charged n (the same
+    accounting as RPC.calls), so a burst is just a batch — exactly
+    what the sequential version already sent. acquire() returns the
+    seconds spent waiting, for per-chain attribution in chain_stats."""
+
+    def __init__(self, rate_per_sec):
+        self.rate = float(rate_per_sec)
+        self._next_free = 0.0
+        self._lock = threading.Lock()
+        self.total_acquired = 0
+
+    def acquire(self, n=1):
+        if n <= 0:
+            return 0.0
+        with self._lock:
+            now = time.monotonic()
+            start = max(now, self._next_free)
+            self._next_free = start + n / self.rate
+            self.total_acquired += n
+            wait = start - now
+        if wait > 0:
+            time.sleep(wait)
+        return wait
+
+
+def _rpc_rps():
+    raw = os.environ.get("AERO_RPC_RPS")
+    if raw:
+        try:
+            v = float(raw)
+            if v > 0:
+                return v
+        except ValueError:
+            pass
+    return 20.0
+
+
+RPC_RPS = _rpc_rps()
+RPC_LIMITER = TokenBucket(RPC_RPS)
+
+_tls = threading.local()
+
+
+def _get_session():
+    """Per-thread requests.Session: a Session is not safe to share
+    across the parallel chain workers, so each thread keeps its own
+    (same headers, same connection-pooling behaviour per thread)."""
+    s = getattr(_tls, "session", None)
+    if s is None:
+        import requests
+        s = requests.Session()
+        s.headers.update(UA)
+        _tls.session = s
+    return s
+
+
 class RPC:
     """JSON-RPC client with endpoint rotation, retries, browser UA."""
 
@@ -129,15 +203,22 @@ class RPC:
         self.idx = 0
         self.calls = 0
         self.errors = 0
+        self.http_429 = 0
+        self.limiter_wait = 0.0
 
-    _session = None
+    def _acquire(self, n=1):
+        """Charge n logical calls to the GLOBAL limiter (shared by all
+        chains); every attempt, retries included, pays before sending."""
+        self.limiter_wait += RPC_LIMITER.acquire(n)
+
+    def _note_error(self, e):
+        resp = getattr(e, "response", None)
+        if (resp is not None and getattr(resp, "status_code", None) == 429) \
+                or "429" in str(e):
+            self.http_429 += 1
 
     def _once(self, url, method, params):
-        import requests
-        if RPC._session is None:
-            RPC._session = requests.Session()
-            RPC._session.headers.update(UA)
-        resp = RPC._session.post(
+        resp = _get_session().post(
             url, json={"jsonrpc": "2.0", "id": 1, "method": method,
                        "params": params}, timeout=30)
         resp.raise_for_status()
@@ -150,12 +231,14 @@ class RPC:
         last = None
         for i in range(attempts):
             url = self.endpoints[self.idx % len(self.endpoints)]
+            self._acquire(1)
             try:
                 res = self._once(url, method, params)
                 self.calls += 1
                 return res
             except Exception as e:  # rotate + backoff
                 self.errors += 1
+                self._note_error(e)
                 last = e
                 self.idx += 1
                 time.sleep(min(1.5 * (i + 1), 6))
@@ -167,25 +250,27 @@ class RPC:
     def eth_call_once(self, to, data_hex):
         """Single attempt on the current endpoint, no retry sleeps."""
         url = self.endpoints[self.idx % len(self.endpoints)]
-        return self._once(url, "eth_call",
-                          [{"to": to, "data": data_hex}, "latest"])
+        self._acquire(1)
+        try:
+            return self._once(url, "eth_call",
+                              [{"to": to, "data": data_hex}, "latest"])
+        except Exception as e:
+            self._note_error(e)
+            raise
 
     def batch_eth_call(self, items, attempts=5):
         """items: list of (to, data_hex). One HTTP POST with a JSON-RPC
         batch array. Returns list of (result_hex_or_None, error_or_None).
         Rotates endpoints on transport failure."""
-        import requests
-        if RPC._session is None:
-            RPC._session = requests.Session()
-            RPC._session.headers.update(UA)
         payload = [{"jsonrpc": "2.0", "id": i, "method": "eth_call",
                     "params": [{"to": to, "data": data}, "latest"]}
                    for i, (to, data) in enumerate(items)]
         last = None
         for i in range(attempts):
             url = self.endpoints[self.idx % len(self.endpoints)]
+            self._acquire(len(items))
             try:
-                resp = RPC._session.post(url, json=payload, timeout=60)
+                resp = _get_session().post(url, json=payload, timeout=60)
                 resp.raise_for_status()
                 out = resp.json()
                 if isinstance(out, dict) and "error" in out:
@@ -202,6 +287,7 @@ class RPC:
                 return res
             except Exception as e:
                 self.errors += 1
+                self._note_error(e)
                 last = e
                 self.idx += 1
                 time.sleep(min(1.5 * (i + 1), 6))
@@ -346,9 +432,14 @@ def pool_type(factory, cfg):
 
 
 class TokenCache:
+    """Shared across the parallel chain threads: every access is
+    lock-guarded (keys are chain-prefixed, so chains never write each
+    other's entries; the lock serialises dict mutation + file saves)."""
+
     def __init__(self, path):
         self.path = path
         self.data = {}
+        self._lock = threading.Lock()
         if os.path.exists(path):
             try:
                 self.data = json.load(open(path))
@@ -356,15 +447,18 @@ class TokenCache:
                 self.data = {}
 
     def save(self):
-        with open(self.path, "w") as f:
-            json.dump(self.data, f)
+        with self._lock:
+            with open(self.path, "w") as f:
+                json.dump(self.data, f)
 
     def get(self, chain, token):
-        return self.data.get(f"{chain}:{token.lower()}")
+        with self._lock:
+            return self.data.get(f"{chain}:{token.lower()}")
 
     def put(self, chain, token, symbol, decimals):
-        self.data[f"{chain}:{token.lower()}"] = {"symbol": symbol,
-                                                 "decimals": decimals}
+        with self._lock:
+            self.data[f"{chain}:{token.lower()}"] = {"symbol": symbol,
+                                                     "decimals": decimals}
 
 
 def _redact_url(url):
@@ -649,6 +743,8 @@ def read_chain(chain, cfg, cache, max_pools=None, only=None):
           flush=True)
     stats["rpc_calls"] = rpc.calls
     stats["rpc_errors"] = rpc.errors
+    stats["http_429"] = rpc.http_429
+    stats["limiter_wait_seconds"] = round(rpc.limiter_wait, 1)
     stats["read_seconds"] = round(time.time() - t0, 1)
     return records, stats, now, block
 
@@ -907,31 +1003,52 @@ def main():
     args = ap.parse_args()
 
     cache = TokenCache(os.path.join(HERE, "token_cache.json"))
-    records_by_chain, stats, now_by_chain, block_by_chain = {}, {}, {}, {}
-    rpcs = {}
-    for chain in args.chains.split(","):
-        chain = chain.strip()
+    chain_names = [c.strip() for c in args.chains.split(",") if c.strip()]
+    only = ({a.strip().lower() for a in args.only.split(",")}
+            if args.only else None)
+    print(f"chains in parallel: {chain_names}; global rpc limiter "
+          f"{RPC_RPS:g} logical calls/s (AERO_RPC_RPS)", flush=True)
+
+    def work(chain):
+        """One chain's local read. A fatal error degrades this chain
+        only (stats carry the fatal, no records) — the other chains
+        and the cross-chain phases proceed, as in the sequential
+        version."""
         cfg = CHAINS[chain]
         print(f"== {chain} ==", flush=True)
         try:
             rpc = RPC(cfg["rpcs"], cfg["chain_id"])
             rpc.chunk = cfg.get("chunk", 100)
-            only = ({a.strip().lower() for a in args.only.split(",")}
-                    if args.only else None)
             recs, st, now, block = read_chain(chain, cfg, cache,
                                               args.max_pools_per_chain, only)
-            records_by_chain[chain] = recs
-            stats[chain] = st
-            now_by_chain[chain] = now
-            block_by_chain[chain] = block
-            rpcs[chain] = rpc
             print(f"  pools found {st['pools_found']}, attempted "
                   f"{st['pools_attempted']}, block {block}", flush=True)
+            return chain, (recs, st, now, block, rpc)
         except Exception as e:
             import traceback
             traceback.print_exc()
-            stats[chain] = {"chain": chain, "fatal": str(e)[:300]}
             print(f"  FATAL: {e}", flush=True)
+            return chain, (None, {"chain": chain, "fatal": str(e)[:300]},
+                           None, None, None)
+
+    results = {}
+    with ThreadPoolExecutor(max_workers=len(chain_names)) as ex:
+        futs = [ex.submit(work, c) for c in chain_names]
+        for fut in as_completed(futs):
+            chain, payload = fut.result()
+            results[chain] = payload
+    # Assemble in the requested chain order, regardless of completion
+    # order, so the output ordering matches the sequential version.
+    records_by_chain, stats, now_by_chain, block_by_chain = {}, {}, {}, {}
+    rpcs = {}
+    for chain in chain_names:
+        recs, st, now, block, rpc = results[chain]
+        stats[chain] = st
+        if recs is not None:
+            records_by_chain[chain] = recs
+            now_by_chain[chain] = now
+            block_by_chain[chain] = block
+            rpcs[chain] = rpc
 
     all_records = [r for rs in records_by_chain.values() for r in rs]
     read_incentives(records_by_chain, rpcs, now_by_chain)
