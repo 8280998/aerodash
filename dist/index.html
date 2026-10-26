@@ -398,11 +398,11 @@
           <div class="card">
             <div class="tblwrap">
               <table class="pools" id="csTable">
-                <thead><tr><th>链</th><th class="num">达标池数</th><th class="num">TVL 合计</th><th class="num">Fees 48H 合计</th><th class="num">平均合计 APR（TVL 加权）</th></tr></thead>
+                <thead><tr><th>链</th><th class="num">达标池数</th><th class="num">TVL 合计</th><th class="num">Fees 48H 合计</th></tr></thead>
                 <tbody id="chainStatsBody"></tbody>
               </table>
             </div>
-            <p class="src" id="csSrc">口径：与「LP 收益」分页同一快照（官方应用 Liquidity 页，2026-10-24 18:45 HKT），仅统计 TVL ≥ $100,000 的 122 个池；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均；「—」排放按 0、「&lt;0.01」按 0.005 计。此处 TVL 合计仅覆盖达标池，与上方全系统 TVL（官方应用全口径）不同。</p>
+            <p class="src" id="csSrc">口径：与「LP 收益」分页同一快照（官方应用 Liquidity 页，2026-10-24 18:45 HKT），仅统计 TVL ≥ $100,000 的 122 个池；「—」排放按 0、「&lt;0.01」按 0.005 计。此处 TVL 合计仅覆盖达标池，与上方全系统 TVL（官方应用全口径）不同。</p>
           </div>
         </section>
 
@@ -525,10 +525,10 @@
           ov_wall_k_live: "投票墙池数", ov_wall_s_live: "data/pools.json 链上直读条数", ov_wall_s_snap: "内嵌快照池数（pools.json 未加载）",
           ov_chains_v_live: "{n} 链", ov_chains_s_live: "上榜池 {n} 个（TVL ≥ $100K）· sAERO 结算在 Base",
           cs_h2: "分链数据统计", cs_note_snap: "由 LP 快照聚合 · TVL ≥ $100K 口径", cs_note_live: "由 LP 实时数据聚合 · TVL ≥ $100K 口径 · 链上直读",
-          cs_th_chain: "链", cs_th_count: "达标池数", cs_th_tvl: "TVL 合计", cs_th_fees: "Fees 48H 合计", cs_th_apr: "平均合计 APR（TVL 加权）",
+          cs_th_chain: "链", cs_th_count: "达标池数", cs_th_tvl: "TVL 合计", cs_th_fees: "Fees 48H 合计",
           cs_total: "全网合计",
-          cs_src_snap: "口径：与「LP 收益」分页同一快照（官方应用 Liquidity 页，2026-10-24 18:45 HKT），仅统计 TVL ≥ $100,000 的 122 个池；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均；「—」排放按 0、「<0.01」按 0.005 计。此处 TVL 合计仅覆盖达标池，与上方全系统 TVL（官方应用全口径）不同。",
-          cs_src_live: "口径：与「LP 收益」分页同一实时数据（链上直读，每小时更新），仅统计 TVL ≥ $100,000 的池；48H 手续费合计由各池 Fees APR × TVL ÷ 18250 反推；平均合计 APR ＝ 各池合计 APR（AERO APR ＋ Fees APR）按 TVL 加权平均。此处 TVL 合计仅覆盖达标池。",
+          cs_src_snap: "口径：与「LP 收益」分页同一快照（官方应用 Liquidity 页，2026-10-24 18:45 HKT），仅统计 TVL ≥ $100,000 的 122 个池；「—」排放按 0、「<0.01」按 0.005 计。此处 TVL 合计仅覆盖达标池，与上方全系统 TVL（官方应用全口径）不同。",
+          cs_src_live: "口径：与「LP 收益」分页同一实时数据（链上直读，每小时更新），仅统计 TVL ≥ $100,000 的池；48H 手续费合计由各池 Fees APR × TVL ÷ 18250 反推。此处 TVL 合计仅覆盖达标池。",
           mech_h2: "新规则收益机制", mech_note: "口径以 2026-10-23 链上解码为准",
           old_title: "旧系统 ve(3,3) ", old_tag: "已结束",
           old_li: "<li>每周投票决定排放去向，收入 = 所投池<b>手续费 + 贿赂</b>，按 epoch 周结</li><li><b>rebase</b> 按周发放，对冲增发稀释，需手动领取</li><li>选错池只损失一周，下周可改投</li><li>Relay 等金库代投、自动复投</li>",
@@ -660,10 +660,10 @@
           ov_wall_k_live: "Pools on the voting wall", ov_wall_s_live: "Rows in data/pools.json (on-chain data)", ov_wall_s_snap: "Pools in the embedded snapshot (pools.json not loaded)",
           ov_chains_v_live: "{n} chains", ov_chains_s_live: "{n} listed pools (TVL ≥ $100K) · sAERO settles on Base",
           cs_h2: "Per-Chain Stats", cs_note_snap: "Aggregated from the LP snapshot · TVL ≥ $100K basis", cs_note_live: "Aggregated from live LP data · TVL ≥ $100K basis · on-chain data",
-          cs_th_chain: "Chain", cs_th_count: "Qualifying pools", cs_th_tvl: "Total TVL", cs_th_fees: "Total Fees 48H", cs_th_apr: "Avg. total APR (TVL-weighted)",
+          cs_th_chain: "Chain", cs_th_count: "Qualifying pools", cs_th_tvl: "Total TVL", cs_th_fees: "Total Fees 48H",
           cs_total: "Network total",
-          cs_src_snap: "Basis: the same snapshot as the LP Rewards tab (official app Liquidity page, 2026-10-24 18:45 HKT), counting only the 122 pools with TVL ≥ $100,000; average total APR = each pool's total APR (AERO APR + Fees APR) weighted by TVL; “—” emissions count as 0 and “<0.01” as 0.005. The TVL total here covers qualifying pools only and differs from the system-wide TVL above (official app, all pools).",
-          cs_src_live: "Basis: the same live data as the LP Rewards tab (on-chain data, updated hourly), counting only pools with TVL ≥ $100,000; total Fees 48H is derived per pool as Fees APR × TVL ÷ 18250; average total APR = each pool's total APR (AERO APR + Fees APR) weighted by TVL. The TVL total here covers qualifying pools only.",
+          cs_src_snap: "Basis: the same snapshot as the LP Rewards tab (official app Liquidity page, 2026-10-24 18:45 HKT), counting only the 122 pools with TVL ≥ $100,000; “—” emissions count as 0 and “<0.01” as 0.005. The TVL total here covers qualifying pools only and differs from the system-wide TVL above (official app, all pools).",
+          cs_src_live: "Basis: the same live data as the LP Rewards tab (on-chain data, updated hourly), counting only pools with TVL ≥ $100,000; total Fees 48H is derived per pool as Fees APR × TVL ÷ 18250. The TVL total here covers qualifying pools only.",
           mech_h2: "New Reward Mechanics", mech_note: "Based on on-chain decoding as of 2026-10-23",
           old_title: "Legacy ve(3,3) ", old_tag: "Ended",
           old_li: "<li>Weekly votes directed emissions; income = <b>trading fees + bribes</b> from voted pools, settled per epoch</li><li><b>Rebase</b> paid weekly to offset dilution from emissions; had to be claimed manually</li><li>A wrong pick cost at most one week; re-vote the next week</li><li>Relay vaults could vote and auto-compound on your behalf</li>",
@@ -792,7 +792,7 @@
         } else { setText("ovChainsK", t("ov_chains_k")); }
         setText("csH2", t("cs_h2"));
         var ths = document.querySelectorAll("#csTable thead th");
-        var thKeys = ["cs_th_chain", "cs_th_count", "cs_th_tvl", "cs_th_fees", "cs_th_apr"];
+        var thKeys = ["cs_th_chain", "cs_th_count", "cs_th_tvl", "cs_th_fees"];
         ths.forEach(function (th, i) { if (thKeys[i]) th.textContent = t(thKeys[i]); });
         setText("mechH2", t("mech_h2")); setText("mechNote", t("mech_note"));
         setHTML("oldTitle", t("old_title") + '<span class="tag">' + t("old_tag") + "</span>");
@@ -1160,7 +1160,6 @@
         if (v >= 10) return fmtNum(v, 1);
         return fmtNum(v, 2);
       }
-      function lpTotal(p) { return aprVal(p[6]) + aprVal(p[7]); }
       function lpQualifying() { return LP_POOLS.filter(function (p) { return p[3] >= LP_MIN_TVL; }); }
       var lpState = { chain: "全部", sort: "aero" };
       var lpLiveMode = false;
@@ -1213,16 +1212,16 @@
         var q = lpQualifying();
         var byChain = {};
         q.forEach(function (p) {
-          var c = byChain[p[1]] || (byChain[p[1]] = { n: 0, tvl: 0, fees: 0, w: 0 });
-          c.n += 1; c.tvl += p[3]; c.fees += feesOf(p); c.w += lpTotal(p) * p[3];
+          var c = byChain[p[1]] || (byChain[p[1]] = { n: 0, tvl: 0, fees: 0 });
+          c.n += 1; c.tvl += p[3]; c.fees += feesOf(p);
         });
         var order = Object.keys(byChain);
         order.sort(function (a, b) { return byChain[b].tvl - byChain[a].tvl; });
-        var tot = { n: 0, tvl: 0, fees: 0, w: 0 };
-        order.forEach(function (c) { var s = byChain[c]; tot.n += s.n; tot.tvl += s.tvl; tot.fees += s.fees; tot.w += s.w; });
+        var tot = { n: 0, tvl: 0, fees: 0 };
+        order.forEach(function (c) { var s = byChain[c]; tot.n += s.n; tot.tvl += s.tvl; tot.fees += s.fees; });
         function row(name, s, cls) {
           var label = (cls === "total" ? "" : chainDot(name)) + escHtml(name);
-          return '<tr' + (cls ? ' class="' + cls + '"' : "") + '><td>' + label + '</td><td class="num mono">' + s.n + '</td><td class="num mono">' + fmtUSD(s.tvl) + '</td><td class="num mono">' + fmtUSD(s.fees) + '</td><td class="num mono">' + fmtPct(s.tvl ? s.w / s.tvl : 0) + "%</td></tr>";
+          return '<tr' + (cls ? ' class="' + cls + '"' : "") + '><td>' + label + '</td><td class="num mono">' + s.n + '</td><td class="num mono">' + fmtUSD(s.tvl) + '</td><td class="num mono">' + fmtUSD(s.fees) + '</td></tr>';
         }
         $("chainStatsBody").innerHTML = order.map(function (c) { return row(c, byChain[c], ""); }).join("") + row(t("cs_total"), tot, "total");
       }
