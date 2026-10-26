@@ -60,9 +60,20 @@ Always writes status.json with the page contract:
  prev_feed_pools, lp_pools, gauge_losses, coinbase_symbols,
  raw_pools, raw_gauged, prev_raw_pools,
  price_tokens_corrected, price_tokens_unverified,
- price_pools_unverified}
-(v2/v15 only append fields; missing values are null; existing field
-names/order are contractual). feed_pools / lp_pools are THIS run's
+ price_pools_unverified, sugar_candidates, sugar_matched,
+ sugar_missing}
+(v2/v15/v20 only append fields; missing values are null; existing
+field names/order are contractual). The sugar_* fields (v20) echo
+the reader's LpSugar coverage summary over wall-candidate pools;
+missing pools' fees count as 0 in the wall caliber, so any missing
+count is surfaced as a warning.
+
+--caliber-reset (v20): a one-run operator waiver for the FIRST run
+of a deliberate caliber change. The anchor pool's stake_apr drift
+check degrades to a warning (the APR definition itself changed, so
+drift is the change working as intended and the baseline resets);
+anchor missing and anchor allocation drift stay hard failures, as
+does every other check. Never pass this from the hourly cron. feed_pools / lp_pools are THIS run's
 produced counts (before any restore); prev_feed_pools is the live
 feed count fetched at job start (null when no valid baseline).
 
@@ -144,22 +155,25 @@ def rel_drift(new, old):
 
 def raw_health(raw_path):
     """-> (gauge_losses, coinbase_symbols, raw_pools, raw_gauged,
-    pg_corrected, pg_unverified_tokens, pg_unverified_pools, error).
+    pg_corrected, pg_unverified_tokens, pg_unverified_pools,
+    sugar_candidates, sugar_matched, sugar_missing, error).
     Reads the raw reader output: gauge losses = records carrying a
     'gaugeStates failed' error; coinbase_symbols = top-level
     coinbase_symbols_priced; raw_pools = top-level pool_count
     (fallback: record count / chain_stats pools_found sum);
     raw_gauged = records with a gauge, from chain_stats / records;
     pg_* = the v15 price gate's top-level summary (absent on
-    pre-v15 raw output -> None)."""
+    pre-v15 raw output -> None); sugar_* = the v20 LpSugar coverage
+    summary (absent on pre-v20 raw output -> None)."""
     if not raw_path or not os.path.exists(raw_path):
-        return None, None, None, None, None, None, None, "missing"
+        return (None, None, None, None, None, None, None, None, None,
+                None, "missing")
     try:
         with open(raw_path) as f:
             raw = json.load(f)
     except Exception as e:
-        return (None, None, None, None, None, None, None,
-                f"unparsable ({e.__class__.__name__})")
+        return (None, None, None, None, None, None, None, None, None,
+                None, f"unparsable ({e.__class__.__name__})")
     records = raw.get("pools")
     losses = 0
     gauged = 0
@@ -196,8 +210,15 @@ def raw_health(raw_path):
         pg_unv_pools = pg.get("pools_unverified")
     else:
         pg_corrected = pg_unv_tokens = pg_unv_pools = None
+    sg = raw.get("sugar")
+    if isinstance(sg, dict):
+        sg_candidates = sg.get("candidates")
+        sg_matched = sg.get("matched")
+        sg_missing = sg.get("missing")
+    else:
+        sg_candidates = sg_matched = sg_missing = None
     return (losses, cs, raw_pools, gauged, pg_corrected, pg_unv_tokens,
-            pg_unv_pools, None)
+            pg_unv_pools, sg_candidates, sg_matched, sg_missing, None)
 
 
 def fetch_prev_raw_pools(url, local_file):
@@ -241,6 +262,12 @@ def main():
     ap.add_argument("--prev-status-file", default=None,
                     help="read the previous status from this local file "
                          "instead of the URL (tests / debugging)")
+    ap.add_argument("--caliber-reset", action="store_true",
+                    help="one-run waiver for the first run of a "
+                         "deliberate caliber change: anchor stake_apr "
+                         "drift becomes a warning instead of a hard "
+                         "failure (see module docstring); never use "
+                         "from the hourly cron")
     args = ap.parse_args()
 
     hard, warnings = [], []
@@ -293,10 +320,16 @@ def main():
     # --- raw reader health + universe ---
     (gauge_losses, coinbase_symbols, raw_pools, raw_gauged,
      pg_corrected, pg_unverified_tokens, pg_unverified_pools,
+     sugar_candidates, sugar_matched, sugar_missing,
      rerr) = raw_health(args.raw)
     if rerr:
         warnings.append(f"raw reader output {rerr}; gauge/coinbase/raw "
                         f"checks skipped")
+    if sugar_missing:
+        warnings.append(f"LpSugar coverage: {sugar_missing} of "
+                        f"{sugar_candidates} wall-candidate pools "
+                        f"unmatched; their fees count as 0 in the "
+                        f"wall rewards caliber")
     if gauge_losses:
         warnings.append(f"gaugeStates read losses: {gauge_losses} pools")
     if pg_corrected:
@@ -335,6 +368,13 @@ def main():
         for field in ("stake_apr", "allocation"):
             d = rel_drift(anchor_new.get(field), anchor_prev.get(field))
             if d is not None and d > ANCHOR_DRIFT_MAX:
+                if field == "stake_apr" and args.caliber_reset:
+                    warnings.append(
+                        f"anchor stake_apr drifted {d:.0%} vs "
+                        f"previous feed -- waived under "
+                        f"--caliber-reset (first run of a deliberate "
+                        f"caliber change; baseline resets here)")
+                    continue
                 hard.append(f"anchor {field} drifted {d:.0%} "
                             f"(> 50%) vs previous feed")
                 pools_failed = True
@@ -422,6 +462,9 @@ def main():
         "price_tokens_corrected": pg_corrected,
         "price_tokens_unverified": pg_unverified_tokens,
         "price_pools_unverified": pg_unverified_pools,
+        "sugar_candidates": sugar_candidates,
+        "sugar_matched": sugar_matched,
+        "sugar_missing": sugar_missing,
     }
     out_dir = os.path.dirname(os.path.abspath(args.status_out))
     os.makedirs(out_dir, exist_ok=True)

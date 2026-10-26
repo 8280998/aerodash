@@ -16,14 +16,36 @@ Output: {"generated_at": ISO-8601 UTC string, "source": "onchain",
         builds ignore them.
 
 Field mapping:
-- fees48h     = fees48h_usd + mev48h_usd. The official UI's Fees 48H
-                includes MEV fees (probe: fees+MEV matched UI at 1.003,
-                fees alone did not), and rewards48h = fees48h +
-                incentives48h then matches the reader's APR numerator.
+- fees48h     = fees48h_staked_usd (v20 caliber): the staked share of
+                the pool's (fees48h_usd + mev48h_usd) tape total. Pool
+                fees split by staking status -- only fees generated
+                by gauge-staked positions go to sAERO allocators;
+                unstaked positions' fees stay with the LPs -- so the
+                wall counts (fees + MEV) x staked_share, the pool's
+                staked VALUE share from LpSugar (see reader.py).
+                Pools LpSugar did not return carry a staked fee
+                portion of 0. rewards48h = fees48h + incentives48h
+                then matches the reader's APR numerator. Raw docs
+                from pre-v20 reader runs have no fees48h_staked_usd;
+                for those, fees48h falls back to the legacy
+                whole-pool fees48h_usd + mev48h_usd (the official
+                UI's Fees 48H includes MEV fees: probe matched UI at
+                1.003 with MEV, not without).
 - incentives48h = incentives48h_usd (live-programs-only, rate * full
-                48h window; see reader.py read_incentives).
-- stake_apr   = stake_apr_pct; allocation = allocation (Allocation
-                Power units, 1e18-scaled value as a plain number).
+                48h window; see reader.py read_incentives). Incentives
+                are NOT scaled by the staked share.
+- stake_apr   = stake_apr_pct (v20: computed by the reader on the
+                staked-fee caliber above); allocation = allocation
+                (Allocation Power units, 1e18-scaled value as a
+                plain number).
+- staked_share = the pool's LpSugar staked value share (additive;
+                null for pre-v20 raw docs and unmatched pools).
+
+The wall feed also carries a top-level "sugar" meta object
+{candidates, matched, missing} counted over the pools that pass
+every trust filter below (the wall candidates before the rewards
+threshold): matched pools had an LpSugar entry, missing pools get
+a staked fee portion of 0. Null on pre-v20 raw docs.
 - chain       = display name (base -> Base, optimism -> OP Mainnet, ...).
 - fee         = fmt_fee(fee_pct): the pool's live swap fee read
                 on-chain by reader.py (CL: pool.fee() in pips; Basic:
@@ -112,6 +134,8 @@ def convert(doc):
     aero = doc.get("aero_usd")
     drops = {}
     out = []
+    sugar = {"candidates": 0, "matched": 0, "missing": 0}
+    saw_v20 = False
 
     def drop(reason):
         drops[reason] = drops.get(reason, 0) + 1
@@ -137,7 +161,19 @@ def convert(doc):
         if r.get("fees48h_usd") is None:
             drop("no_fees")
             continue
-        fees = r["fees48h_usd"] + (r.get("mev48h_usd") or 0.0)
+        # Wall candidate (all trust filters passed). v20 caliber: the
+        # fees that reach allocators are the staked share of the tape
+        # total; pre-v20 raw docs fall back to the whole-pool total.
+        if "fees48h_staked_usd" in r:
+            saw_v20 = True
+            sugar["candidates"] += 1
+            if r.get("sugar_matched"):
+                sugar["matched"] += 1
+            else:
+                sugar["missing"] += 1
+            fees = r["fees48h_staked_usd"] or 0.0
+        else:
+            fees = r["fees48h_usd"] + (r.get("mev48h_usd") or 0.0)
         inc = r.get("incentives48h_usd")
         if inc is None:
             # Unreachable in practice (APR requires priced incentives),
@@ -151,6 +187,7 @@ def convert(doc):
         if aero and fees > 2 * alloc * aero:
             drop("absurd_fees")
             continue
+        share = r.get("staked_share")
         out.append({
             "pair": r["pair"],
             "fee": fmt_fee(r.get("fee_pct")),
@@ -163,6 +200,9 @@ def convert(doc):
             "allocation": round(alloc, 2),
             "pool": r.get("pool"),
             "gauge": r.get("gauge"),
+            "staked_share": (round(share, 6)
+                             if isinstance(share, (int, float))
+                             else None),
         })
     out.sort(key=lambda p: p["allocation"], reverse=True)
     ts = doc.get("generated_at")
@@ -170,7 +210,8 @@ def convert(doc):
         "%Y-%m-%dT%H:%M:%SZ") if ts else "")
     page = {"generated_at": gen, "source": "onchain",
             "aero_price_usd": aero, "pools": out,
-            "price_gate": _gate_meta(doc, drops)}
+            "price_gate": _gate_meta(doc, drops),
+            "sugar": (sugar if saw_v20 else None)}
     return page, drops
 
 
