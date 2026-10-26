@@ -370,14 +370,13 @@
           <div class="ctl-row">
             <span class="lbl" id="sortLbl">排序</span>
             <div class="seg" id="lpSort">
-              <button type="button" data-sort="total" aria-pressed="true">合计 APR</button>
-              <button type="button" data-sort="aero" aria-pressed="false">AERO 排放</button>
+              <button type="button" data-sort="aero" aria-pressed="true">AERO 排放</button>
               <button type="button" data-sort="fees" aria-pressed="false">手续费</button>
             </div>
           </div>
           <p class="lp-sum" id="lpSum"></p>
           <div class="lp-card" id="lpList"></div>
-          <p class="src" id="lpSrc">数据来源：Aero 官方应用 Liquidity 页快照，2026-10-24 18:45 HKT；仅含 TVL ≥ $100,000 的池（122 / 全网 1,040）；AERO APR 为官方显示的排放年化，Fees APR 为手续费年化，均为官方估算口径。快照共抓取 124 个 TVL ≥ $90K 的池，其中 2 个低于 $100K 门槛（USDC/RIZE $93.58K、wstETH/WETH $91.55K）不展示。AERO APR 显示「—」表示该池无 AERO 排放，按 0 参与合计与排序；「&lt;0.01」为官方原显示，按 0.005 参与排序。LEGACY 为官方应用中的旧版池标记。个别池因 TVL 较小、短期成交放大，APR 会异常高，请结合 TVL 与 48 小时成交量判断。</p>
+          <p class="src" id="lpSrc">数据来源：Aero 官方应用 Liquidity 页快照，2026-10-24 18:45 HKT；仅含 TVL ≥ $100,000 的池（122 / 全网 1,040）；AERO APR 为官方显示的排放年化，Fees APR 为手续费年化，均为官方估算口径。快照共抓取 124 个 TVL ≥ $90K 的池，其中 2 个低于 $100K 门槛（USDC/RIZE $93.58K、wstETH/WETH $91.55K）不展示。AERO APR 显示「—」表示该池无 AERO 排放，按 0 参与排序；「&lt;0.01」为官方原显示，按 0.005 参与排序。LEGACY 为官方应用中的旧版池标记。个别池因 TVL 较小、短期成交放大，APR 会异常高，请结合 TVL 与 48 小时成交量判断。</p>
         </section>
       </div>
 
@@ -506,12 +505,12 @@
           lp_head_snap: "快照 2026-10-24 18:45 HKT · 仅 TVL ≥ $100K 的池",
           lp_head_live: "链上直读{t} · 每小时更新 · 仅 TVL ≥ $100K 的池",
           chain_label: "链", sort_label: "排序",
-          sort_total: "合计 APR", sort_aero: "AERO 排放", sort_fees: "手续费",
+          sort_aero: "AERO 排放", sort_fees: "手续费",
           all_chains: "全部",
-          lp_src_snap: "数据来源：Aero 官方应用 Liquidity 页快照，2026-10-24 18:45 HKT；仅含 TVL ≥ $100,000 的池（122 / 全网 1,040）；AERO APR 为官方显示的排放年化，Fees APR 为手续费年化，均为官方估算口径。快照共抓取 124 个 TVL ≥ $90K 的池，其中 2 个低于 $100K 门槛（USDC/RIZE $93.58K、wstETH/WETH $91.55K）不展示。AERO APR 显示「—」表示该池无 AERO 排放，按 0 参与合计与排序；「<0.01」为官方原显示，按 0.005 参与排序。LEGACY 为官方应用中的旧版池标记。个别池因 TVL 较小、短期成交放大，APR 会异常高，请结合 TVL 与 48 小时成交量判断。",
+          lp_src_snap: "数据来源：Aero 官方应用 Liquidity 页快照，2026-10-24 18:45 HKT；仅含 TVL ≥ $100,000 的池（122 / 全网 1,040）；AERO APR 为官方显示的排放年化，Fees APR 为手续费年化，均为官方估算口径。快照共抓取 124 个 TVL ≥ $90K 的池，其中 2 个低于 $100K 门槛（USDC/RIZE $93.58K、wstETH/WETH $91.55K）不展示。AERO APR 显示「—」表示该池无 AERO 排放，按 0 参与排序；「<0.01」为官方原显示，按 0.005 参与排序。LEGACY 为官方应用中的旧版池标记。个别池因 TVL 较小、短期成交放大，APR 会异常高，请结合 TVL 与 48 小时成交量判断。",
           lp_src_live: "数据来源：链上直读（data/lp.json）{t}，每小时更新；TVL 为池内两种代币余额 × 价格直算，AERO APR 为 gauge 排放年化，Fees APR 为过去 48 小时手续费年化，与官方应用口径可能不同。实时模式无 Volume 48H 数据源，该项不显示。加载不到实时数据时回落官方应用 Liquidity 快照（2026-10-24 18:45 HKT）。",
           lp_sum: "<b>{chain}</b> · 达标池 <b>{n}</b> 个 · TVL 合计 <b>{tvl}</b> · 按{name}降序",
-          lp_sort_total: "合计 APR", lp_sort_aero: "AERO 排放 APR", lp_sort_fees: "手续费 APR",
+          lp_sort_aero: "AERO 排放 APR", lp_sort_fees: "手续费 APR",
           lp_empty: "该链暂无 TVL ≥ $100K 的池。",
           ov_px_k: "AERO 价格", ov_px_snap: "Coinbase 现货 · 10-23 12:50 HKT", ov_px_live: "Coinbase 现货 · 刚刚刷新 {t}",
           ov_px_feed: "链上 feed · 生成于 {t}",
@@ -641,12 +640,12 @@
           lp_head_snap: "Snapshot 2026-10-24 18:45 HKT · pools with TVL ≥ $100K only",
           lp_head_live: "On-chain data{t} · updated hourly · pools with TVL ≥ $100K only",
           chain_label: "Chain", sort_label: "Sort",
-          sort_total: "Total APR", sort_aero: "AERO emissions", sort_fees: "Fees",
+          sort_aero: "AERO emissions", sort_fees: "Fees",
           all_chains: "All",
-          lp_src_snap: "Source: Aero official app Liquidity page snapshot, 2026-10-24 18:45 HKT; pools with TVL ≥ $100,000 only (122 of 1,040 network-wide); AERO APR is the official emissions APR and Fees APR the official fee APR, both official estimates. The snapshot captured 124 pools with TVL ≥ $90K, of which 2 fall below the $100K threshold (USDC/RIZE $93.58K, wstETH/WETH $91.55K) and are not shown. An AERO APR of “—” means the pool has no AERO emissions and counts as 0 in totals and sorting; “<0.01” is the official display and counts as 0.005 for sorting. LEGACY marks legacy pools in the official app. Some pools show abnormally high APRs due to small TVL and short-term volume spikes — judge together with TVL and 48-hour volume.",
+          lp_src_snap: "Source: Aero official app Liquidity page snapshot, 2026-10-24 18:45 HKT; pools with TVL ≥ $100,000 only (122 of 1,040 network-wide); AERO APR is the official emissions APR and Fees APR the official fee APR, both official estimates. The snapshot captured 124 pools with TVL ≥ $90K, of which 2 fall below the $100K threshold (USDC/RIZE $93.58K, wstETH/WETH $91.55K) and are not shown. An AERO APR of “—” means the pool has no AERO emissions and counts as 0 for sorting; “<0.01” is the official display and counts as 0.005 for sorting. LEGACY marks legacy pools in the official app. Some pools show abnormally high APRs due to small TVL and short-term volume spikes — judge together with TVL and 48-hour volume.",
           lp_src_live: "Source: on-chain data (data/lp.json){t}, updated hourly; TVL is computed from the pool's two token balances × prices, AERO APR is annualised gauge emissions, and Fees APR is annualised fees over the past 48 hours — these may differ from the official app's methodology. Live mode has no Volume 48H source, so it is not shown. If live data cannot be loaded, the page falls back to the official app Liquidity snapshot (2026-10-24 18:45 HKT).",
           lp_sum: "<b>{chain}</b> · <b>{n}</b> qualifying pools · total TVL <b>{tvl}</b> · sorted by {name} descending",
-          lp_sort_total: "Total APR", lp_sort_aero: "AERO emissions APR", lp_sort_fees: "Fee APR",
+          lp_sort_aero: "AERO emissions APR", lp_sort_fees: "Fee APR",
           lp_empty: "No pool on this chain currently has TVL ≥ $100K.",
           ov_px_k: "AERO price", ov_px_snap: "Coinbase spot · 10-23 12:50 HKT", ov_px_live: "Coinbase spot · refreshed just now {t}",
           ov_px_feed: "On-chain feed · generated {t}",
@@ -772,7 +771,7 @@
         setText("saGoId", t("tokenid_btn")); setText("saAddrsLbl", t("batch_label")); setText("saBatchGo", t("batch_btn"));
         setHTML("mineSrc", t("mine_src"));
         setText("lpH2", t("lp_h2")); setText("chainLbl", t("chain_label")); setText("sortLbl", t("sort_label"));
-        var sT = document.querySelector('#lpSort [data-sort="total"]'); if (sT) sT.textContent = t("sort_total");
+        
         var sA = document.querySelector('#lpSort [data-sort="aero"]'); if (sA) sA.textContent = t("sort_aero");
         var sF = document.querySelector('#lpSort [data-sort="fees"]'); if (sF) sF.textContent = t("sort_fees");
         if (!(window.__lpLiveRef && window.__lpLiveRef())) {
@@ -1163,7 +1162,7 @@
       }
       function lpTotal(p) { return aprVal(p[6]) + aprVal(p[7]); }
       function lpQualifying() { return LP_POOLS.filter(function (p) { return p[3] >= LP_MIN_TVL; }); }
-      var lpState = { chain: "全部", sort: "total" };
+      var lpState = { chain: "全部", sort: "aero" };
       var lpLiveMode = false;
       function buildChainButtons() {
         var q = lpQualifying();
@@ -1185,17 +1184,16 @@
       }
       function renderLP() {
         var list = lpQualifying().filter(function (p) { return lpState.chain === "全部" || p[1] === lpState.chain; });
-        var key = lpState.sort === "aero" ? function (p) { return aprVal(p[6]); }
-          : lpState.sort === "fees" ? function (p) { return aprVal(p[7]); }
-          : lpTotal;
+        var key = lpState.sort === "fees" ? function (p) { return aprVal(p[7]); }
+          : function (p) { return aprVal(p[6]); };
         list.sort(function (a, b) { return key(b) - key(a) || b[3] - a[3]; });
         var tvlSum = list.reduce(function (s, p) { return s + p[3]; }, 0);
-        var sortName = lpState.sort === "aero" ? t("lp_sort_aero") : lpState.sort === "fees" ? t("lp_sort_fees") : t("lp_sort_total");
+        var sortName = lpState.sort === "fees" ? t("lp_sort_fees") : t("lp_sort_aero");
         $("lpSum").innerHTML = tf("lp_sum", { chain: escHtml(chainDisp(lpState.chain)), n: list.length, tvl: fmtUSD(tvlSum), name: sortName });
         $("lpList").innerHTML = list.length ? list.map(function (p, i) {
           return '<div class="vrow lp-row"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
             '<span class="vsym">' + escHtml(p[0]) + '</span>' +
-            '<span class="vapr">' + fmtPct(lpTotal(p)) + '%</span></div>' +
+            '<span class="vapr">' + fmtPct(aprVal(lpState.sort === "fees" ? p[7] : p[6])) + '%</span></div>' +
             '<div class="vsub">' + escHtml(p[2]) + " · " + chainBadge(p[1]) + " · TVL " + fmtCompact(p[3]) + " · AERO " + aprDisp(p[6]) + " · Fees " + aprDisp(p[7]) + '</div>' +
             (p[4] === null || p[4] === undefined ? "" : '<div class="vsub">Volume 48H ' + fmtCompact(p[4]) + " · Fees 48H " + fmtUSD(p[5], p[5] < 10 ? 2 : 0) + '</div>') + '</div>';
          }).join("") : '<div class="tempty">' + t("lp_empty") + '</div>';
