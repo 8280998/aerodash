@@ -1001,13 +1001,16 @@
         }
         return true;
       }
-      fetch("data/pools.json", { cache: "no-store" }).then(function (r) {
-        if (!r.ok) throw new Error("no live data");
-        return r.json();
-      }).then(function (j) {
-        window.__lastPoolsRaw = j;
-        applyLiveData(j);
-      }).catch(function () { });
+      function loadPools() {
+        fetch("data/pools.json", { cache: "no-store" }).then(function (r) {
+          if (!r.ok) throw new Error("no live data");
+          return r.json();
+        }).then(function (j) {
+          window.__lastPoolsRaw = j;
+          applyLiveData(j);
+        }).catch(function () { });
+      }
+      loadPools();
 
       /* copy buttons */
       document.querySelectorAll("[data-copy]").forEach(function (b) {
@@ -1301,13 +1304,16 @@
         updateStamp();
         return true;
       }
-      fetch("data/lp.json", { cache: "no-store" }).then(function (r) {
-        if (!r.ok) throw new Error("no live lp data");
-        return r.json();
-      }).then(function (j) {
-        window.__lastLPRaw = j;
-        applyLiveLP(j);
-      }).catch(function () { });
+      function loadLP() {
+        fetch("data/lp.json", { cache: "no-store" }).then(function (r) {
+          if (!r.ok) throw new Error("no live lp data");
+          return r.json();
+        }).then(function (j) {
+          window.__lastLPRaw = j;
+          applyLiveLP(j);
+        }).catch(function () { });
+      }
+      loadLP();
 
       /* best-effort live price refresh from Coinbase (falls back to baked values) */
       fetch("https://api.coinbase.com/v2/prices/AERO-USD/spot").then(function (r) { return r.json(); })
@@ -2122,7 +2128,10 @@
         $("moversStrip").innerHTML = '<h3 style="margin:0 0 8px;font-size:15.5px">' + t("movers_title") + '</h3><div class="movers">' + '<div class="mv-card"><h4>' + t("movers_up") + '</h4>' + (g.slice(0, 5).map(function (m) { return row(m, false); }).join("") || '<p class="tempty">' + t("movers_none") + '</p>') + "</div>" + '<div class="mv-card"><h4>' + t("movers_down") + '</h4>' + (l.slice(0, 5).map(function (m) { return row(m, true); }).join("") || '<p class="tempty">' + t("movers_none") + '</p>') + "</div></div>";
         $("moversStrip").hidden = false;
       };
-      fetch("data/movers.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no movers"); return r.json(); }).then(function (j) { window.__moversData = j; window.renderMovers(j); }).catch(function () { });
+      window.loadMovers = function () {
+        fetch("data/movers.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no movers"); return r.json(); }).then(function (j) { window.__moversData = j; window.renderMovers(j); }).catch(function () { });
+      };
+      window.loadMovers();
 
       /* ================= C：运行状态行（data/status.json） ================= */
       window.renderStatus = function (j) {
@@ -2137,7 +2146,10 @@
         if (Array.isArray(j.warnings) && j.warnings.length) txt += tf("status_warn", { w: String(j.warnings[0]) });
         var el = $("runStatus"); el.textContent = txt; el.hidden = false;
       };
-      fetch("data/status.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no status"); return r.json(); }).then(function (j) { window.__statusData = j; window.renderStatus(j); }).catch(function () { });
+      window.loadStatus = function () {
+        fetch("data/status.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no status"); return r.json(); }).then(function (j) { window.__statusData = j; window.renderStatus(j); }).catch(function () { });
+      };
+      window.loadStatus();
     </script>
   
     <script>
@@ -2167,6 +2179,26 @@
         if (z) z.addEventListener("click", function () { setLang("zh"); });
         if (e2) e2.addEventListener("click", function () { setLang("en"); });
         applyStatic();
+      })();
+
+      /* ---------- 自动刷新：每 10 分钟重拉四个数据 feed 并重渲染（不整页刷新；
+         只走各 feed 自己的 apply/render 入口，不触碰「我的 sAERO」的查询输入与结果；
+         页面在后台时跳过，回到前台且距上次刷新已满间隔时补刷一次） ---------- */
+      (function () {
+        var REFRESH_MS = 600000;
+        var lastRefresh = Date.now();
+        function refreshFeeds() {
+          lastRefresh = Date.now();
+          if (typeof loadPools === "function") loadPools();
+          if (typeof loadLP === "function") loadLP();
+          if (typeof window.loadMovers === "function") window.loadMovers();
+          if (typeof window.loadStatus === "function") window.loadStatus();
+        }
+        window.__refreshFeeds = refreshFeeds;
+        setInterval(function () { if (!document.hidden) refreshFeeds(); }, REFRESH_MS);
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden && Date.now() - lastRefresh >= REFRESH_MS) refreshFeeds();
+        });
       })();
     </script>
   </body>
