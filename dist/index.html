@@ -264,7 +264,7 @@
         .seg button { min-height: 40px; }
       }
       /* ===== v24 移动端体验改造（全部效果只在 ≤640px 生效；下列控件桌面默认不显示） ===== */
-      .tierchips, .lp-more-wrap, .backtop, .ov-toggle { display: none; }
+      .tierchips, .lp-more-wrap, .backtop, .ov-toggle, .intro-toggle, .basis-toggle { display: none; }
       @media (max-width: 640px) {
         /* P1-1 页签栏吸顶（加固：不透明背景 + 层级） */
         .tabbar { position: sticky; top: 0; z-index: 30; background: var(--bg); }
@@ -300,6 +300,13 @@
         .basis { padding: 10px 12px; margin-bottom: 10px; }
         .stat { padding: 8px 10px; }
         .contract { padding: 7px 10px; }
+        /* v25：首页说明 / 投票口径框折叠（默认折叠，按钮展开；桌面无此规则，全显不变） */
+        .intro-toggle, .basis-toggle { display: inline-flex; align-items: center; }
+        .intro-toggle { margin-top: 6px; }
+        #ledeText.intro-fold { display: none; }
+        .basis.basis-fold { overflow: hidden; }
+        .basis-toggle { float: right; margin: 0 0 4px 10px; }
+        .basis.basis-fold > *:not(h3):not(.basis-toggle) { display: none; }
       }
     </style>
   </head>
@@ -2339,6 +2346,52 @@
           head.appendChild(b); ovBtns.push(b);
         });
         ovApply();
+        /* v25-1：首页顶部说明折叠（移动端默认折叠，只留数据时间行常显；按钮插在时间行之后。
+           折叠只切 #ledeText 的 class，stamp 文案由 updateStamp/renderStatus 写 span，互不干扰） */
+        var introFolded = true;
+        var introBtn = null;
+        function introApply() {
+          var lede = document.getElementById("ledeText");
+          if (lede) lede.classList.toggle("intro-fold", introFolded);
+          if (introBtn) {
+            introBtn.textContent = introFolded ? t("ov_expand") : t("ov_collapse");
+            introBtn.setAttribute("aria-expanded", introFolded ? "false" : "true");
+          }
+        }
+        (function () {
+          var sp = document.getElementById("stampPrefix");
+          var stamp = sp ? sp.parentNode : null;
+          if (!stamp || !stamp.parentNode) return;
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "mini-btn intro-toggle";
+          b.addEventListener("click", function () { introFolded = !introFolded; introApply(); });
+          stamp.parentNode.insertBefore(b, stamp.nextSibling);
+          introBtn = b;
+        })();
+        introApply();
+        /* v25-2：投票「数据口径」框折叠（class 挂 .basis 容器——JS 刷新只改写各段
+           textContent/innerHTML，不重建容器，折叠状态不丢。按钮浮在标题行右侧，
+           不放进 h3：h3 的 textContent 会被语言切换与实时数据重写） */
+        var basisFolded = true;
+        var basisBtn = null;
+        function basisApply() {
+          var box = document.querySelector(".basis");
+          if (box) box.classList.toggle("basis-fold", basisFolded);
+          if (basisBtn) {
+            basisBtn.textContent = basisFolded ? t("ov_expand") : t("ov_collapse");
+            basisBtn.setAttribute("aria-expanded", basisFolded ? "false" : "true");
+          }
+        }
+        (function () {
+          var box = document.querySelector(".basis");
+          if (!box) return;
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "mini-btn basis-toggle";
+          b.addEventListener("click", function () { basisFolded = !basisFolded; basisApply(); });
+          box.insertBefore(b, box.firstChild);
+          basisBtn = b;
+        })();
+        basisApply();
         /* P1-3：回到顶部 */
         var bt = document.getElementById("backTop");
         function btLabel() { if (bt) bt.setAttribute("aria-label", t("back_top")); }
@@ -2354,7 +2407,7 @@
           var el = document.getElementById(id);
           if (el) el.addEventListener("click", function () {
             if (typeof buildTierChips === "function") buildTierChips();
-            ovApply(); btLabel();
+            ovApply(); btLabel(); introApply(); basisApply();
           });
         });
       })();
