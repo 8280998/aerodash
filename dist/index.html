@@ -391,6 +391,7 @@
           <div class="stat"><div class="k" id="kVol7">近 7 天交易量</div><div class="v mono" id="stVol7">$2.63B</div><div class="s" id="sVol7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
           <div class="stat"><div class="k" id="kRev7">近 7 天 Revenue</div><div class="v mono" id="stRev7">$1.74M</div><div class="s" id="sRev7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
           <div class="stat"><div class="k" id="ovChainsK">覆盖链数</div><div class="v mono" id="stChains">7 链</div><div class="s" id="sChains">Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO 结算在 Base</div></div>
+          <div class="stat"><div class="k" id="ovBurnK">累计销毁 AERO</div><div class="v mono" id="stBurn">174,600.64</div><div class="s" id="sBurn">Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计 · 快照 2026-10-29</div></div>
         </div>
 
         <section>
@@ -516,6 +517,9 @@
           ov_px_feed: "链上 feed · 生成于 {t}",
           ov_cool_k: "Predictive Allocation 冷却", ov_cool_v: "47 小时", ov_cool_s: "调整分配的官方冷却 · 链上实测 169,200 秒",
           ov_supply_k: "新 AERO 推算总供应", ov_supply_v: "21.24 亿", ov_supply_s: "新合约供应推算 · 链上 totalSupply 口径",
+          ov_burn_k: "累计销毁 AERO", ov_burn_s: "Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计",
+          ov_burn_latest: "最近一笔 {amt} AERO · {t} 销毁", ov_burn_stale_s: " · 本轮扫描未完成，累计数截至上一轮",
+          ov_burn_s_snap: "Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计 · 快照 2026-10-29",
           ov_nft_k: "sAERO 仓位 NFT 总数", ov_nft_s: "VotingEscrow totalSupply · 10-23 链上直读（结算在 Base）",
           ov_tvl_k_snap: "TVL（全系统）", ov_tvl_s_snap: "来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT",
           ov_vol_k_snap: "近 7 天交易量", ov_rev_k_snap: "近 7 天 Revenue",
@@ -651,6 +655,9 @@
           ov_px_feed: "On-chain feed · generated {t}",
           ov_cool_k: "Predictive Allocation cooldown", ov_cool_v: "47 hours", ov_cool_s: "Official cooldown for changing an allocation · measured on-chain at 169,200 seconds",
           ov_supply_k: "New AERO estimated total supply", ov_supply_v: "2.124B", ov_supply_s: "Estimated from the new contract · on-chain totalSupply basis",
+          ov_burn_k: "AERO burned (cumulative)", ov_burn_s: "Momentum Fund buyback burns and protocol-fee burns · cumulative on-chain total via Base VotingEscrow burnFees",
+          ov_burn_latest: "Latest burn {amt} AERO · {t}", ov_burn_stale_s: " · scan incomplete this round; total is as of the previous round",
+          ov_burn_s_snap: "Momentum Fund buyback burns and protocol-fee burns · cumulative via Base VotingEscrow burnFees · snapshot 2026-10-29",
           ov_nft_k: "Total sAERO position NFTs", ov_nft_s: "VotingEscrow totalSupply · read on-chain 10-23 (settled on Base)",
           ov_tvl_k_snap: "TVL (system-wide)", ov_tvl_s_snap: "Source: app.aero.xyz official app snapshot · 2026-10-24 17:00 HKT",
           ov_vol_k_snap: "Volume, last 7 days", ov_rev_k_snap: "Revenue, last 7 days",
@@ -783,6 +790,8 @@
         if (pxT && !window.__pxLive) pxT.textContent = t("ov_px_snap");
         setText("ovCoolK", t("ov_cool_k")); setText("ovCoolV", t("ov_cool_v")); setText("ovCoolS", t("ov_cool_s"));
         setText("ovSupplyK", t("ov_supply_k")); setText("ovSupplyV", t("ov_supply_v")); setText("ovSupplyS", t("ov_supply_s"));
+        setText("ovBurnK", t("ov_burn_k"));
+        if (!window.__burnLive) setText("sBurn", t("ov_burn_s_snap"));
         setText("ovNftK", t("ov_nft_k")); setText("ovNftS", t("ov_nft_s"));
         if (!(window.__lpLiveRef && window.__lpLiveRef())) {
           setText("kTvl", t("ov_tvl_k_snap")); setText("sTvl", t("ov_tvl_s_snap"));
@@ -2144,6 +2153,19 @@
           txt = tf("status_ok", { t: j.generated_at ? tf("status_gen", { t: fmtGenTime(j.generated_at) }) : "" });
         }
         if (Array.isArray(j.warnings) && j.warnings.length) txt += tf("status_warn", { w: String(j.warnings[0]) });
+        if (typeof j.burn_total_aero === "number" && isFinite(j.burn_total_aero)) {
+          window.__burnLive = true;
+          var bv = $("stBurn");
+          if (bv) bv.textContent = j.burn_total_aero.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          var bs = $("sBurn");
+          if (bs) {
+            if (j.burn_latest_at && typeof j.burn_latest_amount === "number") {
+              bs.textContent = tf("ov_burn_latest", { amt: j.burn_latest_amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), t: fmtGenTime(j.burn_latest_at) }) + (j.burn_stale ? t("ov_burn_stale_s") : "");
+            } else {
+              bs.textContent = t("ov_burn_s") + (j.burn_stale ? t("ov_burn_stale_s") : "");
+            }
+          }
+        }
         var el = $("runStatus"); el.textContent = txt; el.hidden = false;
       };
       window.loadStatus = function () {
