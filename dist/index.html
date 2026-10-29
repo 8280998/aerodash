@@ -263,6 +263,44 @@
         .mini-btn { min-height: 40px; padding: 8px 12px; display: inline-flex; align-items: center; }
         .seg button { min-height: 40px; }
       }
+      /* ===== v24 移动端体验改造（全部效果只在 ≤640px 生效；下列控件桌面默认不显示） ===== */
+      .tierchips, .lp-more-wrap, .backtop, .ov-toggle { display: none; }
+      @media (max-width: 640px) {
+        /* P1-1 页签栏吸顶（加固：不透明背景 + 层级） */
+        .tabbar { position: sticky; top: 0; z-index: 30; background: var(--bg); }
+        /* P0-1 投票墙档位 chips（横滑单排） */
+        .tierchips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .tierchips::-webkit-scrollbar { display: none; }
+        .tierchips button { flex: 0 0 auto; appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 13px; font-weight: 600; min-height: 40px; cursor: pointer; white-space: nowrap; }
+        .tierchips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+        #tiers .tier.tier-off { display: none; }
+        /* P0-2 LP 递增显示（.lp-extra 仅在移动端隐藏，桌面全量不变） */
+        #lpList .lp-row.lp-extra { display: none; }
+        .lp-more-wrap { display: block; margin-top: 10px; }
+        .lp-more-wrap.off { display: none; }
+        .lp-more-btn { appearance: none; width: 100%; min-height: 44px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--accent-ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+        /* P1-2 异动条横滑车道（scroll-snap） */
+        .movers { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding-bottom: 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .movers::-webkit-scrollbar { display: none; }
+        .movers .mv-card { flex: 0 0 86%; scroll-snap-align: start; }
+        /* P1-3 回到顶部（滚动 >600px 出现；含安全区） */
+        .backtop { display: flex; align-items: center; justify-content: center; position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 40; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--accent-ink); font-size: 19px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(10, 20, 40, .22); opacity: 0; pointer-events: none; transition: opacity .18s ease; }
+        .backtop.on { opacity: 1; pointer-events: auto; }
+        /* P2-2 总览规则/口径区折叠 */
+        .ov-toggle { display: inline-flex; align-items: center; }
+        section.ov-fold > *:not(.sec-head) { display: none; }
+        /* P2-1 密度收紧（单卡高度约降 15–20%） */
+        section { margin-top: 20px; }
+        .card { padding: 11px; }
+        .tier { padding: 10px 11px 8px; }
+        .tiers { gap: 9px; }
+        .vrow { padding: 5px 0; }
+        .lp-card { padding: 4px 11px; }
+        .mv-card { padding: 10px 12px; }
+        .basis { padding: 10px 12px; margin-bottom: 10px; }
+        .stat { padding: 8px 10px; }
+        .contract { padding: 7px 10px; }
+      }
     </style>
   </head>
   <body>
@@ -312,6 +350,7 @@
             <p id="basisRefresh">刷新节奏：数据将按<b>每小时</b>节奏由链上直读更新——PoolTape / CLPoolTape 读取 48 小时费用、LeafVoter 读取 Allocation，公开 RPC 直读官方合约（管线接入后生效）；管线接入前，本墙仍为上述 2026-10-24 17:13–17:15 HKT 官方应用快照，不自动刷新。</p>
           </div>
           <div id="moversStrip" hidden></div>
+          <div class="tierchips" id="tierChips" role="group"></div>
           <div class="tiers" id="tiers"></div>
           <p class="src" id="wallSrc">每行小字为 48 小时构成：Fees 48H（交易费）· Incentives 48H（激励）· Rewards 48H（合计）。数据为 app.aero.xyz Markets 页 2026-10-24 17:13–17:15 HKT 快照直读。Stake APR 为过去 48 小时收益年化的预测值，非保证收益；48 小时窗口波动较大，请结合池深与持续性判断，勿据单窗尖峰追高。</p>
         </section>
@@ -376,6 +415,7 @@
           </div>
           <p class="lp-sum" id="lpSum"></p>
           <div class="lp-card" id="lpList"></div>
+          <div class="lp-more-wrap off" id="lpMoreWrap"><button type="button" class="lp-more-btn" id="lpMoreBtn"></button></div>
           <p class="src" id="lpSrc">数据来源：Aero 官方应用 Liquidity 页快照，2026-10-24 18:45 HKT；仅含 TVL ≥ $100,000 的池（122 / 全网 1,040）；AERO APR 为官方显示的排放年化，Fees APR 为手续费年化，均为官方估算口径。快照共抓取 124 个 TVL ≥ $90K 的池，其中 2 个低于 $100K 门槛（USDC/RIZE $93.58K、wstETH/WETH $91.55K）不展示。AERO APR 显示「—」表示该池无 AERO 排放，按 0 参与排序；「&lt;0.01」为官方原显示，按 0.005 参与排序。LEGACY 为官方应用中的旧版池标记。个别池因 TVL 较小、短期成交放大，APR 会异常高，请结合 TVL 与 48 小时成交量判断。</p>
         </section>
       </div>
@@ -407,7 +447,7 @@
           </div>
         </section>
 
-        <section>
+        <section id="secMech">
           <div class="sec-head"><h2 id="mechH2">新规则收益机制</h2><span class="note" id="mechNote">口径以 2026-10-23 链上解码为准</span></div>
           <div class="vs">
             <div>
@@ -437,7 +477,7 @@
           </div>
         </section>
 
-        <section>
+        <section id="secSrc">
           <div class="sec-head"><h2 id="srcH2">数据口径与来源</h2></div>
           <div class="card">
             <ul class="factlist" style="margin-top:0">
@@ -519,6 +559,7 @@
           ov_supply_k: "新 AERO 推算总供应", ov_supply_v: "21.24 亿", ov_supply_s: "新合约供应推算 · 链上 totalSupply 口径",
           ov_burn_k: "累计销毁 AERO", ov_burn_s: "Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计",
           ov_burn_latest: "最近一笔 {amt} AERO · {t} 销毁", ov_burn_stale_s: " · 本轮扫描未完成，累计数截至上一轮",
+          chip_all: "全部", tier_filter_label: "按 Allocation 档位筛选", lp_more: "显示更多 · 剩余 {n} 个", back_top: "回到顶部", ov_expand: "展开", ov_collapse: "收起",
           ov_burn_s_snap: "Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计 · 快照 2026-10-29",
           ov_nft_k: "sAERO 仓位 NFT 总数", ov_nft_s: "VotingEscrow totalSupply · 10-23 链上直读（结算在 Base）",
           ov_tvl_k_snap: "TVL（全系统）", ov_tvl_s_snap: "来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT",
@@ -657,6 +698,7 @@
           ov_supply_k: "New AERO estimated total supply", ov_supply_v: "2.124B", ov_supply_s: "Estimated from the new contract · on-chain totalSupply basis",
           ov_burn_k: "AERO burned (cumulative)", ov_burn_s: "Momentum Fund buyback burns and protocol-fee burns · cumulative on-chain total via Base VotingEscrow burnFees",
           ov_burn_latest: "Latest burn {amt} AERO · {t}", ov_burn_stale_s: " · scan incomplete this round; total is as of the previous round",
+          chip_all: "All", tier_filter_label: "Filter by Allocation tier", lp_more: "Show more · {n} remaining", back_top: "Back to top", ov_expand: "Expand", ov_collapse: "Collapse",
           ov_burn_s_snap: "Momentum Fund buyback burns and protocol-fee burns · cumulative via Base VotingEscrow burnFees · snapshot 2026-10-29",
           ov_nft_k: "Total sAERO position NFTs", ov_nft_s: "VotingEscrow totalSupply · read on-chain 10-23 (settled on Base)",
           ov_tvl_k_snap: "TVL (system-wide)", ov_tvl_s_snap: "Source: app.aero.xyz official app snapshot · 2026-10-24 17:00 HKT",
@@ -886,9 +928,36 @@
       /* ---------- 分页 1：投票收益卡片墙 ---------- */
       var VOTE_WALL = {"snapshot": "2026-10-24 17:13–17:15 HKT", "source": "https://app.aero.xyz/markets/pools", "totalPools": 473, "tiers": [{"name": "100K 以下", "top": [{"name": "WETH/PONS", "fee": "0.61%", "chain": "Robinhood", "type": "CL100", "fees": "$18.67", "incentives": "$0.00", "rewards": "$18.67", "apr": 27.9, "alloc": "17.12K"}, {"name": "USDG/AMD", "fee": "0.31%", "chain": "Robinhood", "type": "CL50", "fees": "$47.08", "incentives": "$0.00", "rewards": "$47.08", "apr": 26.5, "alloc": "45.60K"}, {"name": "USDC/AMDc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$17.13", "incentives": "$0.00", "rewards": "$17.13", "apr": 25.3, "alloc": "17.33K"}, {"name": "TIG/USDC", "fee": "0.15%", "chain": "Base", "type": "CL200", "fees": "$11.27", "incentives": "$0.00", "rewards": "$11.27", "apr": 24.7, "alloc": "11.71K"}, {"name": "USDG/INTC", "fee": "0.45%", "chain": "Robinhood", "type": "CL50", "fees": "$37.98", "incentives": "$0.00", "rewards": "$37.98", "apr": 24.1, "alloc": "40.44K"}, {"name": "PAXG/USDC", "fee": "0.02%", "chain": "Ethereum", "type": "CL10", "fees": "$14.42", "incentives": "$0.00", "rewards": "$14.42", "apr": 22.1, "alloc": "16.68K"}, {"name": "WETH/SPCX", "fee": "0.02%", "chain": "Robinhood", "type": "CL50", "fees": "$24.79", "incentives": "$0.00", "rewards": "$24.79", "apr": 22.0, "alloc": "28.86K"}, {"name": "CASHCAT/USDG", "fee": "0.57%", "chain": "Robinhood", "type": "CL100", "fees": "$36.91", "incentives": "$0.00", "rewards": "$36.91", "apr": 21.0, "alloc": "44.93K"}, {"name": "EURC/USDC", "fee": "&lt;0.01%", "chain": "Base", "type": "CL50", "fees": "$24.41", "incentives": "$0.00", "rewards": "$24.41", "apr": 21.0, "alloc": "29.79K"}, {"name": "WETH/LCAP", "fee": "0.29%", "chain": "Base", "type": "CL200", "fees": "$27.10", "incentives": "$0.00", "rewards": "$27.10", "apr": 19.9, "alloc": "34.94K"}]}, {"name": "100K – 500K", "top": [{"name": "FLOCK/USDC", "fee": "0.12%", "chain": "Base", "type": "CL100", "fees": "$8.81", "incentives": "$127.64", "rewards": "$136.45", "apr": 16.9, "alloc": "207.28K"}, {"name": "USDC/LAPTOP", "fee": "0.8%", "chain": "Base", "type": "CL200", "fees": "$54.10", "incentives": "$127.64", "rewards": "$181.74", "apr": 16.9, "alloc": "275.25K"}, {"name": "cbBTC/ZEN", "fee": "0.18%", "chain": "Base", "type": "CL200", "fees": "$9.91", "incentives": "$127.64", "rewards": "$137.55", "apr": 16.7, "alloc": "211.50K"}, {"name": "LFI/USDC", "fee": "0.95%", "chain": "Base", "type": "CL100", "fees": "$83.75", "incentives": "$127.64", "rewards": "$211.40", "apr": 16.6, "alloc": "325.93K"}, {"name": "WETH/EDEL", "fee": "0.7%", "chain": "Base", "type": "Basic Volatile", "fees": "$37.84", "incentives": "$127.64", "rewards": "$165.48", "apr": 16.6, "alloc": "254.96K"}, {"name": "USDC/alUSD", "fee": "0.05%", "chain": "OP Mainnet", "type": "Basic Stable", "fees": "$8.69", "incentives": "$231.65", "rewards": "$240.34", "apr": 16.5, "alloc": "373.51K"}, {"name": "WETH/SERV", "fee": "1.5%", "chain": "Base", "type": "CL200", "fees": "$21.76", "incentives": "$127.64", "rewards": "$149.41", "apr": 16.4, "alloc": "234.01K"}, {"name": "USDC/NOCK", "fee": "0.3%", "chain": "Base", "type": "Basic Volatile", "fees": "$2.19", "incentives": "$127.64", "rewards": "$129.83", "apr": 16.4, "alloc": "202.62K"}, {"name": "ZORA/USDC", "fee": "0.24%", "chain": "Base", "type": "CL100", "fees": "$68.13", "incentives": "$127.64", "rewards": "$195.77", "apr": 16.4, "alloc": "306.61K"}, {"name": "WETH/BRETT", "fee": "0.21%", "chain": "Base", "type": "CL200", "fees": "$30.93", "incentives": "$127.64", "rewards": "$158.58", "apr": 16.4, "alloc": "247.33K"}]}, {"name": "500K – 1M", "top": [{"name": "USDC/BIDUc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$6.00", "incentives": "$377.14", "rewards": "$383.14", "apr": 17.2, "alloc": "571.31K"}, {"name": "USDC/ULc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$9.34", "incentives": "$377.14", "rewards": "$386.48", "apr": 17.1, "alloc": "580.30K"}, {"name": "USDC/VALEc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$15.90", "incentives": "$377.14", "rewards": "$393.04", "apr": 16.7, "alloc": "601.74K"}, {"name": "USDC/INFYc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$10.45", "incentives": "$377.12", "rewards": "$387.58", "apr": 16.7, "alloc": "593.46K"}, {"name": "USDC/BUDc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$9.70", "incentives": "$377.14", "rewards": "$386.84", "apr": 16.5, "alloc": "600.57K"}, {"name": "USDC/NIOc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$15.38", "incentives": "$377.14", "rewards": "$392.52", "apr": 16.4, "alloc": "615.07K"}, {"name": "USDC/LIc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$4.96", "incentives": "$377.14", "rewards": "$382.10", "apr": 16.4, "alloc": "596.27K"}, {"name": "USDC/SANc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$6.63", "incentives": "$377.14", "rewards": "$383.78", "apr": 16.3, "alloc": "603.32K"}, {"name": "USDC/NOKc", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$5.26", "incentives": "$377.14", "rewards": "$382.40", "apr": 16.1, "alloc": "607.31K"}, {"name": "alETH/WETH", "fee": "0.05%", "chain": "OP Mainnet", "type": "Basic Stable", "fees": "$6.46", "incentives": "$595.67", "rewards": "$602.13", "apr": 16.1, "alloc": "959.36K"}]}, {"name": "1M – 5M", "top": [{"name": "CHIP/USDC", "fee": "0.21%", "chain": "Base", "type": "CL200", "fees": "$580.65", "incentives": "$127.64", "rewards": "$708.29", "apr": 15.7, "alloc": "1.15M"}, {"name": "WETH/ZEN", "fee": "0.11%", "chain": "Base", "type": "CL100", "fees": "$414.27", "incentives": "$1.67K", "rewards": "$2.08K", "apr": 15.0, "alloc": "3.55M"}, {"name": "WETH/msETH", "fee": "0.03%", "chain": "Base", "type": "CL50", "fees": "$606.52", "incentives": "$714.29", "rewards": "$1.32K", "apr": 15.0, "alloc": "2.25M"}, {"name": "WETH/SPY", "fee": "0.02%", "chain": "Robinhood", "type": "CL50", "fees": "$1.79K", "incentives": "$0.00", "rewards": "$1.79K", "apr": 15.0, "alloc": "3.05M"}, {"name": "WBTC/WETH", "fee": "0.02%", "chain": "Ethereum", "type": "CL10", "fees": "$715.98", "incentives": "$0.00", "rewards": "$715.98", "apr": 15.0, "alloc": "1.22M"}, {"name": "USDC/WHUF", "fee": "0.3%", "chain": "Base", "type": "CL200", "fees": "$356.96", "incentives": "$306.14", "rewards": "$663.10", "apr": 14.9, "alloc": "1.14M"}, {"name": "USDC/MUSD", "fee": "0.05%", "chain": "Base", "type": "CL10", "fees": "$25.56", "incentives": "$595.65", "rewards": "$621.21", "apr": 14.8, "alloc": "1.07M"}, {"name": "msUSD/USDC", "fee": "0.05%", "chain": "Base", "type": "CL50", "fees": "$846.37", "incentives": "$714.29", "rewards": "$1.56K", "apr": 14.6, "alloc": "2.74M"}, {"name": "EURC/USDC", "fee": "&lt;0.01%", "chain": "Base", "type": "CL1", "fees": "$347.01", "incentives": "$225.73", "rewards": "$572.74", "apr": 14.6, "alloc": "1.00M"}, {"name": "WETH/USDC", "fee": "0.3%", "chain": "Base", "type": "Basic Volatile", "fees": "$343.95", "incentives": "$453.62", "rewards": "$797.57", "apr": 14.1, "alloc": "1.44M"}]}, {"name": "5M – 10M", "top": [{"name": "USDC/SPCXc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$3.26K", "incentives": "$1.34K", "rewards": "$4.60K", "apr": 15.4, "alloc": "7.67M"}, {"name": "USDC/AMZNc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$4.06K", "incentives": "$1.59K", "rewards": "$5.65K", "apr": 14.9, "alloc": "9.72M"}, {"name": "WETH/AAVE", "fee": "0.25%", "chain": "Base", "type": "CL200", "fees": "$1.73K", "incentives": "$1.49K", "rewards": "$3.22K", "apr": 14.6, "alloc": "5.64M"}, {"name": "SOL/cbBTC", "fee": "0.04%", "chain": "Base", "type": "CL10", "fees": "$1.81K", "incentives": "$1.15K", "rewards": "$2.96K", "apr": 13.9, "alloc": "5.44M"}, {"name": "WETH/ZRO", "fee": "0.11%", "chain": "Base", "type": "CL100", "fees": "$1.55K", "incentives": "$1.36K", "rewards": "$2.91K", "apr": 13.6, "alloc": "5.48M"}, {"name": "msUSD/USDC", "fee": "0.05%", "chain": "Base", "type": "Basic Stable", "fees": "$49.07", "incentives": "$2.86K", "rewards": "$2.91K", "apr": 12.8, "alloc": "5.84M"}, {"name": "USDC/cbHYPE", "fee": "0.19%", "chain": "Base", "type": "CL100", "fees": "$4.28K", "incentives": "$127.64", "rewards": "$4.41K", "apr": 12.8, "alloc": "8.83M"}, {"name": "USDC/NVDAc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$4.26K", "incentives": "$220.97", "rewards": "$4.48K", "apr": 12.2, "alloc": "9.41M"}, {"name": "WETH/VVV", "fee": "0.71%", "chain": "Base", "type": "CL200", "fees": "$1.98K", "incentives": "$0.00", "rewards": "$1.98K", "apr": 8.8, "alloc": "5.76M"}, {"name": "WETH/USDT", "fee": "0.04%", "chain": "Base", "type": "CL100", "fees": "$2.09K", "incentives": "$0.00", "rewards": "$2.09K", "apr": 8.5, "alloc": "6.30M"}]}, {"name": "10M 以上", "top": [{"name": "USDC/MSTRc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$11.92K", "incentives": "$0.00", "rewards": "$11.92K", "apr": 17.3, "alloc": "17.63M"}, {"name": "USDC/SNDKc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$4.89K", "incentives": "$1.95K", "rewards": "$6.84K", "apr": 15.3, "alloc": "11.46M"}, {"name": "USDC/MUc", "fee": "0.02%", "chain": "Base", "type": "CL10", "fees": "$4.11K", "incentives": "$2.23K", "rewards": "$6.34K", "apr": 15.1, "alloc": "10.78M"}, {"name": "WETH/USDC", "fee": "0.05%", "chain": "Base", "type": "CL100", "fees": "$14.10K", "incentives": "$0.00", "rewards": "$14.10K", "apr": 14.4, "alloc": "25.00M"}, {"name": "USDC/cbZEC", "fee": "0.16%", "chain": "Base", "type": "CL200", "fees": "$4.15K", "incentives": "$1.51K", "rewards": "$5.65K", "apr": 14.3, "alloc": "10.16M"}, {"name": "USDC/cbBTC", "fee": "0.01%", "chain": "Base", "type": "CL50", "fees": "$7.99K", "incentives": "$0.00", "rewards": "$7.99K", "apr": 14.2, "alloc": "14.38M"}, {"name": "WETH/cbBTC", "fee": "&lt;0.01%", "chain": "Base", "type": "CL1", "fees": "$5.32K", "incentives": "$0.00", "rewards": "$5.32K", "apr": 13.5, "alloc": "10.12M"}, {"name": "WETH/VVV", "fee": "0.27%", "chain": "Base", "type": "CL100", "fees": "$18.15K", "incentives": "$0.00", "rewards": "$18.15K", "apr": 13.2, "alloc": "35.34M"}, {"name": "WETH/USDC", "fee": "0.04%", "chain": "Base", "type": "CL50", "fees": "$27.12K", "incentives": "$0.00", "rewards": "$27.12K", "apr": 12.9, "alloc": "53.69M"}, {"name": "AERO/cbBTC", "fee": "0.27%", "chain": "Base", "type": "CL200", "fees": "$8.31K", "incentives": "$0.00", "rewards": "$8.31K", "apr": 12.8, "alloc": "16.64M"}]}]};
       var currentWall = null;
+      /* v24 P0-1：移动端档位筛选（chips 仅 ≤640px 显示；筛选状态存变量，renderWall 后重应用，自动刷新不冲掉） */
+      var tierFilter = "100K 以下";
+      function buildTierChips() {
+        var box = $("tierChips"); if (!box) return;
+        box.setAttribute("aria-label", t("tier_filter_label"));
+        var items = [{ k: "all", label: t("chip_all") }].concat(TIER_DEFS.map(function (d) { return { k: d.name, label: tierName(d.name) }; }));
+        box.innerHTML = items.map(function (it) {
+          return '<button type="button" data-tf="' + escHtml(it.k) + '" aria-pressed="' + (tierFilter === it.k ? "true" : "false") + '">' + escHtml(it.label) + "</button>";
+        }).join("");
+        box.querySelectorAll("[data-tf]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            tierFilter = b.getAttribute("data-tf");
+            box.querySelectorAll("[data-tf]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+            applyTierFilter();
+          });
+        });
+      }
+      function applyTierFilter() {
+        var tiersEl = $("tiers"); if (!tiersEl) return;
+        var defs = (typeof currentWall !== "undefined" && currentWall && currentWall.tiers) ? currentWall.tiers : null;
+        tiersEl.querySelectorAll(".tier").forEach(function (el) {
+          var name = null;
+          var ti = Number(el.getAttribute("data-ti"));
+          if (defs && defs[ti]) name = defs[ti].name;
+          el.classList.toggle("tier-off", !(tierFilter === "all" || name === tierFilter));
+        });
+      }
       function renderWall(wall) {
         currentWall = wall;
-        $("tiers").innerHTML = wall.tiers.map(function (t) {
+        $("tiers").innerHTML = wall.tiers.map(function (t, ti) {
           var head = '<div class="tier-head"><span class="tn">' + tierName(t.name) + '</span><span class="tc">' + tf("tier_top", { n: wall.totalPools }) + '</span></div>';
           var sum = t.top.length ? '<div class="tier-sum">' + tf("tier_highest", { apr: fmtNum(t.top[0].apr) }) + '</div>' : '';
           var body = t.top.length ? t.top.map(function (p, i) {
@@ -898,8 +967,9 @@
               '<div class="vsub">' + p.type + ' · ' + tf("fee_rate") + ' ' + p.fee + ' · ' + chainBadge(p.chain) + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div></div>';
            }).join("") : '<div class="tempty">' + tf("tier_empty") + '</div>';
           var foot = '<div class="tier-foot">' + tf("tier_foot") + '</div>';
-          return '<div class="tier">' + head + sum + body + foot + '</div>';
+          return '<div class="tier" data-ti="' + ti + '">' + head + sum + body + foot + '</div>';
         }).join("");
+        applyTierFilter();
       }
       renderWall(VOTE_WALL);
 
@@ -1174,6 +1244,9 @@
       }
       function lpQualifying() { return LP_POOLS.filter(function (p) { return p[3] >= LP_MIN_TVL; }); }
       var lpState = { chain: "全部", sort: "aero" };
+      /* v24 P0-2：移动端 LP 递增显示（每步 20 行；renderLP 每次重渲染重置） */
+      var LP_PAGE = 20;
+      var lpShown = LP_PAGE;
       var lpLiveMode = false;
       function buildChainButtons() {
         var q = lpQualifying();
@@ -1194,6 +1267,7 @@
         });
       }
       function renderLP() {
+        lpShown = LP_PAGE;
         var list = lpQualifying().filter(function (p) { return lpState.chain === "全部" || p[1] === lpState.chain; });
         var key = lpState.sort === "fees" ? function (p) { return aprVal(p[7]); }
           : function (p) { return aprVal(p[6]); };
@@ -1202,12 +1276,26 @@
         var sortName = lpState.sort === "fees" ? t("lp_sort_fees") : t("lp_sort_aero");
         $("lpSum").innerHTML = tf("lp_sum", { chain: escHtml(chainDisp(lpState.chain)), n: list.length, tvl: fmtUSD(tvlSum), name: sortName });
         $("lpList").innerHTML = list.length ? list.map(function (p, i) {
-          return '<div class="vrow lp-row"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
+          return '<div class="vrow lp-row' + (i >= lpShown ? " lp-extra" : "") + '"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
             '<span class="vsym">' + escHtml(p[0]) + '</span>' +
             '<span class="vapr">' + fmtPct(aprVal(lpState.sort === "fees" ? p[7] : p[6])) + '%</span></div>' +
             '<div class="vsub">' + escHtml(p[2]) + " · " + chainBadge(p[1]) + " · TVL " + fmtCompact(p[3]) + " · AERO " + aprDisp(p[6]) + " · Fees " + aprDisp(p[7]) + '</div>' +
             (p[4] === null || p[4] === undefined ? "" : '<div class="vsub">Volume 48H ' + fmtCompact(p[4]) + " · Fees 48H " + fmtUSD(p[5], p[5] < 10 ? 2 : 0) + '</div>') + '</div>';
          }).join("") : '<div class="tempty">' + t("lp_empty") + '</div>';
+        renderLpMore(list.length);
+      }
+      function renderLpMore(total) {
+        var wrap = $("lpMoreWrap"), btn = $("lpMoreBtn");
+        if (!wrap || !btn) return;
+        var left = total - lpShown;
+        if (left > 0) { wrap.classList.remove("off"); btn.textContent = tf("lp_more", { n: left }); }
+        else { wrap.classList.add("off"); }
+      }
+      function lpShowMore() {
+        lpShown += LP_PAGE;
+        var rows = $("lpList").querySelectorAll(".lp-row");
+        rows.forEach(function (r, i) { if (i < lpShown) r.classList.remove("lp-extra"); });
+        renderLpMore(rows.length);
       }
       $("lpSort").querySelectorAll("[data-sort]").forEach(function (b) {
         b.addEventListener("click", function () {
@@ -1216,6 +1304,7 @@
           renderLP();
         });
       });
+      $("lpMoreBtn").addEventListener("click", lpShowMore);
       buildChainButtons();
       renderLP();
 
@@ -2220,6 +2309,53 @@
         setInterval(function () { if (!document.hidden) refreshFeeds(); }, REFRESH_MS);
         document.addEventListener("visibilitychange", function () {
           if (!document.hidden && Date.now() - lastRefresh >= REFRESH_MS) refreshFeeds();
+        });
+      })();
+    </script>
+    <button type="button" id="backTop" class="backtop" aria-label="回到顶部">↑</button>
+    <script>
+      /* ===== v24 移动端控件初始化（视觉效果全部由 ≤640px CSS 门控，桌面无变化） ===== */
+      (function () {
+        if (typeof buildTierChips === "function") buildTierChips();
+        /* P2-2：总览「收益机制 / 数据口径」两区折叠（移动端默认折叠；两区为静态 DOM，自动刷新不重建，状态存变量不丢失） */
+        var ovFolded = true;
+        var ovBtns = [];
+        function ovApply() {
+          ["secMech", "secSrc"].forEach(function (id) {
+            var s = document.getElementById(id);
+            if (s) s.classList.toggle("ov-fold", ovFolded);
+          });
+          ovBtns.forEach(function (b) {
+            b.textContent = ovFolded ? t("ov_expand") : t("ov_collapse");
+            b.setAttribute("aria-expanded", ovFolded ? "false" : "true");
+          });
+        }
+        ["secMech", "secSrc"].forEach(function (id) {
+          var s = document.getElementById(id); if (!s) return;
+          var head = s.querySelector(".sec-head"); if (!head) return;
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "mini-btn ov-toggle";
+          b.addEventListener("click", function () { ovFolded = !ovFolded; ovApply(); });
+          head.appendChild(b); ovBtns.push(b);
+        });
+        ovApply();
+        /* P1-3：回到顶部 */
+        var bt = document.getElementById("backTop");
+        function btLabel() { if (bt) bt.setAttribute("aria-label", t("back_top")); }
+        btLabel();
+        if (bt) {
+          bt.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+          var onScroll = function () { bt.classList.toggle("on", window.scrollY > 600); };
+          window.addEventListener("scroll", onScroll, { passive: true });
+          onScroll();
+        }
+        /* 语言切换后同步 v24 控件文案（语言按钮的 setLang 监听在本脚本之前注册，先执行） */
+        ["langZh", "langEn"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener("click", function () {
+            if (typeof buildTierChips === "function") buildTierChips();
+            ovApply(); btLabel();
+          });
         });
       })();
     </script>
