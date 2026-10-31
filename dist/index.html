@@ -111,6 +111,18 @@
       .stat .k { font-size: 12px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .stat .v { font-size: 19px; font-weight: 600; margin-top: 1px; }
       .stat .s { font-size: 11px; color: var(--ink-3); margin-top: 1px; }
+      .burn-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+      .burn-total { font-size: 26px; font-weight: 700; }
+      .burn-legend { display: inline-flex; gap: 14px; align-items: center; font-size: 12px; color: var(--ink-2); }
+      .burn-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+      #burnChart svg { display: block; width: 100%; height: auto; }
+      #burnChart .bbar { fill: var(--accent); }
+      #burnChart .bline { fill: none; stroke: var(--warn-ink); stroke-width: 2; }
+      #burnChart .bdot { fill: var(--warn-ink); }
+      #burnChart .bgrid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
+      #burnChart .blab { fill: var(--ink-3); font-size: 12px; }
+      #burnChart .bval { fill: var(--ink); font-size: 12px; font-weight: 600; }
+      #burnChart .bcum { fill: var(--warn-ink); font-size: 12.5px; font-weight: 700; }
       @media (max-width: 720px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stat .v { font-size: 17px; } }
       /* segmented controls */
       .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); max-width: 100%; }
@@ -438,8 +450,16 @@
           <div class="stat"><div class="k" id="kVol7">近 7 天交易量</div><div class="v mono" id="stVol7">$2.63B</div><div class="s" id="sVol7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
           <div class="stat"><div class="k" id="kRev7">近 7 天 Revenue</div><div class="v mono" id="stRev7">$1.74M</div><div class="s" id="sRev7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
           <div class="stat"><div class="k" id="ovChainsK">覆盖链数</div><div class="v mono" id="stChains">7 链</div><div class="s" id="sChains">Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO 结算在 Base</div></div>
-          <div class="stat"><div class="k" id="ovBurnK">累计销毁 AERO</div><div class="v mono" id="stBurn">174,600.64</div><div class="s" id="sBurn">Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计 · 快照 2026-10-29</div></div>
         </div>
+
+        <section id="secBurn">
+          <div class="sec-head"><h2 id="burnH2">累计销毁 AERO</h2><span class="note" id="burnNote">Base VotingEscrow burnFees · 链上逐笔记录</span></div>
+          <div class="card">
+            <div class="burn-head"><div class="burn-total mono" id="burnTotal">407,815.83</div><div class="burn-legend" id="burnLegend"></div></div>
+            <div id="burnChart"></div>
+            <p class="src" id="burnSub">Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计 · 快照 2026-10-31</p>
+          </div>
+        </section>
 
         <section>
           <div class="sec-head"><h2 id="csH2">分链数据统计</h2><span class="note" id="csNote">由 LP 快照聚合 · TVL ≥ $100K 口径</span></div>
@@ -567,7 +587,8 @@
           ov_burn_k: "累计销毁 AERO", ov_burn_s: "Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计",
           ov_burn_latest: "最近一笔 {amt} AERO · {t} 销毁", ov_burn_stale_s: " · 本轮扫描未完成，累计数截至上一轮",
           chip_all: "全部", tier_filter_label: "按 Allocation 档位筛选", lp_more: "显示更多 · 剩余 {n} 个", back_top: "回到顶部", ov_expand: "展开", ov_collapse: "收起",
-          ov_burn_s_snap: "Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计 · 快照 2026-10-29",
+          ov_burn_s_snap: "Momentum Fund 回购销毁与协议费销毁 · Base VotingEscrow burnFees 链上累计 · 快照 2026-10-31",
+          burn_note: "Base VotingEscrow burnFees · 链上逐笔记录", burn_each: "每笔销毁", burn_cum: "累计",
           ov_nft_k: "sAERO 仓位 NFT 总数", ov_nft_s: "VotingEscrow totalSupply · 10-23 链上直读（结算在 Base）",
           ov_tvl_k_snap: "TVL（全系统）", ov_tvl_s_snap: "来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT",
           ov_vol_k_snap: "近 7 天交易量", ov_rev_k_snap: "近 7 天 Revenue",
@@ -706,7 +727,8 @@
           ov_burn_k: "AERO burned (cumulative)", ov_burn_s: "Momentum Fund buyback burns and protocol-fee burns · cumulative on-chain total via Base VotingEscrow burnFees",
           ov_burn_latest: "Latest burn {amt} AERO · {t}", ov_burn_stale_s: " · scan incomplete this round; total is as of the previous round",
           chip_all: "All", tier_filter_label: "Filter by Allocation tier", lp_more: "Show more · {n} remaining", back_top: "Back to top", ov_expand: "Expand", ov_collapse: "Collapse",
-          ov_burn_s_snap: "Momentum Fund buyback burns and protocol-fee burns · cumulative via Base VotingEscrow burnFees · snapshot 2026-10-29",
+          ov_burn_s_snap: "Momentum Fund buyback burns and protocol-fee burns · cumulative via Base VotingEscrow burnFees · snapshot 2026-10-31",
+          burn_note: "Base VotingEscrow burnFees · per-event on-chain record", burn_each: "Per burn", burn_cum: "Cumulative",
           ov_nft_k: "Total sAERO position NFTs", ov_nft_s: "VotingEscrow totalSupply · read on-chain 10-23 (settled on Base)",
           ov_tvl_k_snap: "TVL (system-wide)", ov_tvl_s_snap: "Source: app.aero.xyz official app snapshot · 2026-10-24 17:00 HKT",
           ov_vol_k_snap: "Volume, last 7 days", ov_rev_k_snap: "Revenue, last 7 days",
@@ -839,8 +861,10 @@
         if (pxT && !window.__pxLive) pxT.textContent = t("ov_px_snap");
         setText("ovCoolK", t("ov_cool_k")); setText("ovCoolV", t("ov_cool_v")); setText("ovCoolS", t("ov_cool_s"));
         setText("ovSupplyK", t("ov_supply_k")); setText("ovSupplyV", t("ov_supply_v")); setText("ovSupplyS", t("ov_supply_s"));
-        setText("ovBurnK", t("ov_burn_k"));
-        if (!window.__burnLive) setText("sBurn", t("ov_burn_s_snap"));
+        setText("burnH2", t("ov_burn_k"));
+        setText("burnNote", t("burn_note"));
+        if (!window.__burnLive) setText("burnSub", t("ov_burn_s_snap"));
+        if (typeof window.renderBurn === "function") window.renderBurn();
         setText("ovNftK", t("ov_nft_k")); setText("ovNftS", t("ov_nft_s"));
         if (!(window.__lpLiveRef && window.__lpLiveRef())) {
           setText("kTvl", t("ov_tvl_k_snap")); setText("sTvl", t("ov_tvl_s_snap"));
@@ -2239,6 +2263,71 @@
       window.loadMovers();
 
       /* ================= C：运行状态行（data/status.json） ================= */
+      /* 累计销毁柱状图：每笔一柱 + 累计折线（数据：status.json burn_history；
+         无实时明细时用内置快照两笔，合计须与实时累计对得上才画） */
+      var BURN_SNAP = [
+        { at: "2026-10-28T20:38:37Z", amount_aero: 174600.63624035534 },
+        { at: "2026-10-30T19:20:23Z", amount_aero: 233215.197549 }
+      ];
+      function burnFmt(n, dp) { return n.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp }); }
+      function burnShort(n) { return n >= 1000 ? Math.round(n).toLocaleString("en-US") : burnFmt(n, 2); }
+      function burnDate(iso) { var d = new Date(iso); if (isNaN(d)) return String(iso).slice(5, 10); return String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+      window.renderBurn = function () {
+        var box = $("burnChart"); if (!box) return;
+        var j = window.__statusData || null;
+        var live = !!(j && typeof j.burn_total_aero === "number" && isFinite(j.burn_total_aero));
+        var hist = null, total = live ? j.burn_total_aero : null;
+        if (live && Array.isArray(j.burn_history) && j.burn_history.length) {
+          var hh = j.burn_history.map(function (h) {
+            var amt = (h && h.amount_wei != null) ? Number(h.amount_wei) / 1e18 : (h ? Number(h.amount_aero) : NaN);
+            return { at: h && h.at ? String(h.at) : null, amt: amt };
+          }).filter(function (e) { return isFinite(e.amt) && e.amt > 0; });
+          if (hh.length) {
+            var s = hh.reduce(function (a, e) { return a + e.amt; }, 0);
+            if (Math.abs(s - total) <= Math.max(1, total * 0.01)) hist = hh;
+          }
+        }
+        if (!hist) {
+          var st = BURN_SNAP.reduce(function (a, e) { return a + e.amount_aero; }, 0);
+          if (!live || Math.abs(st - total) <= Math.max(1, total * 0.01)) {
+            hist = BURN_SNAP.map(function (e) { return { at: e.at, amt: e.amount_aero }; });
+            if (!live) total = st;
+          }
+        }
+        var bt = $("burnTotal");
+        if (bt && typeof total === "number") bt.textContent = burnFmt(total, 2);
+        var lg = $("burnLegend");
+        if (lg) lg.innerHTML = '<span><span class="sw" style="background:var(--accent)"></span>' + t("burn_each") + '</span><span><span class="sw" style="background:var(--warn-ink);border-radius:50%"></span>' + t("burn_cum") + "</span>";
+        var bs = $("burnSub");
+        if (bs) {
+          if (live) {
+            if (j.burn_latest_at && typeof j.burn_latest_amount === "number") bs.textContent = tf("ov_burn_latest", { amt: burnFmt(j.burn_latest_amount, 2), t: fmtGenTime(j.burn_latest_at) }) + (j.burn_stale ? t("ov_burn_stale_s") : "");
+            else bs.textContent = t("ov_burn_s") + (j.burn_stale ? t("ov_burn_stale_s") : "");
+          } else bs.textContent = t("ov_burn_s_snap");
+        }
+        if (!hist || !hist.length || typeof total !== "number" || !(total > 0)) { box.innerHTML = ""; return; }
+        var W = 680, H = 218, mT = 30, mB = 24, mL = 6, mR = 6;
+        var pw = W - mL - mR, ph = H - mT - mB, yMax = total * 1.12;
+        function Y(v) { return mT + ph - (v / yMax) * ph; }
+        var n = hist.length, slot = pw / n, bw = Math.min(72, slot * 0.52);
+        var cum = 0, bars = "", line = "", dots = "", grid = "";
+        [0.5, 1].forEach(function (f) { var gy = Y(total * f); grid += '<line class="bgrid" x1="' + mL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - mR) + '" y2="' + gy.toFixed(1) + '"/>'; });
+        hist.forEach(function (e, i) {
+          var cx = mL + slot * i + slot / 2, x = cx - bw / 2, y = Y(e.amt);
+          bars += '<rect class="bbar" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + (Y(0) - y).toFixed(1) + '" rx="3"><title>' + burnFmt(e.amt, 2) + " AERO</title></rect>";
+          bars += '<text class="bval" x="' + cx.toFixed(1) + '" y="' + (y - 6).toFixed(1) + '" text-anchor="middle">' + burnShort(e.amt) + "</text>";
+          bars += '<text class="blab" x="' + cx.toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + (e.at ? burnDate(e.at) : ("#" + (i + 1))) + "</text>";
+          cum += e.amt;
+          var cy = Y(cum);
+          line += (i ? "L" : "M") + cx.toFixed(1) + " " + cy.toFixed(1) + " ";
+          dots += '<circle class="bdot" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="3.2"><title>' + t("burn_cum") + " " + burnFmt(cum, 2) + " AERO</title></circle>";
+          if (i === n - 1) {
+            var end = cx > W - 150;
+            dots += '<text class="bcum" x="' + (end ? cx - 8 : cx + 8).toFixed(1) + '" y="' + (cy - 8).toFixed(1) + '" text-anchor="' + (end ? "end" : "start") + '">' + burnShort(cum) + "</text>";
+          }
+        });
+        box.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + t("ov_burn_k") + '">' + grid + bars + '<path class="bline" d="' + line.trim() + '"/>' + dots + "</svg>";
+      };
       window.renderStatus = function (j) {
         if (!j || typeof j !== "object") return;
         var txt;
@@ -2249,24 +2338,14 @@
           txt = tf("status_ok", { t: j.generated_at ? tf("status_gen", { t: fmtGenTime(j.generated_at) }) : "" });
         }
         if (Array.isArray(j.warnings) && j.warnings.length) txt += tf("status_warn", { w: String(j.warnings[0]) });
-        if (typeof j.burn_total_aero === "number" && isFinite(j.burn_total_aero)) {
-          window.__burnLive = true;
-          var bv = $("stBurn");
-          if (bv) bv.textContent = j.burn_total_aero.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          var bs = $("sBurn");
-          if (bs) {
-            if (j.burn_latest_at && typeof j.burn_latest_amount === "number") {
-              bs.textContent = tf("ov_burn_latest", { amt: j.burn_latest_amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), t: fmtGenTime(j.burn_latest_at) }) + (j.burn_stale ? t("ov_burn_stale_s") : "");
-            } else {
-              bs.textContent = t("ov_burn_s") + (j.burn_stale ? t("ov_burn_stale_s") : "");
-            }
-          }
-        }
+        if (typeof j.burn_total_aero === "number" && isFinite(j.burn_total_aero)) window.__burnLive = true;
+        if (typeof window.renderBurn === "function") window.renderBurn();
         var el = $("runStatus"); el.textContent = txt; el.hidden = false;
       };
       window.loadStatus = function () {
         fetch("data/status.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no status"); return r.json(); }).then(function (j) { window.__statusData = j; window.renderStatus(j); }).catch(function () { });
       };
+      if (typeof window.renderBurn === "function") window.renderBurn();
       window.loadStatus();
     </script>
   
