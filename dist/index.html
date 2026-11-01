@@ -239,6 +239,9 @@
       .mv-pct.up { color: var(--pos); }
       .mv-pct.down { color: var(--danger); }
       .mv-delta { color: var(--ink-3); white-space: nowrap; font-size: 12px; }
+      /* autopilot strip */
+      .apgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      @media (max-width: 640px) { .apgrid { grid-template-columns: 1fr; } }
       /* 我的 sAERO */
       .sa-lbl { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-3); margin-bottom: 4px; }
       .sa-input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; }
@@ -369,6 +372,7 @@
             <p id="basisRefresh">刷新节奏：数据将按<b>每小时</b>节奏由链上直读更新——PoolTape / CLPoolTape 读取 48 小时费用、LeafVoter 读取 Allocation，公开 RPC 直读官方合约（管线接入后生效）；管线接入前，本墙仍为上述 2026-10-24 17:13–17:15 HKT 官方应用快照，不自动刷新。</p>
           </div>
           <div id="moversStrip" hidden></div>
+          <div id="apStrip" hidden></div>
           <div class="tierchips" id="tierChips" role="group"></div>
           <div class="tiers" id="tiers"></div>
           <p class="src" id="wallSrc">每行小字为 48 小时构成：Fees 48H（交易费）· Incentives 48H（激励）· Rewards 48H（合计）。数据为 app.aero.xyz Markets 页 2026-10-24 17:13–17:15 HKT 快照直读。Stake APR 为过去 48 小时收益年化的预测值，非保证收益；48 小时窗口波动较大，请结合池深与持续性判断，勿据单窗尖峰追高。</p>
@@ -620,6 +624,7 @@
           footer_credit: "本站由 Meta Muse 开发",
           unit_yi: "亿", unit_wan: "万",
           movers_title: "过去 24 小时 Allocation 异动", movers_up: "涨幅前 5", movers_down: "跌幅前 5", movers_none: "暂无",
+          ap_title: "自动投票 · Autopilot", ap_yield: "收益率（年化）", ap_deposit: "存入规模", ap_status: "状态", ap_st_idle: "待分配（队列中）", ap_st_live: "已分配", ap_st_partial: "已分配 {p}%", ap_yield_pending: "尚未开始分配", ap_src: "数据：RelaySugar / RelayTape 链上直读 · 更新 {t}", ap_stale_s: " · 本轮采样异常，沿用上一帧",
           status_fail: "运行状态：本轮未通过质量检查，已保留上一轮数据{hf}",
           status_ok: "运行状态：正常{t}", status_gen: " · 生成于 {t}", status_warn: " · 提示：{w}",
           sa_pos_summary: "<b>仓位 #{id}</b> · 余额 <span class=\"mono\">{bal} AERO</span> · 已分配 <span class=\"mono\">{alloc} AERO</span> · 未派发余量 <span class=\"mono\">{rem} AERO</span>",
@@ -760,6 +765,7 @@
           footer_credit: "Built by Meta Muse",
           unit_yi: "00M", unit_wan: "0K",
           movers_title: "Allocation Movers — Past 24 Hours", movers_up: "Top 5 gainers", movers_down: "Top 5 losers", movers_none: "None",
+          ap_title: "Autopilot", ap_yield: "Yield (annualized)", ap_deposit: "Deposited", ap_status: "Status", ap_st_idle: "Queued — not allocated yet", ap_st_live: "Allocated", ap_st_partial: "{p}% allocated", ap_yield_pending: "Not earning yet", ap_src: "Source: RelaySugar / RelayTape on-chain reads · updated {t}", ap_stale_s: " · sampler issue this round; showing the previous frame",
           status_fail: "Run status: this run failed the quality check; the previous data was kept{hf}",
           status_ok: "Run status: OK{t}", status_gen: " · generated {t}", status_warn: " · Note: {w}",
           sa_pos_summary: "<b>Position #{id}</b> · Balance <span class=\"mono\">{bal} AERO</span> · Allocated <span class=\"mono\">{alloc} AERO</span> · Unallocated <span class=\"mono\">{rem} AERO</span>",
@@ -2262,6 +2268,51 @@
       };
       window.loadMovers();
 
+      /* ================= B2：Autopilot 收益（data/relays.json） ================= */
+      window.renderAutopilot = function (j) {
+        var box = $("apStrip"); if (!box) return;
+        if (!j || !Array.isArray(j.relays)) { box.hidden = true; return; }
+        var disp = j.relays.filter(function (r) { return r && r.display; });
+        if (!disp.length) {
+          /* 旧版 relays.json 无 display 标记：按 symbol 取存入最大的一代 */
+          var best = {};
+          j.relays.forEach(function (r) {
+            if (!r || r.type !== 0 || r.closed) return;
+            var k = r.symbol || r.name || "";
+            if (!best[k] || (r.amount_aero || 0) > (best[k].amount_aero || 0)) best[k] = r;
+          });
+          disp = Object.keys(best).map(function (k) { return best[k]; });
+        }
+        if (!disp.length) { box.hidden = true; return; }
+        disp.sort(function (a, b) { return (b.amount_aero || 0) - (a.amount_aero || 0); });
+        function fmtAero(n) { return (typeof n === "number" && isFinite(n)) ? Math.round(n).toLocaleString("en-US") : "—"; }
+        function statusOf(r) {
+          if (typeof r.idle_share !== "number") return "—";
+          if (r.idle_share >= 0.999) return t("ap_st_idle");
+          if (r.idle_share <= 0.01) return t("ap_st_live");
+          return tf("ap_st_partial", { p: ((1 - r.idle_share) * 100).toFixed(0) });
+        }
+        function yieldOf(r) {
+          if (typeof r.apr_pct === "number" && isFinite(r.apr_pct)) return '<span class="mv-pct up mono">' + r.apr_pct.toFixed(2) + "%</span>";
+          if (typeof r.idle_share === "number" && r.idle_share >= 0.999) return t("ap_yield_pending");
+          return "—";
+        }
+        var cards = disp.map(function (r) {
+          return '<div class="mv-card"><h4>' + escHtml(r.name || r.symbol || "") + "</h4>"
+            + '<div class="mv-row"><span class="mv-name">' + t("ap_yield") + "</span>" + yieldOf(r) + "</div>"
+            + '<div class="mv-row"><span class="mv-name">' + t("ap_deposit") + '</span><span class="mono">' + fmtAero(r.amount_aero) + " AERO</span></div>"
+            + '<div class="mv-row"><span class="mv-name">' + t("ap_status") + "</span><span>" + statusOf(r) + "</span></div>"
+            + "</div>";
+        }).join("");
+        box.innerHTML = '<h3 style="margin:0 0 8px;font-size:15.5px">' + t("ap_title") + '</h3><div class="apgrid">' + cards + "</div>"
+          + '<p class="src">' + tf("ap_src", { t: j.generated_at ? fmtGenTime(j.generated_at) : "—" }) + (j.stale ? t("ap_stale_s") : "") + "</p>";
+        box.hidden = false;
+      };
+      window.loadAutopilot = function () {
+        fetch("data/relays.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no relays"); return r.json(); }).then(function (j) { window.__relaysData = j; window.renderAutopilot(j); }).catch(function () { });
+      };
+      window.loadAutopilot();
+
       /* ================= C：运行状态行（data/status.json） ================= */
       /* 累计销毁柱状图：每笔一柱 + 累计折线（数据：status.json burn_history；
          无实时明细时用内置快照两笔，合计须与实时累计对得上才画） */
@@ -2358,6 +2409,7 @@
         if (typeof updateOverview === "function") updateOverview();
         if (typeof updateStamp === "function") updateStamp();
         if (window.__moversData && typeof window.renderMovers === "function") window.renderMovers(window.__moversData);
+        if (window.__relaysData && typeof window.renderAutopilot === "function") window.renderAutopilot(window.__relaysData);
         if (window.__statusData && typeof window.renderStatus === "function") window.renderStatus(window.__statusData);
         if (typeof saState !== "undefined" && saState && saState.chainData && saState.current !== null && typeof renderAllPosition === "function") renderAllPosition();
         else if (typeof renderChips === "function" && typeof saState !== "undefined" && saState.positions && saState.positions.length) renderChips();
@@ -2389,6 +2441,7 @@
           if (typeof loadPools === "function") loadPools();
           if (typeof loadLP === "function") loadLP();
           if (typeof window.loadMovers === "function") window.loadMovers();
+          if (typeof window.loadAutopilot === "function") window.loadAutopilot();
           if (typeof window.loadStatus === "function") window.loadStatus();
         }
         window.__refreshFeeds = refreshFeeds;
