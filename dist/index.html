@@ -452,7 +452,7 @@
           <div class="stat"><div class="k" id="ovNftK">sAERO 仓位 NFT 总数</div><div class="v mono">11,916</div><div class="s" id="ovNftS">VotingEscrow totalSupply · 10-23 链上直读（结算在 Base）</div></div>
           <div class="stat"><div class="k" id="kTvl">TVL（全系统）</div><div class="v mono" id="stTvl">$344.13M</div><div class="s" id="sTvl">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
           <div class="stat"><div class="k" id="kVol7">近 7 天交易量</div><div class="v mono" id="stVol7">$2.63B</div><div class="s" id="sVol7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
-          <div class="stat"><div class="k" id="kRev7">近 7 天 Revenue</div><div class="v mono" id="stRev7">$1.74M</div><div class="s" id="sRev7">来源：app.aero.xyz 官方应用快照 · 2026-10-24 17:00 HKT</div></div>
+          <div class="stat"><div class="k" id="kRev7">sAERO 质押数量</div><div class="v mono" id="stRev7">1,045,247,236</div><div class="s" id="sRev7">内嵌快照 · 2026-11-03 链上直读（status.json 未加载）</div></div>
           <div class="stat"><div class="k" id="ovChainsK">覆盖链数</div><div class="v mono" id="stChains">7 链</div><div class="s" id="sChains">Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain · sAERO 结算在 Base</div></div>
         </div>
 
@@ -600,6 +600,7 @@
           ov_tvl_k_live: "TVL 合计（达标池）", ov_tvl_s_live: "TVL ≥ $100K 池 · 链上直读（data/lp.json）· 每小时更新",
           ov_fees_k_live: "48H 手续费合计", ov_fees_s_live: "TVL ≥ $100K 池口径 · 由 Fees APR × TVL ÷ 18250 反推",
           ov_wall_k_live: "投票墙池数", ov_wall_s_live: "data/pools.json 链上直读条数", ov_wall_s_snap: "内嵌快照池数（pools.json 未加载）",
+          ov_stake_k: "sAERO 质押数量", ov_stake_s_live: "VotingEscrow supply() 链上直读 · 占 AERO 总供应 {pct}%", ov_stake_s_live_nopct: "VotingEscrow supply() 链上直读 · 每小时更新", ov_stake_s_snap: "内嵌快照 · 2026-11-03 链上直读（status.json 未加载）", ov_stake_stale_s: "（本轮采样失败，沿用上轮数值）",
           ov_chains_v_live: "{n} 链", ov_chains_s_live: "上榜池 {n} 个（TVL ≥ $100K）· sAERO 结算在 Base",
           cs_h2: "分链数据统计", cs_note_snap: "由 LP 快照聚合 · TVL ≥ $100K 口径", cs_note_live: "由 LP 实时数据聚合 · TVL ≥ $100K 口径 · 链上直读",
           cs_th_chain: "链", cs_th_count: "达标池数", cs_th_tvl: "TVL 合计", cs_th_fees: "Fees 48H 合计",
@@ -741,6 +742,7 @@
           ov_tvl_k_live: "Total TVL (qualifying pools)", ov_tvl_s_live: "Pools with TVL ≥ $100K · on-chain data (data/lp.json) · updated hourly",
           ov_fees_k_live: "Total fees, 48H", ov_fees_s_live: "Qualifying pools (TVL ≥ $100K) · derived as Fees APR × TVL ÷ 18250",
           ov_wall_k_live: "Pools on the voting wall", ov_wall_s_live: "Rows in data/pools.json (on-chain data)", ov_wall_s_snap: "Pools in the embedded snapshot (pools.json not loaded)",
+          ov_stake_k: "AERO staked in sAERO", ov_stake_s_live: "VotingEscrow supply() on-chain · {pct}% of AERO total supply", ov_stake_s_live_nopct: "VotingEscrow supply() on-chain · updated hourly", ov_stake_s_snap: "Embedded snapshot · read on-chain 2026-11-03 (status.json not loaded)", ov_stake_stale_s: " (sampling failed this round; previous values carried)",
           ov_chains_v_live: "{n} chains", ov_chains_s_live: "{n} listed pools (TVL ≥ $100K) · sAERO settles on Base",
           cs_h2: "Per-Chain Stats", cs_note_snap: "Aggregated from the LP snapshot · TVL ≥ $100K basis", cs_note_live: "Aggregated from live LP data · TVL ≥ $100K basis · on-chain data",
           cs_th_chain: "Chain", cs_th_count: "Qualifying pools", cs_th_tvl: "Total TVL", cs_th_fees: "Total Fees 48H",
@@ -875,7 +877,7 @@
         if (!(window.__lpLiveRef && window.__lpLiveRef())) {
           setText("kTvl", t("ov_tvl_k_snap")); setText("sTvl", t("ov_tvl_s_snap"));
           setText("kVol7", t("ov_vol_k_snap")); setText("sVol7", t("ov_tvl_s_snap"));
-          setText("kRev7", t("ov_rev_k_snap")); setText("sRev7", t("ov_tvl_s_snap"));
+          setText("kRev7", t("ov_stake_k")); if (typeof window.renderStake === "function") window.renderStake();
           setText("ovChainsK", t("ov_chains_k")); setText("stChains", t("ov_chains_v_snap")); setText("sChains", t("ov_chains_s_snap"));
         } else { setText("ovChainsK", t("ov_chains_k")); }
         setText("csH2", t("cs_h2"));
@@ -1383,9 +1385,7 @@
         $("kVol7").textContent = t("ov_fees_k_live");
         $("stVol7").textContent = fmtM(fees);
         $("sVol7").textContent = t("ov_fees_s_live");
-        $("kRev7").textContent = t("ov_wall_k_live");
-        $("stRev7").textContent = fmtNum(liveState.poolsCount || VOTE_WALL.totalPools, 0);
-        $("sRev7").textContent = liveState.poolsCount ? t("ov_wall_s_live") : t("ov_wall_s_snap");
+        /* kRev7/stRev7/sRev7 卡自 v28 起为 sAERO 质押数量，由 renderStake 依 status.json 的 ve_* 字段渲染，此处不再写投票墙池数 */
         $("stChains").textContent = tf("ov_chains_v_live", { n: Object.keys(chains).length });
         $("sChains").textContent = tf("ov_chains_s_live", { n: q.length });
       }
@@ -2379,6 +2379,26 @@
         });
         box.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + t("ov_burn_k") + '">' + grid + bars + '<path class="bline" d="' + line.trim() + '"/>' + dots + "</svg>";
       };
+      /* sAERO 质押数量卡（v28 起取代投票墙池数）：status.json 的 ve_*
+         字段（VotingEscrow supply() 锁仓量，管线每小时采样）；无实时
+         字段时用内置快照（2026-11-03 链上直读，与快照口径一致才显示
+         占比，快照小字已注明日期）。 */
+      var VE_SNAP = { locked: 1045247235.52, total: 2132948313.97 };
+      window.renderStake = function () {
+        var kEl = $("kRev7"), vEl = $("stRev7"), sEl = $("sRev7");
+        if (!kEl || !vEl || !sEl) return;
+        kEl.textContent = t("ov_stake_k");
+        var j = window.__statusData || null;
+        var locked = (j && typeof j.ve_locked_aero === "number" && isFinite(j.ve_locked_aero) && j.ve_locked_aero > 0) ? j.ve_locked_aero : null;
+        if (locked !== null) {
+          vEl.textContent = burnFmt(locked, 0);
+          var pct = (typeof j.ve_total_supply_aero === "number" && isFinite(j.ve_total_supply_aero) && j.ve_total_supply_aero > 0) ? (locked / j.ve_total_supply_aero * 100).toFixed(1) : null;
+          sEl.textContent = (pct !== null ? tf("ov_stake_s_live", { pct: pct }) : t("ov_stake_s_live_nopct")) + (j.ve_stale ? t("ov_stake_stale_s") : "");
+        } else {
+          vEl.textContent = burnFmt(VE_SNAP.locked, 0);
+          sEl.textContent = t("ov_stake_s_snap");
+        }
+      };
       window.renderStatus = function (j) {
         if (!j || typeof j !== "object") return;
         var txt;
@@ -2391,12 +2411,14 @@
         if (Array.isArray(j.warnings) && j.warnings.length) txt += tf("status_warn", { w: String(j.warnings[0]) });
         if (typeof j.burn_total_aero === "number" && isFinite(j.burn_total_aero)) window.__burnLive = true;
         if (typeof window.renderBurn === "function") window.renderBurn();
+        if (typeof window.renderStake === "function") window.renderStake();
         var el = $("runStatus"); el.textContent = txt; el.hidden = false;
       };
       window.loadStatus = function () {
         fetch("data/status.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no status"); return r.json(); }).then(function (j) { window.__statusData = j; window.renderStatus(j); }).catch(function () { });
       };
       if (typeof window.renderBurn === "function") window.renderBurn();
+      if (typeof window.renderStake === "function") window.renderStake();
       window.loadStatus();
     </script>
   
