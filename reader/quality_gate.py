@@ -93,6 +93,11 @@ import sys
 import urllib.request
 from datetime import datetime, timezone
 
+try:
+    import requests
+except Exception:  # the pipeline venv ships requests; guard anyway
+    requests = None
+
 ANCHOR = {"pair": "AERO/USDC", "chain": "Base", "type": "Basic Volatile"}
 ANCHOR_DRIFT_MAX = 0.50
 LP_DRIFT_MAX = 0.30
@@ -234,10 +239,21 @@ def fetch_prev_raw_pools(url, local_file):
             return None
     elif url:
         try:
-            req = urllib.request.Request(
-                url, headers={"User-Agent": "aerodash-quality-gate/2"})
-            with urllib.request.urlopen(req, timeout=20) as resp:
-                doc = json.loads(resp.read().decode("utf-8"))
+            # requests first: plain urllib reads from aerodash.xyz are
+            # truncated mid-body on the hosted runner VM, which used to
+            # silently drop this baseline (fix formalised 2026-11-04).
+            if requests is not None:
+                with requests.get(
+                        url,
+                        headers={"User-Agent": "aerodash-quality-gate/2"},
+                        timeout=20) as resp:
+                    resp.raise_for_status()
+                    doc = resp.json()
+            else:
+                req = urllib.request.Request(
+                    url, headers={"User-Agent": "aerodash-quality-gate/2"})
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    doc = json.loads(resp.read().decode("utf-8"))
         except Exception:
             return None
     if isinstance(doc, dict):
