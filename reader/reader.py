@@ -4,11 +4,19 @@
 Enumerates gauged pools per chain from FactoryRegistry, reads 48h fees/MEV
 from PoolTape/CLPoolTape, per-pool Allocation from LeafVoter gauge points,
 and per-gauge incentive program streams from VotingRewardsManager.
-Incentives口径: incentives48h counts ONLY programs still live at read
-time (end > now), each at rate * full 48h window (not pro-rated by
-overlap), matching the official UI (proven 2026-10-24, ratios
-0.998-1.000 on 6 Base pools); the old gross trailing-48h stream is
-kept separately as incentives48h_gross_usd.
+Incentives口径: incentives48h counts each program at rate * its
+overlap with the FORWARD 48h window [now, now+48h] (changed
+2026-11-02). The previous caliber -- every program with end > now at
+rate * full 48h -- matched the official UI on 6 Base pools
+(2026-10-24, ratios 0.998-1.000) because those programs spanned the
+whole window, where the two calibers coincide; but it double-counts
+a sponsor handover: when a successor program is pre-created before
+the running one ends, both were charged a full 48h (Arbitrum
+USDG/WETH showed $4,424 vs official $2.25K; forward overlap
+recomputes $2,251 on-chain -- see caliber_check/). Forward overlap
+also leaves a single window-spanning program unchanged, so the
+2026-10-24 parity stands. The gross trailing-48h stream is kept
+separately as incentives48h_gross_usd.
 LP extension (2026-10-24): per-pool token balances (TVL), the gauge
 emission rate min(weight * emissionsPerVP / 1e18, emissionCap) from
 LeafVoter + FactoryRegistry, and derived aero_apr_pct / fees_apr_pct;
@@ -79,7 +87,8 @@ from web3 import Web3
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 WINDOW = 172800  # 48h in seconds
-ANNUALIZE = 365.25 * 24 * 3600 / WINDOW  # 182.625
+ANNUALIZE = 365 * 24 * 3600 / WINDOW  # 182.5 (365d, unified with the
+# LP APRs' 182.5 / 31536000 on 2026-11-02; was 365.25d = 182.625)
 # ---- price sanity gate thresholds (v15) -----------------------------------
 # Basis (caliber_check/, 2026-10-25): the two observed poisonings deviated
 # 55x (Index, overpriced) and ~3x (AI, underpriced) from their pools' spot
@@ -126,10 +135,15 @@ CHAINS = {
                      "https://ink.drpc.org"]},
     "arc": {"chain_id": 5042, "registry": "0xCe44907DC45D3BFa3f5f6035B0e6E8B22D780A42",
             "cl_factory": "0x7F83235643181E440433400a027618Cd50879751",
-            "rpcs": ["https://rpc.mainnet.arc.io"], "chunk": 25},
+            "rpcs": ["https://rpc.mainnet.arc.io", "https://arc.drpc.org"],
+            "chunk": 25},
     "robinhood": {"chain_id": 4663, "registry": "0xdd1705e23762F4D6e44D8C31BD8Ea80c54612239",
                   "cl_factory": "0xc63d7338c178e805c544B8f897066bD3BBcBE136",
-                  "rpcs": ["https://robinhood.drpc.org"], "chunk": 50},
+                  # publicnode first: it accepts JSON-RPC batches; the
+                  # drpc free plan rejects batches >3 items outright
+                  # (HTTP 400), which forced per-item fallback crawls.
+                  "rpcs": ["https://robinhood-rpc.publicnode.com",
+                           "https://robinhood.drpc.org"], "chunk": 50},
 }
 
 # LpSugar aggregator per chain (v20 staked-share source). Every address
@@ -193,17 +207,23 @@ class RPCError(Exception):
 
 
 class TokenBucket:
-    """Global RPC rate limiter shared by every chain thread.
+    """Per-endpoint RPC rate limiter (one bucket per endpoint URL).
 
     Reservation scheduling on a shared clock: acquiring n logical calls
     reserves n/rate seconds of budget, and the caller sleeps until its
-    reservation starts. The aggregate logical-call rate across all
-    chains therefore never exceeds the configured rate over any
-    sustained window, while an idle limiter lets the next request go
-    immediately. A batch POST of n items is charged n (the same
-    accounting as RPC.calls), so a burst is just a batch — exactly
-    what the sequential version already sent. acquire() returns the
-    seconds spent waiting, for per-chain attribution in chain_stats."""
+    reservation starts. The logical-call rate to any one endpoint
+    therefore never exceeds the configured rate over any sustained
+    window, while an idle limiter lets the next request go immediately.
+    A batch POST of n items is charged n (the same accounting as
+    RPC.calls), so a burst is just a batch. acquire() returns the
+    seconds spent waiting, for per-chain attribution in chain_stats.
+
+    History: this was a single GLOBAL bucket until 2026-11-06. That
+    serialized all seven chains behind one 20/s budget — a ~660s floor
+    for ~13k calls — and starved small chains behind Base's
+    reservations (arc waited 548s for 483 calls). Providers meter per
+    endpoint host, so per-endpoint buckets at the same rate restore
+    parallelism without raising the pressure on any single host."""
 
     def __init__(self, rate_per_sec):
         self.rate = float(rate_per_sec)
@@ -238,7 +258,17 @@ def _rpc_rps():
 
 
 RPC_RPS = _rpc_rps()
-RPC_LIMITER = TokenBucket(RPC_RPS)
+_LIMITERS = {}
+_LIMITERS_LOCK = threading.Lock()
+
+
+def _bucket_for(url):
+    """The TokenBucket metering one endpoint URL (created lazily)."""
+    with _LIMITERS_LOCK:
+        bucket = _LIMITERS.get(url)
+        if bucket is None:
+            bucket = _LIMITERS[url] = TokenBucket(RPC_RPS)
+        return bucket
 
 _tls = threading.local()
 
@@ -283,10 +313,11 @@ class RPC:
         self.http_429 = 0
         self.limiter_wait = 0.0
 
-    def _acquire(self, n=1):
-        """Charge n logical calls to the GLOBAL limiter (shared by all
-        chains); every attempt, retries included, pays before sending."""
-        self.limiter_wait += RPC_LIMITER.acquire(n)
+    def _acquire(self, n, url):
+        """Charge n logical calls to the bucket of the endpoint about
+        to be used; every attempt, retries included, pays before
+        sending."""
+        self.limiter_wait += _bucket_for(url).acquire(n)
 
     def _note_error(self, e):
         resp = getattr(e, "response", None)
@@ -308,7 +339,7 @@ class RPC:
         last = None
         for i in range(attempts):
             url = self.endpoints[self.idx % len(self.endpoints)]
-            self._acquire(1)
+            self._acquire(1, url)
             try:
                 res = self._once(url, method, params)
                 self.calls += 1
@@ -327,7 +358,7 @@ class RPC:
     def eth_call_once(self, to, data_hex):
         """Single attempt on the current endpoint, no retry sleeps."""
         url = self.endpoints[self.idx % len(self.endpoints)]
-        self._acquire(1)
+        self._acquire(1, url)
         try:
             return self._once(url, "eth_call",
                               [{"to": to, "data": data_hex}, "latest"])
@@ -345,7 +376,7 @@ class RPC:
         last = None
         for i in range(attempts):
             url = self.endpoints[self.idx % len(self.endpoints)]
-            self._acquire(len(items))
+            self._acquire(len(items), url)
             try:
                 resp = _get_session().post(url, json=payload, timeout=60)
                 resp.raise_for_status()
@@ -926,12 +957,16 @@ def read_incentives(records_by_chain, rpcs_by_chain, now_by_chain):
     - incentive_raw_gross: every program's trailing-48h streamed amount,
       rate * overlap([start,end], [now-48h, now]) — the v1 definition,
       kept for reference only.
-    - incentive_raw (UI parity, proven 2026-10-24): ONLY programs still
-      live at read time (end > now), each contributing rate * WINDOW —
-      the FULL 48h window, not pro-rated by overlap. Ended programs
-      contribute 0. This reproduced the official UI's Incentives 48H
-      at ratios 0.998-1.000 on 6 Base pools (targeted read 19:39 HKT
-      vs UI capture 19:38 HKT)."""
+    - incentive_raw (UI parity): each program contributes
+      rate * overlap([start, end], [now, now + WINDOW]) — the stream
+      it will actually pay over the forward 48h. For a program
+      spanning the whole forward window this equals rate * WINDOW,
+      the caliber proven against the official UI on 2026-10-24
+      (ratios 0.998-1.000 on 6 Base pools); the forward-overlap form
+      additionally fixes the 2026-11-02 handover double-count, where
+      a pre-created successor and its still-running predecessor were
+      both charged a full window (USDG/WETH $4,424 vs official
+      $2.25K; forward overlap $2,251)."""
     for chain, records in records_by_chain.items():
         rpc = rpcs_by_chain[chain]
         now = now_by_chain[chain]
@@ -966,14 +1001,19 @@ def read_incentives(records_by_chain, rpcs_by_chain, now_by_chain):
                 if overlap > 0:
                     rec.setdefault("incentive_raw_gross", []).append(
                         (addr(token), rate * overlap / 1e18))
-                # Live-only (UI parity): a program contributes to
-                # incentives48h only if it is still live at read time
-                # (end > now), and then at rate * WINDOW — the full 48h
-                # window, NOT pro-rated by overlap. Ended programs
-                # contribute 0 here and survive only in the gross list.
-                if end > now:
+                # Live (UI parity): rate * overlap of [start, end]
+                # with the FORWARD window [now, now + WINDOW] — what
+                # the program will actually stream over the next 48h.
+                # A window-spanning program contributes rate * WINDOW
+                # exactly as the pre-2026-11-02 caliber did; a program
+                # ending mid-window contributes only its remaining
+                # stream and a pre-created successor only from its
+                # start, so a handover is never double-charged.
+                fwd_overlap = max(0, min(end, now + WINDOW)
+                                  - max(start, now))
+                if fwd_overlap > 0:
                     rec.setdefault("incentive_raw", []).append(
-                        (addr(token), rate * WINDOW / 1e18))
+                        (addr(token), rate * fwd_overlap / 1e18))
             rec["_incentive_overlap_done"] = True
         for rec in records:
             if rec.get("incentive_count") == 0:
@@ -1434,7 +1474,7 @@ def main():
     chain_names = [c.strip() for c in args.chains.split(",") if c.strip()]
     only = ({a.strip().lower() for a in args.only.split(",")}
             if args.only else None)
-    print(f"chains in parallel: {chain_names}; global rpc limiter "
+    print(f"chains in parallel: {chain_names}; per-endpoint rpc limiter "
           f"{RPC_RPS:g} logical calls/s (AERO_RPC_RPS)", flush=True)
 
     def work(chain):
