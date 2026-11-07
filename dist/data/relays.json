@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-07T17:23:57Z",
+ "generated_at": "2026-11-07T18:22:56Z",
  "source": "RelaySugar.all + RelayTape.observeBacking/observeReward (Base)",
  "relay_sugar": "0xA9eb3df2F5a6713D6BfD74B0a66647228672a654",
  "relay_tape": "0x2d2B0Bed14477a15cE77181cA84f518e75628cb2",
@@ -815,30 +815,30 @@
    "closed": false,
    "token_id": 20365,
    "factory": "0xA5283582951ae0cF72bE4BEA54dA63D199264B78",
-   "amount_wei": "12496714826735644031742165",
-   "amount_aero": 12496714.826735644,
-   "idle_wei": "26012328702924994378911",
-   "idle_aero": 26012.32870292499,
-   "idle_share": 0.0020815333520513616,
-   "voting_wei": "12496714826735644031742165",
-   "total_shares_wei": "11678407400699784437247036",
-   "total_backing_wei": "11709541257610781243015048",
+   "amount_wei": "12367431819218769785084668",
+   "amount_aero": 12367431.81921877,
+   "idle_wei": "13588884307834945332108",
+   "idle_aero": 13588.884307834946,
+   "idle_share": 0.0010987636322941404,
+   "voting_wei": "12367431819218769785084668",
+   "total_shares_wei": "12331254864253912939317503",
+   "total_backing_wei": "12364129169054558080233945",
    "backing_per_share": 1.0026659334481798,
-   "pending_deposits": 272,
-   "pending_withdrawals": 9,
+   "pending_deposits": 3,
+   "pending_withdrawals": 0,
    "reward_tokens": [],
    "tape_backing": [
     {
      "seconds_ago": 0,
      "cumulative": "23993519216173988721921",
-     "block_timestamp": 1794072246,
-     "value_per_share": "1002665933448179862866424697"
+     "block_timestamp": 1794075786,
+     "value_per_share": "1002665933448179862866435829"
     },
     {
      "seconds_ago": 3600,
-     "cumulative": "7542143014413748974169",
-     "block_timestamp": 1793898227,
-     "value_per_share": "1001053545133522581033819751"
+     "cumulative": "16645104326008072424871",
+     "block_timestamp": 1794069863,
+     "value_per_share": "1002036702540399955282420495"
     },
     {
      "seconds_ago": 86400,
@@ -860,8 +860,8 @@
     }
    ],
    "tape_rewards": {},
-   "apr_pct": 25.700822799225588,
-   "apr_span_hours": 95.33361111111111,
+   "apr_pct": 25.40762492156279,
+   "apr_span_hours": 96.31694444444445,
    "apr_source": "tape_backing_growth",
    "display": true
   },
@@ -873,17 +873,17 @@
    "closed": false,
    "token_id": 20366,
    "factory": "0xA5283582951ae0cF72bE4BEA54dA63D199264B78",
-   "amount_wei": "49961931334865384813886502",
-   "amount_aero": 49961931.33486539,
-   "idle_wei": "9647357130190270490385811",
-   "idle_aero": 9647357.13019027,
-   "idle_share": 0.19309415934163393,
-   "voting_wei": "49961931334865384813886502",
-   "total_shares_wei": "38700333148617775534209955",
-   "total_backing_wei": "38700333148617775534209955",
+   "amount_wei": "50975705458419495872205005",
+   "amount_aero": 50975705.458419494,
+   "idle_wei": "10388052006485453489302441",
+   "idle_aero": 10388052.006485453,
+   "idle_share": 0.2037843696927139,
+   "voting_wei": "50975705458419495872205005",
+   "total_shares_wei": "38028170406787477508930054",
+   "total_backing_wei": "38028170406787477508930054",
    "backing_per_share": 1.0,
-   "pending_deposits": 163,
-   "pending_withdrawals": 8,
+   "pending_deposits": 167,
+   "pending_withdrawals": 1,
    "reward_tokens": [
     "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
    ],
@@ -924,14 +924,14 @@
      {
       "seconds_ago": 0,
       "cumulative": "46858693590",
-      "block_timestamp": 1794072247,
+      "block_timestamp": 1794075787,
       "value_per_share": "1613442334334"
      },
      {
       "seconds_ago": 3600,
-      "cumulative": "24956673521",
-      "block_timestamp": 1793898241,
-      "value_per_share": "1023585148728"
+      "cumulative": "43862335966",
+      "block_timestamp": 1794071697,
+      "value_per_share": "1536017737242"
      },
      {
       "seconds_ago": 86400,
@@ -953,8 +953,8 @@
      }
     ]
    },
-   "apr_pct": 16.288738507171523,
-   "apr_span_hours": 95.32944444444445,
+   "apr_pct": 16.096542403813878,
+   "apr_span_hours": 96.31277777777778,
    "apr_source": "tape_rewards_cumulative",
    "display": true
   },
