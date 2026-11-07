@@ -517,6 +517,7 @@
         <p id="footer1"><b>非官方声明</b>：本站为社区非官方（unofficial）数据看板，与 Aerodrome 官方无关，不提供交易、兑换或分配执行功能，所有操作请以官方渠道为准。</p>
                 <p id="footer3">收益数字均为历史记录或官方估算，不代表未来收益，不构成投资建议。</p>
         <p><span id="footerSrcLbl">源码：</span><a href="https://github.com/8280998/aerodash" target="_blank" rel="noopener">github.com/8280998/aerodash</a> · <span id="footerCredit">本站由 Meta Muse 开发</span></p>
+        <p><span id="footerXLbl">官方 X：</span><a href="https://x.com/aeroxyz" target="_blank" rel="noopener">@aeroxyz</a> · <span id="footerXCnLbl">官方中文 X：</span><a href="https://x.com/aerochinese" target="_blank" rel="noopener">@aerochinese</a></p>
       </footer>
     </main>
 
@@ -609,6 +610,8 @@
           footer_3: "收益数字均为历史记录或官方估算，不代表未来收益，不构成投资建议。",
           footer_src_label: "源码：",
           footer_credit: "本站由 Meta Muse 开发",
+          footer_x_label: "官方 X：",
+          footer_xcn_label: "官方中文 X：",
           unit_yi: "亿", unit_wan: "万",
           movers_title: "过去 24 小时 Allocation 异动", movers_up: "涨幅前 5", movers_down: "跌幅前 5", movers_none: "暂无",
           ap_title: "自动投票 · Autopilot", ap_yield: "收益率（年化）", ap_deposit: "存入规模", ap_status: "状态", ap_st_idle: "待分配（队列中）", ap_st_live: "已分配", ap_st_partial: "已分配 {p}%", ap_yield_pending: "尚未开始分配", ap_src: "更新 {t}", ap_stale_s: " · 本轮采样异常，沿用上一帧",
@@ -742,6 +745,8 @@
           footer_3: "All reward figures are historical records or official estimates; they do not represent future returns and are not investment advice.",
           footer_src_label: "Source code: ",
           footer_credit: "Built by Meta Muse",
+          footer_x_label: "Official X: ",
+          footer_xcn_label: "Official Chinese X: ",
           unit_yi: "00M", unit_wan: "0K",
           movers_title: "Allocation Movers — Past 24 Hours", movers_up: "Top 5 gainers", movers_down: "Top 5 losers", movers_none: "None",
           ap_title: "Autopilot", ap_yield: "Yield (annualized)", ap_deposit: "Deposited", ap_status: "Status", ap_st_idle: "Queued — not allocated yet", ap_st_live: "Allocated", ap_st_partial: "{p}% allocated", ap_yield_pending: "Not earning yet", ap_src: "Updated {t}", ap_stale_s: " · sampler issue this round; showing the previous frame",
@@ -868,6 +873,8 @@
         setHTML("footer1", t("footer_1")); setText("footer3", t("footer_3"));
         var fl = document.getElementById("footerSrcLbl"); if (fl) fl.textContent = t("footer_src_label");
         var fc = document.getElementById("footerCredit"); if (fc) fc.textContent = t("footer_credit");
+        var fx = document.getElementById("footerXLbl"); if (fx) fx.textContent = t("footer_x_label");
+        var fxc = document.getElementById("footerXCnLbl"); if (fxc) fxc.textContent = t("footer_xcn_label");
       }
       function rerenderAll() {
         applyStatic();
