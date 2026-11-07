@@ -169,6 +169,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--feed", required=True)
     ap.add_argument("--history-dir", required=True)
+    ap.add_argument("--preds-out",
+                    help="also write the predictions archive record "
+                         "(this round's pred_apr values plus the "
+                         "inputs needed to score them at T+48h)")
     args = ap.parse_args()
     with open(args.feed, encoding="utf-8") as f:
         feed = json.load(f)
@@ -179,6 +183,7 @@ def main():
         return 1
     series = collect(args.history_dir, now, WINDOW_H)
     n_pred = 0
+    preds = []
     for row in feed.get("pools", []):
         key = (str(row.get("chain", "")).lower(),
                str(row.get("pool", "")).lower())
@@ -186,8 +191,18 @@ def main():
         if pred is not None:
             row["pred_apr"] = pred
             n_pred += 1
+            preds.append({
+                "chain": row.get("chain"), "pool": row.get("pool"),
+                "pair": row.get("pair"), "stake_apr": row.get("stake_apr"),
+                "pred_apr": pred, "rewards48h": row.get("rewards48h"),
+                "incentives48h": row.get("incentives48h"),
+                "allocation": row.get("allocation")})
     with open(args.feed, "w", encoding="utf-8") as f:
         json.dump(feed, f, indent=1)
+    if args.preds_out:
+        with open(args.preds_out, "w", encoding="utf-8") as f:
+            json.dump({"generated_at": feed.get("generated_at"),
+                       "pools": preds}, f, indent=1)
     print(f"predict: {n_pred}/{len(feed.get('pools', []))} pools "
           f"have pred_apr ({len(series)} pools in history window)")
     return 0
