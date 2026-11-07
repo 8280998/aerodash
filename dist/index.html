@@ -973,8 +973,8 @@
           var body = t.top.length ? t.top.map(function (p, i) {
             return '<div class="vrow"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
               '<span class="vsym">' + p.name + '</span>' +
-              '<span class="vapr">' + fmtNum(p.apr) + '%' + (p.pred !== null && p.pred !== undefined && Math.abs(p.pred - p.apr) >= 0.5 ? ' <span class="vpred ' + (p.pred >= p.apr ? 'up' : 'down') + '">→ ' + fmtNum(p.pred) + '%</span>' : '') + '</span><span class="vvotes">Alloc ' + p.alloc + '</span></div>' +
-              '<div class="vsub">' + p.type + ' · ' + tf("fee_rate") + ' ' + p.fee + ' · ' + chainBadge(p.chain) + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div></div>';
+              '<span class="vapr">' + fmtNum(p.apr) + '%' + (p.pred !== null && p.pred !== undefined && Math.abs(p.pred - p.apr) >= 0.5 ? ' <span class="vpred ' + (p.pred >= p.apr ? 'up' : 'down') + '">→ ' + fmtNum(p.pred) + '%</span>' : '') + '</span></div>' +
+              '<div class="vsub">Alloc ' + p.alloc + ' · ' + p.type + ' · ' + tf("fee_rate") + ' ' + p.fee + ' · ' + chainBadge(p.chain) + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div></div>';
            }).join("") : '<div class="tempty">' + tf("tier_empty") + '</div>';
           var foot = '<div class="tier-foot">' + tf("tier_foot") + '</div>';
           return '<div class="tier" data-ti="' + ti + '">' + head + sum + body + foot + '</div>';
