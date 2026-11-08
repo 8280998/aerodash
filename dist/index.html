@@ -241,6 +241,9 @@
       .vapr .vpred { font-weight: 700; white-space: nowrap; }
       .vapr .vpred.up { color: var(--pos); }
       .vapr .vpred.down { color: var(--danger); }
+      .vdev { text-align: right; font-size: 11px; font-weight: 700; margin-top: 1px; }
+      .vdev.up { color: var(--pos); }
+      .vdev.down { color: var(--danger); }
       .mv-delta { color: var(--ink-3); white-space: nowrap; font-size: 12px; }
       /* autopilot strip */
       .apgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -559,6 +562,7 @@
           tier_foot: "仅显示前 10 · 门槛 Rewards 48H ≥ $10 · Stake APR 降序",
           tier_under: "100K 以下", tier_over: "10M 以上",
           fee_rate: "费率",
+          dev_label: "偏离",
           mine_h2: "我的 sAERO",
           mine_note: "浏览器直连 7 链公共 RPC 只读查询 · 无需连钱包 · 不签名、不发交易",
           mode_label: "模式", mode_single: "单地址详情", mode_batch: "批量雷达",
@@ -695,6 +699,7 @@
           tier_foot: "Top 10 only · dust threshold Rewards 48H ≥ $10 · Stake APR descending",
           tier_under: "Under 100K", tier_over: "Over 10M",
           fee_rate: "Fee",
+          dev_label: "Dev",
           mine_h2: "My sAERO",
           mine_note: "Read-only queries via public RPC for all 7 chains, straight from your browser · no wallet connection · nothing is signed or sent",
           mode_label: "Mode", mode_single: "Single address", mode_batch: "Batch radar",
@@ -981,7 +986,8 @@
             return '<div class="vrow"><div class="vline1"><span class="rk' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
               '<span class="vsym">' + p.name + '</span>' +
               '<span class="vapr">' + fmtNum(p.apr) + '%' + (p.pred !== null && p.pred !== undefined && Math.abs(p.pred - p.apr) >= 0.5 ? ' <span class="vpred ' + (p.pred >= p.apr ? 'up' : 'down') + '">→ ' + fmtNum(p.pred) + '%</span>' : '') + '</span></div>' +
-              '<div class="vsub">Alloc ' + p.alloc + ' · ' + p.type + ' · ' + tf("fee_rate") + ' ' + p.fee + ' · ' + chainBadge(p.chain) + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div></div>';
+              '<div class="vsub">Alloc ' + p.alloc + ' · ' + p.type + ' · ' + tf("fee_rate") + ' ' + p.fee + ' · ' + chainBadge(p.chain) + ' · Fees ' + p.fees + ' · Inc ' + p.incentives + ' · Rewards ' + p.rewards + '</div>' +
+              ((p.pred !== null && p.pred !== undefined && Math.abs(p.pred - p.apr) >= 0.5 && p.dev !== null) ? '<div class="vdev ' + (p.dev >= 0 ? 'up' : 'down') + '">' + tf("dev_label") + ' ' + (p.dev >= 0 ? '+' : '−') + Math.abs(p.dev).toFixed(1) + '%</div>' : '') + '</div>';
            }).join("") : '<div class="tempty">' + tf("tier_empty") + '</div>';
           var foot = '<div class="tier-foot">' + tf("tier_foot") + '</div>';
           return '<div class="tier" data-ti="' + ti + '">' + head + sum + body + foot + '</div>';
@@ -1040,7 +1046,7 @@
             return {
               name: escHtml(p.pair), fee: escHtml(p.fee), chain: p.chain, type: escHtml(p.type),
               fees: fmtMoney(p.fees48h), incentives: fmtMoney(p.incentives48h), rewards: fmtMoney(p.rewards48h),
-              apr: p.stake_apr, pred: p.pred_apr, alloc: fmtAlloc(p.allocation)
+              apr: p.stake_apr, pred: p.pred_apr, dev: (p.pred_apr !== null && p.pred_apr !== undefined && p.stake_apr > 0) ? (p.pred_apr / p.stake_apr - 1) * 100 : null, alloc: fmtAlloc(p.allocation)
             };
           }) };
         });
