@@ -25,6 +25,13 @@ MIN_SPAN_H) get NO pred_apr key; the page then shows the plain APR.
 Autopilot / whale reallocations are not predictable and are NOT
 modelled beyond the 24h trend term.
 
+The step also scores the forecast made one horizon ago: for each row
+it looks up the preds-archive snapshot closest to 48h old and adds
+`pred_dev` = (current stake_apr / that snapshot's pred_apr - 1) x 100
+-- how far reality landed from the prediction, in percent (positive =
+reality beat the forecast). Rows without a scorable past prediction
+get NO pred_dev key.
+
 Run: python predict.py --feed data/pools.json --history-dir history/
 (the history dir uses the data-history layout history/YYYY/MM/DD/).
 The feed file is rewritten in place.
@@ -51,7 +58,11 @@ SHRINK_K_USD = 500.0    # fee-scale shrinkage: the prediction delta is
                         # dust-fee pools (whose EWMA is noise) barely
                         # move while real pools take the full signal
 
-_NAME_RE = re.compile(r"pools-(\d{2})(\d{2})\.json\.gz$")
+_NAME_RE = re.compile(r"(?:pools|preds)-(\d{2})(\d{2})\.json\.gz$")
+
+DEV_TARGET_AGE_H = 48.0   # a prediction is scored against the feed
+DEV_MIN_AGE_H = 36.0      # generated one forecast horizon (48h) later;
+DEV_MAX_AGE_H = 60.0      # accept the preds snapshot closest to 48h old
 _DATE_RE = re.compile(r"(\d{4})/(\d{2})/(\d{2})$")
 
 
@@ -112,6 +123,39 @@ def collect(history_dir, now, window_h):
             key = (str(chain).lower(), str(pool).lower())
             series.setdefault(key, []).append((snap_ts, fees, alloc))
     return series
+
+
+def collect_past_preds(history_dir, now):
+    """{(chain_lower, pool_lower): pred_apr} from the preds-archive
+    snapshot closest to DEV_TARGET_AGE_H old (within the accepted age
+    band); empty when no snapshot qualifies."""
+    if not history_dir or not os.path.isdir(history_dir):
+        return {}
+    best = None
+    for path in glob.glob(os.path.join(
+            history_dir, "*", "*", "*", "preds-*.json.gz")):
+        ts = snapshot_ts(path)
+        if ts is None:
+            continue
+        age_h = (now - ts) / 3600.0
+        if DEV_MIN_AGE_H <= age_h <= DEV_MAX_AGE_H:
+            if best is None or abs(age_h - DEV_TARGET_AGE_H) < abs(
+                    (now - best[0]) / 3600.0 - DEV_TARGET_AGE_H):
+                best = (ts, path)
+    if best is None:
+        return {}
+    try:
+        with gzip.open(best[1], "rt", encoding="utf-8") as f:
+            snap = json.load(f)
+    except Exception:
+        return {}
+    out = {}
+    for row in snap.get("pools", []):
+        pool, chain, pred = row.get("pool"), row.get("chain"), \
+            row.get("pred_apr")
+        if pool and chain and isinstance(pred, (int, float)) and pred > 0:
+            out[(str(chain).lower(), str(pool).lower())] = pred
+    return out
 
 
 def predict_row(row, samples, now):
@@ -182,11 +226,18 @@ def main():
               file=sys.stderr)
         return 1
     series = collect(args.history_dir, now, WINDOW_H)
+    past_preds = collect_past_preds(args.history_dir, now)
     n_pred = 0
+    n_dev = 0
     preds = []
     for row in feed.get("pools", []):
         key = (str(row.get("chain", "")).lower(),
                str(row.get("pool", "")).lower())
+        past = past_preds.get(key)
+        apr_now = row.get("stake_apr")
+        if past is not None and isinstance(apr_now, (int, float)):
+            row["pred_dev"] = round((apr_now / past - 1.0) * 100.0, 1)
+            n_dev += 1
         pred = predict_row(row, series.get(key, []), now)
         if pred is not None:
             row["pred_apr"] = pred
@@ -204,7 +255,8 @@ def main():
             json.dump({"generated_at": feed.get("generated_at"),
                        "pools": preds}, f, indent=1)
     print(f"predict: {n_pred}/{len(feed.get('pools', []))} pools "
-          f"have pred_apr ({len(series)} pools in history window)")
+          f"have pred_apr ({len(series)} pools in history window); "
+          f"{n_dev} rows scored with pred_dev")
     return 0
 
 
