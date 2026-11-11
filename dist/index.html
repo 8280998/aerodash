@@ -189,6 +189,7 @@
       table.pools td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
       table.pools td.num, table.pools th.num { text-align: right; }
       table.pools tr.total td { font-weight: 700; background: var(--surface-2); }
+      table.pools tr.hl td { font-weight: 700; background: rgba(0, 82, 255, .07); }
       /* vote wall */
       .sec-main h2 { font-size: 21px; }
       .basis {
@@ -484,6 +485,18 @@
           </div>
         </section>
 
+        <section id="secDex">
+          <div class="sec-head"><h2 id="dexH2">DEX 市场份额</h2><span class="note" id="dexNote">按项目合并口径 · 实时</span></div>
+          <div class="card">
+            <div class="tblwrap">
+              <table class="pools" id="dexTable">
+                <thead><tr><th>排名</th><th>DEX</th><th class="num">24H 份额</th><th class="num">24H 成交额</th><th class="num">7 天份额</th></tr></thead>
+                <tbody id="dexShareBody"><tr><td colspan="5">—</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
         <section id="secMech">
           <div class="sec-head"><h2 id="mechH2">新规则收益机制</h2><span class="note" id="mechNote">口径以 2026-10-23 链上解码为准</span></div>
           <div class="vs">
@@ -601,6 +614,8 @@
           cs_h2: "分链数据统计", cs_note_live: "TVL ≥ $100K 口径",
           cs_th_chain: "链", cs_th_count: "达标池数", cs_th_tvl: "TVL 合计", cs_th_fees: "Fees 48H 合计",
           cs_total: "全网合计",
+          dex_h2: "DEX 市场份额", dex_note: "按项目合并口径 · 实时",
+          dex_th_rank: "排名", dex_th_name: "DEX", dex_th_share: "24H 份额", dex_th_vol: "24H 成交额", dex_th_share7: "7 天份额",
           cs_src_live: "口径：仅统计 TVL ≥ $100,000 的池；48H 手续费合计由各池 Fees APR × TVL ÷ 18250 反推。",
           mech_h2: "新规则收益机制", mech_note: "口径以 2026-10-23 链上解码为准",
           old_title: "旧系统 ve(3,3) ", old_tag: "已结束",
@@ -737,6 +752,8 @@
           cs_h2: "Per-Chain Stats", cs_note_live: "TVL ≥ $100K basis",
           cs_th_chain: "Chain", cs_th_count: "Qualifying pools", cs_th_tvl: "Total TVL", cs_th_fees: "Total Fees 48H",
           cs_total: "Network total",
+          dex_h2: "DEX Market Share", dex_note: "Grouped by project · live",
+          dex_th_rank: "Rank", dex_th_name: "DEX", dex_th_share: "24h Share", dex_th_vol: "24h Volume", dex_th_share7: "7d Share",
           cs_src_live: "Basis: pools with TVL ≥ $100,000 only; total Fees 48H is derived per pool as Fees APR × TVL ÷ 18250.",
           mech_h2: "New Reward Mechanics", mech_note: "Based on on-chain decoding as of 2026-10-23",
           old_title: "Legacy ve(3,3) ", old_tag: "Ended",
@@ -868,6 +885,11 @@
         var ths = document.querySelectorAll("#csTable thead th");
         var thKeys = ["cs_th_chain", "cs_th_count", "cs_th_tvl", "cs_th_fees"];
         ths.forEach(function (th, i) { if (thKeys[i]) th.textContent = t(thKeys[i]); });
+        setText("dexH2", t("dex_h2")); setText("dexNote", t("dex_note"));
+        var dths = document.querySelectorAll("#dexTable thead th");
+        var dthKeys = ["dex_th_rank", "dex_th_name", "dex_th_share", "dex_th_vol", "dex_th_share7"];
+        dths.forEach(function (th, i) { if (dthKeys[i]) th.textContent = t(dthKeys[i]); });
+        if (typeof window.renderDexShare === "function") window.renderDexShare();
         setText("mechH2", t("mech_h2")); setText("mechNote", t("mech_note"));
         setHTML("oldTitle", t("old_title") + '<span class="tag">' + t("old_tag") + "</span>");
         setHTML("oldList", t("old_li"));
@@ -1227,6 +1249,66 @@
         $("chainStatsBody").innerHTML = order.map(function (c) { return row(c, byChain[c], ""); }).join("") + row(t("cs_total"), tot, "total");
       }
       renderChainStats();
+
+      /* ---------- 分页 3：DEX 市场份额（页面打开时实时拉取全网 DEX 成交数据，
+         按项目合并口径计算份额；拉取失败时表格保持「—」，不使用任何缓存值） ---------- */
+      var dexShareData = null, dexShareBusy = false;
+      function dexFamily(name) {
+        var n = String(name || "").toLowerCase();
+        if (n.indexOf("aero") >= 0) return "Aerodrome";
+        if (n.indexOf("uniswap") === 0) return "Uniswap";
+        if (n.indexOf("pancakeswap") === 0) return "PancakeSwap";
+        if (n.indexOf("raydium") === 0) return "Raydium";
+        if (n.indexOf("meteora") === 0) return "Meteora";
+        if (n.indexOf("curve") === 0) return "Curve";
+        if (n.indexOf("orca") === 0) return "Orca";
+        return name;
+      }
+      function renderDexShare() {
+        var body = $("dexShareBody");
+        if (!body) return;
+        if (!dexShareData) { body.innerHTML = '<tr><td colspan="5">—</td></tr>'; return; }
+        var rows = dexShareData.slice(0, 5);
+        var hasAero = rows.some(function (r) { return r.name === "Aerodrome"; });
+        if (!hasAero) {
+          var aero = null;
+          dexShareData.forEach(function (r) { if (r.name === "Aerodrome") aero = r; });
+          if (aero) rows.push(aero);
+        }
+        body.innerHTML = rows.map(function (r) {
+          return '<tr' + (r.name === "Aerodrome" ? ' class="hl"' : "") + '><td class="mono">' + r.rank + '</td><td>' + escHtml(r.name) + '</td><td class="num mono">' + r.share.toFixed(2) + '%</td><td class="num mono">' + fmtM(r.vol) + '</td><td class="num mono">' + r.share7.toFixed(2) + '%</td></tr>';
+        }).join("");
+      }
+      window.renderDexShare = renderDexShare;
+      function loadDexShare() {
+        if (dexShareBusy) return;
+        dexShareBusy = true;
+        fetch("https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true", { cache: "no-store" })
+          .then(function (res) { return res.json(); })
+          .then(function (d) {
+            var tot24 = 0, tot7 = 0, groups = {};
+            (d.protocols || []).forEach(function (p) {
+              var v = p.total24h, v7 = p.total7d;
+              if (typeof v !== "number" || !(v > 0)) return;
+              tot24 += v;
+              var has7 = (typeof v7 === "number" && v7 > 0);
+              if (has7) tot7 += v7;
+              var f = dexFamily(p.name);
+              var g = groups[f] || (groups[f] = { name: f, vol: 0, vol7: 0 });
+              g.vol += v; if (has7) g.vol7 += v7;
+            });
+            if (!(tot24 > 0)) return;
+            var arr = Object.keys(groups).map(function (k) { return groups[k]; });
+            arr.sort(function (a, b) { return b.vol - a.vol; });
+            arr.forEach(function (g, i) { g.rank = i + 1; g.share = g.vol / tot24 * 100; g.share7 = tot7 > 0 ? g.vol7 / tot7 * 100 : 0; });
+            dexShareData = arr;
+            renderDexShare();
+          })
+          .catch(function () { /* 拉取失败：保持「—」 */ })
+          .finally(function () { dexShareBusy = false; });
+      }
+      window.loadDexShare = loadDexShare;
+      loadDexShare();
 
       /* ---------- 分页 3：总览实时聚合（lp.json 可用时；聚合全部基于护栏过滤后的达标行） ---------- */
       function fmtM(n) {
@@ -2310,6 +2392,7 @@
           if (typeof window.loadMovers === "function") window.loadMovers();
           if (typeof window.loadAutopilot === "function") window.loadAutopilot();
           if (typeof window.loadStatus === "function") window.loadStatus();
+          if (typeof window.loadDexShare === "function") window.loadDexShare();
         }
         window.__refreshFeeds = refreshFeeds;
         setInterval(function () { if (!document.hidden) refreshFeeds(); }, REFRESH_MS);
