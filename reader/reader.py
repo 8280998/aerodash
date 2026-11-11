@@ -144,6 +144,15 @@ CHAINS = {
                   # (HTTP 400), which forced per-item fallback crawls.
                   "rpcs": ["https://robinhood-rpc.publicnode.com",
                            "https://robinhood.drpc.org"], "chunk": 50},
+    # Elysium (Kinetiq's Hyperliquid-ecosystem L2, chain 99901, mainnet
+    # 2026-11-09): registry / cl_factory / sugar extracted 2026-11-11
+    # from the official app.aero.xyz bundle's [99901] chain config and
+    # cross-checked on-chain (eth_getCode + LeafVoter/tapes present at
+    # the canonical addresses). Single public RPC (chainlist); batch
+    # requests probe-verified working.
+    "elysium": {"chain_id": 99901, "registry": "0xdd1705e23762F4D6e44D8C31BD8Ea80c54612239",
+                "cl_factory": "0xEfd7A089D3057F05189B05f74Ffcf30610c42891",
+                "rpcs": ["https://rpc.elysium.kinetiq.xyz"]},
 }
 
 # LpSugar aggregator per chain (v20 staked-share source). Every address
@@ -160,6 +169,7 @@ SUGAR = {
     "ink": "0x624dF05C4584c1CfC1cb22f4B205AF9E08eBd5d4",
     "robinhood": "0x548245396B5a74c416590580434b9E4bc4CFe3b6",
     "arc": "0x7b308986982153940A8c6B346730121fA83e682a",
+    "elysium": "0xB1d0DFFe6260982164B53EdAcD3ccd58B081889d",
 }
 
 # Optional dedicated RPC: when the AERO_ALCHEMY_KEY environment variable

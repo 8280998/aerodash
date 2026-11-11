@@ -71,11 +71,22 @@ Trust filter (a pool is emitted only if ALL hold):
   feed's "price_gate" meta and in status.json);
 - allocation > 0; stake_apr present (the reader only
   computes APR when fees AND incentives were fully priced);
-- BOTH tokens priced via Coinbase: price_via.token0 == "coinbase" and
-  price_via.token1 == "coinbase". Single-pool on-chain spot prices are
-  off by orders of magnitude for illiquid/manipulated exotics, so any
-  record touching an on-chain-propagated price is excluded from the
-  wall feed (it stays in the raw pools.json for analysis).
+- BOTH tokens price-trusted. A token is trusted when it is priced via
+  Coinbase, OR when it is on-chain-priced but consensus-corroborated:
+  the token appears in >= 2 distinct pools (price_unverified ones do
+  not count) whose counterparty is Coinbase-priced, so its price is
+  anchored by at least two independent major-quoted markets, and the
+  v15 gate has already settled its adopted price against pool spot
+  (any >2x unsettled conflict marks the pool price_unverified and it
+  is dropped above). Pre-2026-10-29 the rule was Coinbase-only, which
+  incidentally excluded every tokenised-stock pool (GOOGLc, MSTRc,
+  ...: no Coinbase listing, prices purely on-chain) even though their
+  prices passed the gate; the user approved relaxing it to the
+  consensus rule (2026-10-29). A token priced from a single on-chain
+  pool is still excluded: single-pool spot prices are off by orders
+  of magnitude for illiquid/manipulated exotics. Pools admitted via
+  a consensus-trusted token are counted in the feed's price_gate
+  meta as "consensus_admitted".
 - rewards48h >= $10: the page's anti-dust rule, sunk into the adapter
   (2026-10-24) so the feed itself carries no dust pools; display is
   unchanged (the page already hid them at render time).
@@ -121,6 +132,7 @@ CHAIN_NAMES = {
     "ink": "Ink",
     "arc": "Arc",
     "robinhood": "Robinhood",
+    "elysium": "Elysium",
 }
 
 
@@ -143,6 +155,25 @@ def convert(doc):
     out = []
     sugar = {"candidates": 0, "matched": 0, "missing": 0}
     saw_v20 = False
+    consensus_admitted = 0
+
+    # Consensus corroboration pre-pass: for each token, the set of
+    # distinct pools where it trades against a Coinbase-priced
+    # counterparty (price_unverified pools cannot corroborate). A
+    # token with >= 2 such anchored sightings is consensus-trusted
+    # even though its own price is on-chain-derived.
+    anchored = {}
+    for r in doc.get("pools", []):
+        if r.get("price_unverified"):
+            continue
+        pv = r.get("price_via") or {}
+        toks = (r.get("token0"), r.get("token1"))
+        vias = (pv.get("token0"), pv.get("token1"))
+        for i in (0, 1):
+            if toks[i] and vias[1 - i] == "coinbase":
+                anchored.setdefault(toks[i].lower(), set()).add(
+                    r.get("pool"))
+    consensus_trusted = {t for t, ps in anchored.items() if len(ps) >= 2}
 
     def drop(reason):
         drops[reason] = drops.get(reason, 0) + 1
@@ -162,9 +193,18 @@ def convert(doc):
             drop("no_apr")
             continue
         pv = r.get("price_via") or {}
-        if pv.get("token0") != "coinbase" or pv.get("token1") != "coinbase":
+
+        def _trusted(idx):
+            if pv.get("token%d" % idx) == "coinbase":
+                return True
+            addr = (r.get("token%d" % idx) or "").lower()
+            return addr in consensus_trusted
+
+        if not (_trusted(0) and _trusted(1)):
             drop("untrusted_price")
             continue
+        via_consensus = (pv.get("token0") != "coinbase"
+                         or pv.get("token1") != "coinbase")
         if r.get("fees48h_usd") is None:
             drop("no_fees")
             continue
@@ -194,6 +234,8 @@ def convert(doc):
         if aero and fees > 2 * alloc * aero:
             drop("absurd_fees")
             continue
+        if via_consensus:
+            consensus_admitted += 1
         share = r.get("staked_share")
         out.append({
             "pair": r["pair"],
@@ -219,6 +261,7 @@ def convert(doc):
             "aero_price_usd": aero, "pools": out,
             "price_gate": _gate_meta(doc, drops),
             "sugar": (sugar if saw_v20 else None)}
+    page["price_gate"]["consensus_admitted"] = consensus_admitted
     return page, drops
 
 

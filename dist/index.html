@@ -158,6 +158,7 @@
       .cb-robinhood { --cb-bg: #d8f9da; --cb-ink: #00690a; --cb-dot: #00C805; }
       .cb-arc { --cb-bg: #d5f4f0; --cb-ink: #067064; --cb-dot: #12B5A5; }
       .cb-ink { --cb-bg: #e8e0fd; --cb-ink: #4d1ec4; --cb-dot: #7132F5; }
+      .cb-elysium { --cb-bg: #fdf0d5; --cb-ink: #8a5a00; --cb-dot: #F59E0B; }
       .cb-default { --cb-bg: #e7edf5; --cb-ink: #43536b; --cb-dot: #98a2b3; }
       @media (prefers-color-scheme: dark) {
         .cb-base { --cb-bg: rgba(0, 82, 255, .26); --cb-ink: #9dbdff; }
@@ -167,6 +168,7 @@
         .cb-robinhood { --cb-bg: rgba(0, 200, 5, .20); --cb-ink: #5ce662; }
         .cb-arc { --cb-bg: rgba(18, 181, 165, .22); --cb-ink: #63ddd0; }
         .cb-ink { --cb-bg: rgba(113, 50, 245, .30); --cb-ink: #c0a6ff; }
+        .cb-elysium { --cb-bg: rgba(245, 158, 11, .22); --cb-ink: #fbbf24; }
         .cb-default { --cb-bg: #1a2637; --cb-ink: #a9b8cc; }
       }
       .vs ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink-2); font-size: 14px; }
@@ -349,7 +351,7 @@
     <polygon points="452,60 404,116 416,152" fill="#1b6fd1"/>
   </g>
 </svg><h1 id="pageTitle">AERO 分析看板</h1></div><div class="langseg" role="group" aria-label="Language / 语言"><button type="button" id="langZh" aria-pressed="true">中文</button><button type="button" id="langEn" aria-pressed="false">EN</button></div></div>
-      <p class="lede" id="ledeText">迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain 共 7 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 7 链。本页为独立的新系统数据看板，下方四个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>我的 sAERO</b>（输入地址查仓位的当前分配、待领收益与冷却，并给出投票建议）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。</p>
+      <p class="lede" id="ledeText">迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain、Elysium 共 8 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 8 链。本页为独立的新系统数据看板，下方四个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>我的 sAERO</b>（输入地址查仓位的当前分配、待领收益与冷却，并给出投票建议）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。</p>
       <p class="stamp"><span id="stampPrefix">数据时间 — </span><span id="dtVote">投票墙：—</span>；<span id="dtLp">LP 排名：—</span>；<span id="dtOv">总览：—</span></p>
 
       <p class="stamp" id="runStatus" hidden></p>
@@ -515,7 +517,7 @@
                 <li>sAERO <b>无 rebase、可转让、面值固定</b>；收益只来自<b>手续费分成 + 激励</b>，不再有抗稀释 rebase 兜底</li>
                 <li>分配设定一次<b>持续生效</b>；调整分配有 <b>47 小时冷却</b></li>
                 <li><b>allocate 只做分配、不自动领奖</b>：奖励在各叶子链 rewards manager 按检查点累积，须单独调用 claimRewards <b>按链领取</b>；重新分配也不会触发领取</li>
-                <li>一笔分配可跨 <b>7 条链</b>（Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain），gas 只付 Base</li>
+                <li>一笔分配可跨 <b>8 条链</b>（Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain / Elysium），gas 只付 Base</li>
                 <li>排放由 AER Engine 按美元价值定速率、每池 gauge cap、全局通胀上限约束（机制参数，实际速率待数据积累）</li>
               </ul>
             </div>
@@ -544,7 +546,7 @@
       var I18N = {
         zh: {
           title: "AERO 分析看板",
-          lede: "迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain 共 7 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 7 链。本页为独立的新系统数据看板，下方四个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>我的 sAERO</b>（输入地址查仓位的当前分配、待领收益与冷却，并给出投票建议）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。",
+          lede: "迁移之后的新 AERO 系统：原 veAERO 持有者换到 sAERO 新规则下，质押收益的结构怎么变、分配到哪些池收益更高。新系统已在 <b>Base、以太坊主网、Optimism、Arbitrum、Ink、Arc、Robinhood Chain、Elysium 共 8 条链</b>运行，单一 AERO 代币；sAERO 质押结算仍在 Base，一笔分配可跨 8 链。本页为独立的新系统数据看板，下方四个分页：<b>投票收益</b>（按 Allocation 分档的 Stake APR 排名）、<b>我的 sAERO</b>（输入地址查仓位的当前分配、待领收益与冷却，并给出投票建议）、<b>LP 收益</b>（TVL ≥ $100K 的池按链看 AERO 排放与手续费 APR）、<b>数据总览</b>（全系统与分链统计）。",
           stamp_prefix: "数据时间 — ",
           dt_vote_none: "投票墙：—",
           dt_lp_none: "LP 排名：—",
@@ -577,7 +579,7 @@
           fee_rate: "费率",
           dev_label: "偏离",
           mine_h2: "我的 sAERO",
-          mine_note: "浏览器直连 7 链公共 RPC 只读查询 · 无需连钱包 · 不签名、不发交易",
+          mine_note: "浏览器直连 8 链公共 RPC 只读查询 · 无需连钱包 · 不签名、不发交易",
           mode_label: "模式", mode_single: "单地址详情", mode_batch: "批量雷达",
           wallet_label: "钱包地址", query_btn: "查询",
           tokenid_label: "或直接输入仓位 tokenId", tokenid_ph: "如 6032", tokenid_btn: "按 tokenId 查询",
@@ -621,7 +623,7 @@
           old_title: "旧系统 ve(3,3) ", old_tag: "已结束",
           old_li: "<li>每周投票决定排放去向，收入 = 所投池<b>手续费 + 贿赂</b>，按 epoch 周结</li><li><b>rebase</b> 按周发放，对冲增发稀释，需手动领取</li><li>选错池只损失一周，下周可改投</li><li>Relay 等金库代投、自动复投</li>",
           new_title: "新系统 sAERO + Predictive Allocation ", new_tag: "现行",
-          new_li: "<li>sAERO <b>无 rebase、可转让、面值固定</b>；收益只来自<b>手续费分成 + 激励</b>，不再有抗稀释 rebase 兜底</li><li>分配设定一次<b>持续生效</b>；调整分配有 <b>47 小时冷却</b></li><li><b>allocate 只做分配、不自动领奖</b>：奖励在各叶子链 rewards manager 按检查点累积，须单独调用 claimRewards <b>按链领取</b>；重新分配也不会触发领取</li><li>一笔分配可跨 <b>7 条链</b>（Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain），gas 只付 Base</li><li>排放由 AER Engine 按美元价值定速率、每池 gauge cap、全局通胀上限约束（机制参数，实际速率待数据积累）</li>",
+          new_li: "<li>sAERO <b>无 rebase、可转让、面值固定</b>；收益只来自<b>手续费分成 + 激励</b>，不再有抗稀释 rebase 兜底</li><li>分配设定一次<b>持续生效</b>；调整分配有 <b>47 小时冷却</b></li><li><b>allocate 只做分配、不自动领奖</b>：奖励在各叶子链 rewards manager 按检查点累积，须单独调用 claimRewards <b>按链领取</b>；重新分配也不会触发领取</li><li>一笔分配可跨 <b>8 条链</b>（Base / 以太坊 / Optimism / Arbitrum / Ink / Arc / Robinhood Chain / Elysium），gas 只付 Base</li><li>排放由 AER Engine 按美元价值定速率、每池 gauge cap、全局通胀上限约束（机制参数，实际速率待数据积累）</li>",
           contract1: "Allocator（分配入口）", contract2: "sAERO VotingEscrow（仓位凭证）", contract3: "样本热门池 WETH/cbBTC",
           copy: "复制", copied: "已复制",
           
@@ -666,7 +668,7 @@
           sa_advice_unknown: "部分现持池不在实时 feed 中，其当前收益未计入「当前预计」。",
           sa_advice_note: "估算基于 {t} 数据：候选按 Stake APR 降序贪心填充，单池上限为该池当前 Allocation 值的 25%（防稀释），预计收益已按进场后稀释折算；APR 随分配浮动，非保证收益。本页只读，执行分配请用你自己的工具。",
           sa_advice_feed_time: "实时 feed",
-          sa_prog_chains: "读取各链分配中…（7 条链并行）",
+          sa_prog_chains: "读取各链分配中…（8 条链并行）",
           sa_prog_enum: "枚举仓位中…（Base VotingEscrow）",
           sa_no_positions: "该地址没有 sAERO 仓位。",
           sa_prog_enum_n: "枚举仓位中…共 {n} 个，读取余额",
@@ -686,7 +688,7 @@
         },
         en: {
           title: "AERO Analytics Dashboard",
-          lede: "The new AERO system after the migration: how the reward structure changes for former veAERO holders under the sAERO rules, and which pools pay more. The new system runs on <b>7 chains — Base, Ethereum mainnet, Optimism, Arbitrum, Ink, Arc and Robinhood Chain</b> — with a single AERO token; sAERO staking settles on Base and one allocation can span all 7 chains. The four tabs below: <b>Voting Rewards</b> (Stake APR rankings tiered by Allocation), <b>My sAERO</b> (look up a position's current allocation, est. claimable rewards and cooldown, with allocation suggestions), <b>LP Rewards</b> (AERO emissions and fee APR by chain for pools with TVL ≥ $100K) and <b>Overview</b> (system-wide and per-chain stats).",
+          lede: "The new AERO system after the migration: how the reward structure changes for former veAERO holders under the sAERO rules, and which pools pay more. The new system runs on <b>8 chains — Base, Ethereum mainnet, Optimism, Arbitrum, Ink, Arc, Robinhood Chain and Elysium</b> — with a single AERO token; sAERO staking settles on Base and one allocation can span all 8 chains. The four tabs below: <b>Voting Rewards</b> (Stake APR rankings tiered by Allocation), <b>My sAERO</b> (look up a position's current allocation, est. claimable rewards and cooldown, with allocation suggestions), <b>LP Rewards</b> (AERO emissions and fee APR by chain for pools with TVL ≥ $100K) and <b>Overview</b> (system-wide and per-chain stats).",
           stamp_prefix: "Data as of — ",
           dt_vote_none: "Voting wall: —",
           dt_lp_none: "LP rankings: —",
@@ -716,7 +718,7 @@
           fee_rate: "Fee",
           dev_label: "Dev",
           mine_h2: "My sAERO",
-          mine_note: "Read-only queries via public RPC for all 7 chains, straight from your browser · no wallet connection · nothing is signed or sent",
+          mine_note: "Read-only queries via public RPC for all 8 chains, straight from your browser · no wallet connection · nothing is signed or sent",
           mode_label: "Mode", mode_single: "Single address", mode_batch: "Batch radar",
           wallet_label: "Wallet address", query_btn: "Look up",
           tokenid_label: "Or enter a position tokenId directly", tokenid_ph: "e.g. 6032", tokenid_btn: "Look up by tokenId",
@@ -759,7 +761,7 @@
           old_title: "Legacy ve(3,3) ", old_tag: "Ended",
           old_li: "<li>Weekly votes directed emissions; income = <b>trading fees + bribes</b> from voted pools, settled per epoch</li><li><b>Rebase</b> paid weekly to offset dilution from emissions; had to be claimed manually</li><li>A wrong pick cost at most one week; re-vote the next week</li><li>Relay vaults could vote and auto-compound on your behalf</li>",
           new_title: "New sAERO + Predictive Allocation ", new_tag: "Current",
-          new_li: "<li>sAERO has <b>no rebase, is transferable, and has a fixed face value</b>; rewards come only from <b>fee share + incentives</b> — no anti-dilution rebase safety net</li><li>An allocation, once set, <b>stays in effect</b>; changing it has a <b>47-hour cooldown</b></li><li><b>allocate only allocates — it does not claim rewards</b>: rewards accrue per checkpoint in each leaf chain's rewards manager and must be claimed separately via claimRewards <b>per chain</b>; reallocating does not trigger a claim either</li><li>One allocation can span <b>7 chains</b> (Base / Ethereum / Optimism / Arbitrum / Ink / Arc / Robinhood Chain); gas is paid on Base only</li><li>Emissions are rate-set by the AER Engine in USD terms, subject to per-gauge caps and a global inflation cap (mechanism parameters; actual rates pending data)</li>",
+          new_li: "<li>sAERO has <b>no rebase, is transferable, and has a fixed face value</b>; rewards come only from <b>fee share + incentives</b> — no anti-dilution rebase safety net</li><li>An allocation, once set, <b>stays in effect</b>; changing it has a <b>47-hour cooldown</b></li><li><b>allocate only allocates — it does not claim rewards</b>: rewards accrue per checkpoint in each leaf chain's rewards manager and must be claimed separately via claimRewards <b>per chain</b>; reallocating does not trigger a claim either</li><li>One allocation can span <b>8 chains</b> (Base / Ethereum / Optimism / Arbitrum / Ink / Arc / Robinhood Chain / Elysium); gas is paid on Base only</li><li>Emissions are rate-set by the AER Engine in USD terms, subject to per-gauge caps and a global inflation cap (mechanism parameters; actual rates pending data)</li>",
           contract1: "Allocator (allocation entry point)", contract2: "sAERO VotingEscrow (position certificate)", contract3: "Sample hot pool WETH/cbBTC",
           copy: "Copy", copied: "Copied",
           src_h2: "Methodology & Sources",
@@ -804,7 +806,7 @@
           sa_advice_unknown: "Some held pools are not in the live feed; their current rewards are not counted in the current est.",
           sa_advice_note: "Estimates based on {t} data: candidates are filled greedily by Stake APR descending, capped at 25% of each pool's current Allocation value per pool (anti-dilution), and est. rewards are adjusted for post-entry dilution; APR floats with allocation and is not a guaranteed return. This page is read-only — execute allocations with your own tooling.",
           sa_advice_feed_time: "live feed",
-          sa_prog_chains: "Reading allocations on all chains… (7 chains in parallel)",
+          sa_prog_chains: "Reading allocations on all chains… (8 chains in parallel)",
           sa_prog_enum: "Enumerating positions… (Base VotingEscrow)",
           sa_no_positions: "This address has no sAERO positions.",
           sa_prog_enum_n: "Enumerating positions… {n} found, reading balances",
@@ -949,6 +951,7 @@
         if (k === "robinhood" || k === "robinhood chain") return "robinhood";
         if (k === "arc") return "arc";
         if (k === "ink") return "ink";
+        if (k === "elysium") return "elysium";
         return "default";
       }
       function chainBadge(name) {
@@ -1429,7 +1432,8 @@
         { key: "arbitrum", name: "Arbitrum", rpc: ["https://arbitrum-one-rpc.publicnode.com", "https://arb1.arbitrum.io/rpc"], registry: "0x9e635b2c689fc52201df7ef1c9fa607c2f58f666" },
         { key: "ink", name: "Ink", rpc: ["https://rpc-gel.inkonchain.com", "https://ink.drpc.org"], registry: "0xdd1705e23762f4d6e44d8c31bd8ea80c54612239" },
         { key: "arc", name: "Arc", rpc: ["https://rpc.mainnet.arc.io", "https://arc.drpc.org"], registry: "0xce44907dc45d3bfa3f5f6035b0e6e8b22d780a42" },
-        { key: "robinhood", name: "Robinhood", rpc: ["https://robinhood.drpc.org", "https://robinhood-rpc.publicnode.com"], registry: "0xdd1705e23762f4d6e44d8c31bd8ea80c54612239" }
+        { key: "robinhood", name: "Robinhood", rpc: ["https://robinhood.drpc.org", "https://robinhood-rpc.publicnode.com"], registry: "0xdd1705e23762f4d6e44d8c31bd8ea80c54612239" },
+        { key: "elysium", name: "Elysium", rpc: ["https://rpc.elysium.kinetiq.xyz"], registry: "0xdd1705e23762f4d6e44d8c31bd8ea80c54612239" }
       ];
       var BASE_CHAIN = SA_CHAINS[0];
 
