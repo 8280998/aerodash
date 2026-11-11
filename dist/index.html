@@ -115,6 +115,10 @@
       .burn-total { font-size: 26px; font-weight: 700; }
       .burn-legend { display: inline-flex; gap: 14px; align-items: center; font-size: 12px; color: var(--ink-2); }
       .burn-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+      #dexChart svg { display: block; width: 100%; height: auto; }
+      #dexChart .dgrid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
+      #dexChart .dlab { fill: var(--ink-2); font-size: 10px; }
+      #dexChart .dline { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
       #burnChart svg { display: block; width: 100%; height: auto; }
       #burnChart .bbar { fill: var(--accent); }
       #burnChart .bline { fill: none; stroke: var(--warn-ink); stroke-width: 2; }
@@ -496,6 +500,8 @@
                 <tbody id="dexShareBody"><tr><td colspan="5">—</td></tr></tbody>
               </table>
             </div>
+            <div class="burn-head" style="margin-top:12px"><span class="note" id="dexChartNote">近 90 天每日份额</span><div class="burn-legend" id="dexLegend"></div></div>
+            <div id="dexChart"><p class="src">—</p></div>
           </div>
         </section>
 
@@ -618,6 +624,7 @@
           cs_total: "全网合计",
           dex_h2: "DEX 市场份额", dex_note: "按项目合并口径 · 实时",
           dex_th_rank: "排名", dex_th_name: "DEX", dex_th_share: "24H 份额", dex_th_vol: "24H 成交额", dex_th_share7: "7 天份额",
+          dex_chart_note: "近 90 天每日份额",
           cs_src_live: "口径：仅统计 TVL ≥ $100,000 的池；48H 手续费合计由各池 Fees APR × TVL ÷ 18250 反推。",
           mech_h2: "新规则收益机制", mech_note: "口径以 2026-10-23 链上解码为准",
           old_title: "旧系统 ve(3,3) ", old_tag: "已结束",
@@ -756,6 +763,7 @@
           cs_total: "Network total",
           dex_h2: "DEX Market Share", dex_note: "Grouped by project · live",
           dex_th_rank: "Rank", dex_th_name: "DEX", dex_th_share: "24h Share", dex_th_vol: "24h Volume", dex_th_share7: "7d Share",
+          dex_chart_note: "Daily share — last 90 days",
           cs_src_live: "Basis: pools with TVL ≥ $100,000 only; total Fees 48H is derived per pool as Fees APR × TVL ÷ 18250.",
           mech_h2: "New Reward Mechanics", mech_note: "Based on on-chain decoding as of 2026-10-23",
           old_title: "Legacy ve(3,3) ", old_tag: "Ended",
@@ -892,6 +900,8 @@
         var dthKeys = ["dex_th_rank", "dex_th_name", "dex_th_share", "dex_th_vol", "dex_th_share7"];
         dths.forEach(function (th, i) { if (dthKeys[i]) th.textContent = t(dthKeys[i]); });
         if (typeof window.renderDexShare === "function") window.renderDexShare();
+        setText("dexChartNote", t("dex_chart_note"));
+        if (typeof window.renderDexChart === "function") window.renderDexChart();
         setText("mechH2", t("mech_h2")); setText("mechNote", t("mech_note"));
         setHTML("oldTitle", t("old_title") + '<span class="tag">' + t("old_tag") + "</span>");
         setHTML("oldList", t("old_li"));
@@ -1312,6 +1322,83 @@
       }
       window.loadDexShare = loadDexShare;
       loadDexShare();
+
+      /* ---------- 分页 3：DEX 份额曲线（近 90 天每日份额；分母为全网
+         DEX 每日总成交量；任一序列拉取失败则整图保持「—」） ---------- */
+      var dexSeries = null, dexChartBusy = false;
+      var DEX_LINES = [
+        { slug: "aero", name: "Aerodrome", color: "#0052FF", width: 2.4 },
+        { slug: "uniswap", name: "Uniswap", color: "#FF007A", width: 1.6 },
+        { slug: "pancakeswap", name: "PancakeSwap", color: "#D1884F", width: 1.6 }
+      ];
+      function dexDayMap(chart) {
+        var m = {};
+        (chart || []).forEach(function (pt) {
+          if (Array.isArray(pt) && pt.length >= 2) m[pt[0]] = Number(pt[1]);
+        });
+        return m;
+      }
+      function renderDexChart() {
+        var box = $("dexChart"), lg = $("dexLegend");
+        if (!box) return;
+        if (!dexSeries || !dexSeries.length) { box.innerHTML = '<p class="src">—</p>'; if (lg) lg.innerHTML = ""; return; }
+        var W = 680, H = 208, mT = 12, mB = 22, mL = 34, mR = 8;
+        var pw = W - mL - mR, ph = H - mT - mB;
+        var maxV = 0, t0 = Infinity, t1 = -Infinity;
+        dexSeries.forEach(function (s) { s.points.forEach(function (p) { if (p.v > maxV) maxV = p.v; if (p.ts < t0) t0 = p.ts; if (p.ts > t1) t1 = p.ts; }); });
+        if (!(maxV > 0) || !isFinite(t0)) { box.innerHTML = '<p class="src">—</p>'; return; }
+        var yMax = maxV * 1.12;
+        function X(ts) { return mL + (ts - t0) / Math.max(1, t1 - t0) * pw; }
+        function Y(v) { return mT + ph - (v / yMax) * ph; }
+        var svg = "";
+        [0, 0.5, 1].forEach(function (f) {
+          var v = yMax * f, gy = Y(v);
+          svg += '<line class="dgrid" x1="' + mL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - mR) + '" y2="' + gy.toFixed(1) + '"/>';
+          svg += '<text class="dlab" x="' + (mL - 5) + '" y="' + (gy + 3).toFixed(1) + '" text-anchor="end">' + v.toFixed(0) + "%</text>";
+        });
+        function dlab(ts) { var d = new Date(ts * 1000); return (d.getUTCMonth() + 1) + "/" + d.getUTCDate(); }
+        svg += '<text class="dlab" x="' + mL + '" y="' + (H - 6) + '">' + dlab(t0) + "</text>";
+        svg += '<text class="dlab" x="' + (W - mR) + '" y="' + (H - 6) + '" text-anchor="end">' + dlab(t1) + "</text>";
+        dexSeries.forEach(function (s) {
+          var d = s.points.map(function (p, i) { return (i ? "L" : "M") + X(p.ts).toFixed(1) + " " + Y(p.v).toFixed(1); }).join(" ");
+          svg += '<path class="dline" stroke="' + s.color + '" stroke-width="' + s.width + '" opacity="' + (s.width > 2 ? "1" : "0.75") + '" d="' + d + '"><title>' + escHtml(s.name) + "</title></path>";
+        });
+        box.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img">' + svg + "</svg>";
+        if (lg) lg.innerHTML = dexSeries.map(function (s) {
+          var last = s.points[s.points.length - 1];
+          return '<span><span class="sw" style="background:' + s.color + '"></span>' + escHtml(s.name) + " " + last.v.toFixed(2) + "%</span>";
+        }).join("");
+      }
+      window.renderDexChart = renderDexChart;
+      function loadDexChart() {
+        if (dexChartBusy) return;
+        dexChartBusy = true;
+        var base = "https://api.llama.fi";
+        var totP = fetch(base + "/overview/dexs?excludeTotalDataChartBreakdown=true", { cache: "no-store" }).then(function (r) { return r.json(); });
+        var famP = DEX_LINES.map(function (L) {
+          return fetch(base + "/summary/dexs/" + L.slug, { cache: "no-store" }).then(function (r) { return r.json(); });
+        });
+        Promise.all([totP].concat(famP)).then(function (res) {
+          var totals = dexDayMap(res[0].totalDataChart);
+          var tsList = Object.keys(totals).map(Number).sort(function (a, b) { return a - b; });
+          /* 只用完整 UTC 日：最新一天是未走完的当日，各协议补数节奏不一，
+             混入会让个别曲线在末端假摔；取 91 天后丢弃最后一天。 */
+          if (tsList.length > 91) tsList = tsList.slice(tsList.length - 91);
+          tsList = tsList.slice(0, tsList.length - 1);
+          var series = DEX_LINES.map(function (L, i) {
+            var m = dexDayMap(res[i + 1].totalDataChart);
+            var pts = [];
+            tsList.forEach(function (ts) {
+              var tv = totals[ts], v = m[ts];
+              if (typeof v === "number" && isFinite(v) && tv > 0) pts.push({ ts: ts, v: v / tv * 100 });
+            });
+            return { name: L.name, color: L.color, width: L.width, points: pts };
+          }).filter(function (s) { return s.points.length >= 10; });
+          if (series.length) { dexSeries = series; renderDexChart(); }
+        }).catch(function () { /* 拉取失败：保持「—」 */ }).finally(function () { dexChartBusy = false; });
+      }
+      window.loadDexChart = loadDexChart;
+      loadDexChart();
 
       /* ---------- 分页 3：总览实时聚合（lp.json 可用时；聚合全部基于护栏过滤后的达标行） ---------- */
       function fmtM(n) {
@@ -2397,6 +2484,7 @@
           if (typeof window.loadAutopilot === "function") window.loadAutopilot();
           if (typeof window.loadStatus === "function") window.loadStatus();
           if (typeof window.loadDexShare === "function") window.loadDexShare();
+          if (typeof window.loadDexChart === "function") window.loadDexChart();
         }
         window.__refreshFeeds = refreshFeeds;
         setInterval(function () { if (!document.hidden) refreshFeeds(); }, REFRESH_MS);
