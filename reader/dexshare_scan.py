@@ -44,6 +44,8 @@ def family(name):
         return "Curve"
     if n.startswith("orca"):
         return "Orca"
+    if n.startswith("polymarket"):
+        return "Polymarket"
     return name
 
 
