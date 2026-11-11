@@ -115,7 +115,12 @@
       .burn-total { font-size: 26px; font-weight: 700; }
       .burn-legend { display: inline-flex; gap: 14px; align-items: center; font-size: 12px; color: var(--ink-2); }
       .burn-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+      #dexChart { position: relative; }
       #dexChart svg { display: block; width: 100%; height: auto; }
+      #dexTip { position: absolute; z-index: 5; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: 12px; line-height: 1.55; color: var(--ink); box-shadow: 0 4px 16px rgba(10, 20, 40, .13); white-space: nowrap; }
+      #dexTip .tt-date { font-weight: 700; margin-bottom: 2px; }
+      #dexTip .sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+      #dexTip .tt-v { font-variant-numeric: tabular-nums; float: right; margin-left: 14px; font-weight: 600; }
       #dexChart .dgrid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
       #dexChart .dlab { fill: var(--ink-2); font-size: 10px; }
       #dexChart .dline { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
@@ -501,7 +506,7 @@
               </table>
             </div>
             <div class="burn-head" style="margin-top:12px"><span class="note" id="dexChartNote">近 90 天每日份额</span><div class="burn-legend" id="dexLegend"></div></div>
-            <div id="dexChart"><p class="src">—</p></div>
+            <div id="dexChart"><div id="dexSvg"><p class="src">—</p></div><div id="dexTip" hidden></div></div>
           </div>
         </section>
 
@@ -1338,15 +1343,17 @@
         });
         return m;
       }
+      var dexGeom = null;
       function renderDexChart() {
-        var box = $("dexChart"), lg = $("dexLegend");
+        var box = $("dexSvg"), lg = $("dexLegend"), tip = $("dexTip");
         if (!box) return;
-        if (!dexSeries || !dexSeries.length) { box.innerHTML = '<p class="src">—</p>'; if (lg) lg.innerHTML = ""; return; }
+        if (tip) tip.hidden = true;
+        if (!dexSeries || !dexSeries.length) { box.innerHTML = '<p class="src">—</p>'; if (lg) lg.innerHTML = ""; dexGeom = null; return; }
         var W = 680, H = 208, mT = 12, mB = 22, mL = 34, mR = 8;
         var pw = W - mL - mR, ph = H - mT - mB;
         var maxV = 0, t0 = Infinity, t1 = -Infinity;
         dexSeries.forEach(function (s) { s.points.forEach(function (p) { if (p.v > maxV) maxV = p.v; if (p.ts < t0) t0 = p.ts; if (p.ts > t1) t1 = p.ts; }); });
-        if (!(maxV > 0) || !isFinite(t0)) { box.innerHTML = '<p class="src">—</p>'; return; }
+        if (!(maxV > 0) || !isFinite(t0)) { box.innerHTML = '<p class="src">—</p>'; dexGeom = null; return; }
         var yMax = maxV * 1.12;
         function X(ts) { return mL + (ts - t0) / Math.max(1, t1 - t0) * pw; }
         function Y(v) { return mT + ph - (v / yMax) * ph; }
@@ -1363,11 +1370,71 @@
           var d = s.points.map(function (p, i) { return (i ? "L" : "M") + X(p.ts).toFixed(1) + " " + Y(p.v).toFixed(1); }).join(" ");
           svg += '<path class="dline" stroke="' + s.color + '" stroke-width="' + s.width + '" opacity="' + (s.width > 2 ? "1" : "0.75") + '" d="' + d + '"><title>' + escHtml(s.name) + "</title></path>";
         });
-        box.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img">' + svg + "</svg>";
+        svg += '<g id="dexHoverG" style="display:none"><line id="dexHoverLine" y1="' + mT + '" y2="' + (mT + ph) + '" stroke="var(--ink-2)" stroke-width="1" stroke-dasharray="3 3"/>';
+        dexSeries.forEach(function (s, i) {
+          svg += '<circle id="dexHoverDot' + i + '" r="4" fill="' + s.color + '" stroke="var(--surface)" stroke-width="1.6"/>';
+        });
+        svg += "</g>";
+        svg += '<rect id="dexHoverZone" x="' + mL + '" y="' + mT + '" width="' + pw + '" height="' + ph + '" fill="transparent"/>';
+        box.innerHTML = '<svg id="dexSvgEl" viewBox="0 0 ' + W + " " + H + '" role="img">' + svg + "</svg>";
         if (lg) lg.innerHTML = dexSeries.map(function (s) {
           var last = s.points[s.points.length - 1];
           return '<span><span class="sw" style="background:' + s.color + '"></span>' + escHtml(s.name) + " " + last.v.toFixed(2) + "%</span>";
         }).join("");
+        /* 悬停读数：按天对齐，显示竖线 + 各线圆点 + 数据浮签 */
+        var days = dexSeries[0].points.map(function (p) { return p.ts; });
+        var byTs = dexSeries.map(function (s) {
+          var m = {};
+          s.points.forEach(function (p) { m[p.ts] = p.v; });
+          return m;
+        });
+        dexGeom = { W: W, H: H, mL: mL, mT: mT, pw: pw, ph: ph, yMax: yMax, t0: t0, t1: t1, days: days, byTs: byTs };
+        var svgEl = $("dexSvgEl"), zone = $("dexHoverZone"), wrap = $("dexChart");
+        if (!svgEl || !zone || !wrap) return;
+        function hideHover() {
+          var g = $("dexHoverG"); if (g) g.style.display = "none";
+          if (tip) tip.hidden = true;
+        }
+        zone.addEventListener("pointerleave", hideHover);
+        zone.addEventListener("pointermove", function (ev) {
+          if (!dexGeom) return;
+          var rect = svgEl.getBoundingClientRect();
+          var sx = (ev.clientX - rect.left) * (dexGeom.W / rect.width);
+          var frac = (sx - dexGeom.mL) / dexGeom.pw;
+          if (frac < 0 || frac > 1) { hideHover(); return; }
+          var target = dexGeom.t0 + frac * (dexGeom.t1 - dexGeom.t0);
+          var best = null, bd = Infinity;
+          dexGeom.days.forEach(function (ts) { var dd = Math.abs(ts - target); if (dd < bd) { bd = dd; best = ts; } });
+          if (best === null) return;
+          var x = dexGeom.mL + (best - dexGeom.t0) / Math.max(1, dexGeom.t1 - dexGeom.t0) * dexGeom.pw;
+          var g = $("dexHoverG"); if (!g) return;
+          g.style.display = "";
+          var line = $("dexHoverLine");
+          if (line) { line.setAttribute("x1", x.toFixed(1)); line.setAttribute("x2", x.toFixed(1)); }
+          var rows = "";
+          dexSeries.forEach(function (s, i) {
+            var dot = $("dexHoverDot" + i);
+            var v = dexGeom.byTs[i][best];
+            if (typeof v === "number" && isFinite(v)) {
+              var y = dexGeom.mT + dexGeom.ph - (v / dexGeom.yMax) * dexGeom.ph;
+              if (dot) { dot.style.display = ""; dot.setAttribute("cx", x.toFixed(1)); dot.setAttribute("cy", y.toFixed(1)); }
+              rows += '<div><span class="sw" style="background:' + s.color + '"></span>' + escHtml(s.name) + '<span class="tt-v">' + v.toFixed(2) + "%</span></div>";
+            } else if (dot) dot.style.display = "none";
+          });
+          if (tip) {
+            var dstr = new Date(best * 1000).toISOString().slice(0, 10);
+            tip.innerHTML = '<div class="tt-date">' + dstr + "</div>" + rows;
+            tip.hidden = false;
+            var wrapRect = wrap.getBoundingClientRect();
+            var px = (ev.clientX - wrapRect.left), py = (ev.clientY - wrapRect.top);
+            var tw = tip.offsetWidth, th = tip.offsetHeight;
+            var lx = px + 14, ly = py - th - 10;
+            if (lx + tw > wrapRect.width - 4) lx = px - tw - 14;
+            if (ly < 0) ly = py + 16;
+            tip.style.left = Math.max(0, lx) + "px";
+            tip.style.top = Math.max(0, ly) + "px";
+          }
+        });
       }
       window.renderDexChart = renderDexChart;
       function loadDexChart() {
