@@ -465,7 +465,7 @@
       <div class="panel" id="panel-overview" hidden>
         <div class="strip" id="strip">
           <div class="stat"><div class="k" id="ovPxK">AERO 价格</div><div class="v mono" id="stAeroPx">—</div><div class="s"><span id="pxTime"></span></div></div>
-          <div class="stat"><div class="k" id="ovCoolK">Predictive Allocation 冷却</div><div class="v mono" id="ovCoolV">47 小时</div><div class="s" id="ovCoolS">调整分配的官方冷却 · 链上实测 169,200 秒</div></div>
+          <div class="stat"><div class="k" id="ovEmisK">48H 排放与手续费</div><div class="v mono" id="ovEmisV">—</div><div class="s" id="ovEmisS"></div></div>
           <div class="stat"><div class="k" id="ovSupplyK">新 AERO 推算总供应</div><div class="v mono" id="ovSupplyV">—</div><div class="s" id="ovSupplyS"></div></div>
           <div class="stat"><div class="k" id="ovNftK">sAERO 仓位 NFT 总数</div><div class="v mono" id="ovNftV">—</div><div class="s" id="ovNftS"></div></div>
           <div class="stat"><div class="k" id="kTvl">TVL（全系统）</div><div class="v mono" id="stTvl">—</div><div class="s" id="sTvl"></div></div>
@@ -609,7 +609,7 @@
           lp_empty: "该链暂无 TVL ≥ $100K 的池。",
           ov_px_k: "AERO 价格", ov_px_live: "{t}",
           ov_px_feed: "{t}",
-          ov_cool_k: "Predictive Allocation 冷却", ov_cool_v: "47 小时", ov_cool_s: "调整分配的官方冷却 · 链上实测 169,200 秒",
+          ov_emis_k: "48H 排放与手续费", ov_emis_s: "净排放 {aero} AERO ≈ {usd} · 手续费 {fees}",
           ov_supply_k: "新 AERO 总供应",
           ov_burn_k: "累计销毁 AERO", ov_burn_s: "Momentum Fund 回购销毁与协议费销毁",
           ov_burn_latest: "最近一笔 {amt} AERO · {t} 销毁", ov_burn_stale_s: " · 本轮扫描未完成，累计数截至上一轮",
@@ -748,7 +748,7 @@
           lp_empty: "No pool on this chain currently has TVL ≥ $100K.",
           ov_px_k: "AERO price", ov_px_live: "{t}",
           ov_px_feed: "{t}",
-          ov_cool_k: "Predictive Allocation cooldown", ov_cool_v: "47 hours", ov_cool_s: "Official cooldown for changing an allocation · measured on-chain at 169,200 seconds",
+          ov_emis_k: "48H emissions & fees", ov_emis_s: "Net emissions {aero} AERO ≈ {usd} · Fees {fees}",
           ov_supply_k: "New AERO total supply",
           ov_burn_k: "AERO burned (cumulative)", ov_burn_s: "Momentum Fund buyback burns and protocol-fee burns",
           ov_burn_latest: "Latest burn {amt} AERO · {t}", ov_burn_stale_s: " · scan incomplete this round; total is as of the previous round",
@@ -886,7 +886,7 @@
         setText("ovPxK", t("ov_px_k"));
         var pxT = document.getElementById("pxTime");
         if (pxT && !window.__pxLive && !window.__pxSet) pxT.textContent = "";
-        setText("ovCoolK", t("ov_cool_k")); setText("ovCoolV", t("ov_cool_v")); setText("ovCoolS", t("ov_cool_s"));
+        setText("ovEmisK", t("ov_emis_k")); if (typeof window.renderEmis === "function") window.renderEmis();
         setText("ovSupplyK", t("ov_supply_k")); if (typeof window.renderStake === "function") window.renderStake();
         setText("burnH2", t("ov_burn_k"));
         setText("burnNote", t("burn_note"));
@@ -1489,6 +1489,8 @@
         /* kRev7/stRev7/sRev7 卡自 v28 起为 sAERO 质押数量，由 renderStake 依 status.json 的 ve_* 字段渲染，此处不再写投票墙池数 */
         $("stChains").textContent = tf("ov_chains_v_live", { n: Object.keys(chains).length });
         $("sChains").textContent = tf("ov_chains_s_live", { n: q.length });
+        window.__ovFees48 = fees;
+        if (typeof window.renderEmis === "function") window.renderEmis();
       }
 
       /* ---------- LP 数据：仅实时 feed（data/lp.json，链上读取器产出） ---------- */
@@ -1561,6 +1563,7 @@
             var now = new Date();
             var hh = String(now.getHours()).padStart(2, "0"), mm = String(now.getMinutes()).padStart(2, "0");
             window.__pxLive = true; $("pxTime").textContent = tf("ov_px_live", { t: hh + ":" + mm });
+            if (typeof window.renderEmis === "function") window.renderEmis();
           }
         }).catch(function () { /* keep baked snapshot values */ });
     </script>
@@ -2486,6 +2489,22 @@
         var supEl = $("ovSupplyV");
         if (supEl) supEl.textContent = total !== null ? (LANG === "en" ? (total / 1e9).toFixed(2) + "B" : (total / 1e8).toFixed(2) + " 亿") : "—";
       };
+      /* 总览排放与手续费卡：status.json 的 emis48h_aero（管线采样，
+         48 小时净排放）× 实时价 ÷ 总览同口径 48H 手续费合计；
+         任一输入缺失时显示 —，不使用任何快照值。 */
+      window.renderEmis = function () {
+        var kEl = $("ovEmisK"); if (kEl) kEl.textContent = t("ov_emis_k");
+        var vEl = $("ovEmisV"); if (!vEl) return;
+        var sEl = $("ovEmisS");
+        var j = window.__statusData || null;
+        var emis = (j && typeof j.emis48h_aero === "number" && isFinite(j.emis48h_aero)) ? j.emis48h_aero : null;
+        var fees = (typeof window.__ovFees48 === "number" && isFinite(window.__ovFees48) && window.__ovFees48 > 0) ? window.__ovFees48 : null;
+        var px = (typeof AERO_PX === "number" && isFinite(AERO_PX) && AERO_PX > 0) ? AERO_PX : null;
+        if (emis === null || fees === null || px === null) { vEl.textContent = "—"; if (sEl) sEl.textContent = ""; return; }
+        var usd = emis * px;
+        vEl.textContent = (usd / fees).toFixed(2) + "×";
+        if (sEl) sEl.textContent = tf("ov_emis_s", { aero: burnFmt(emis, 0), usd: fmtM(usd), fees: fmtM(fees) });
+      };
       window.renderStatus = function (j) {
         if (!j || typeof j !== "object") return;
         var txt;
@@ -2498,6 +2517,7 @@
         if (typeof j.burn_total_aero === "number" && isFinite(j.burn_total_aero)) window.__burnLive = true;
         if (typeof window.renderBurn === "function") window.renderBurn();
         if (typeof window.renderStake === "function") window.renderStake();
+        if (typeof window.renderEmis === "function") window.renderEmis();
         var el = $("runStatus"); el.textContent = txt; el.hidden = false;
       };
       window.loadStatus = function () {
