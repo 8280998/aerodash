@@ -153,6 +153,13 @@ def main():
         return 1
     span_h, old_supply = picked
     emis = (cur[1] - old_supply) * TARGET_H / span_h
+    # 合理性护栏：协议年化通胀硬顶 20%，48h 净排放折年化超过 22%
+    # 只可能是读取错误；净销毁超过总供应 0.15%/48h 同理。越界一律
+    # 不写字段（页面显示 —），宁可缺数据也不显示错数据。
+    if emis > cur[1] * 0.22 * 2 / 365 or emis < -cur[1] * 0.0015:
+        print(f"emis: 折算值 {emis:,.0f} 超出合理区间，判为读取错误",
+              file=sys.stderr)
+        return 1
     status["emis48h_aero"] = round(emis, 2)
     status["emis_span_h"] = round(span_h, 1)
     with open(args.status, "w") as f:
