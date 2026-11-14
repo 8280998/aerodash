@@ -1257,7 +1257,7 @@
           c.n += 1; c.tvl += p[3]; c.fees += feesOf(p);
         });
         var order = Object.keys(byChain);
-        order.sort(function (a, b) { return byChain[b].tvl - byChain[a].tvl; });
+        order.sort(function (a, b) { return byChain[b].fees - byChain[a].fees; });
         var tot = { n: 0, tvl: 0, fees: 0 };
         order.forEach(function (c) { var s = byChain[c]; tot.n += s.n; tot.tvl += s.tvl; tot.fees += s.fees; });
         function row(name, s, cls) {
