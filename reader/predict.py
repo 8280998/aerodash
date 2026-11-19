@@ -32,6 +32,12 @@ it looks up the preds-archive snapshot closest to 48h old and adds
 reality beat the forecast). Rows without a scorable past prediction
 get NO pred_dev key.
 
+此外还导出尖峰状态字段 `fees_ratio` / `fees_base`：fees_base 是该池
+fees48h 历史序列（不含当前行）的 EWMA 基线（口径同上），fees_ratio
+= 当前 fees48h / fees_base。回测（2026-11-19，样本期 10-27→11-17）
+显示 ratio ≥2 的池未来 48h 维持尖峰的概率显著高于基线，页面据此在
+卡片底部行标注尖峰值。历史不足的行不带这两个字段。
+
 Run: python predict.py --feed data/pools.json --history-dir history/
 (the history dir uses the data-history layout history/YYYY/MM/DD/).
 The feed file is rewritten in place.
@@ -158,6 +164,28 @@ def collect_past_preds(history_dir, now):
     return out
 
 
+def fees_baseline(samples, now):
+    """历史样本（不含当前行）的 fees48h EWMA 基线，口径同 predict_row
+    的 pred_fees 但严格只用 now 之前的快照；样本不足时返回 None。"""
+    hist = [s for s in samples
+            if isinstance(s[1], (int, float))
+            and s[0] < now and now - s[0] <= WINDOW_H * 3600]
+    if len(hist) < MIN_SAMPLES:
+        return None
+    span_h = (now - min(s[0] for s in hist)) / 3600.0
+    if span_h < MIN_SPAN_H:
+        return None
+    wsum = 0.0
+    fsum = 0.0
+    for ts, fees, _alloc in hist:
+        w = 0.5 ** (((now - ts) / 3600.0) / HALF_LIFE_H)
+        wsum += w
+        fsum += w * fees
+    if wsum <= 0:
+        return None
+    return fsum / wsum
+
+
 def predict_row(row, samples, now):
     """pred_apr for one feed row, or None when history is too thin."""
     apr = row.get("stake_apr")
@@ -229,6 +257,7 @@ def main():
     past_preds = collect_past_preds(args.history_dir, now)
     n_pred = 0
     n_dev = 0
+    n_ratio = 0
     preds = []
     for row in feed.get("pools", []):
         key = (str(row.get("chain", "")).lower(),
@@ -248,6 +277,13 @@ def main():
                 "pred_apr": pred, "rewards48h": row.get("rewards48h"),
                 "incentives48h": row.get("incentives48h"),
                 "allocation": row.get("allocation")})
+        base = fees_baseline(series.get(key, []), now)
+        fees_now = row.get("fees48h")
+        if base is not None and base > 0 \
+                and isinstance(fees_now, (int, float)):
+            row["fees_ratio"] = round(fees_now / base, 2)
+            row["fees_base"] = round(base, 2)
+            n_ratio += 1
     with open(args.feed, "w", encoding="utf-8") as f:
         json.dump(feed, f, indent=1)
     if args.preds_out:
@@ -256,7 +292,8 @@ def main():
                        "pools": preds}, f, indent=1)
     print(f"predict: {n_pred}/{len(feed.get('pools', []))} pools "
           f"have pred_apr ({len(series)} pools in history window); "
-          f"{n_dev} rows scored with pred_dev")
+          f"{n_dev} rows scored with pred_dev; "
+          f"{n_ratio} rows with fees_ratio")
     return 0
 
 
