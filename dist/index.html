@@ -239,9 +239,6 @@
       footer p { margin: 5px 0; }
       footer a { color: var(--accent-ink); }
       .src { font-size: 11.5px; color: var(--ink-3); margin-top: 8px; }
-      /* movers strip */
-      .movers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-      @media (max-width: 640px) { .movers { grid-template-columns: 1fr; } }
       .mv-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; min-width: 0; }
       .mv-card h4 { margin: 0 0 4px; font-size: 13px; color: var(--ink-2); }
       .mv-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13px; min-width: 0; }
@@ -317,10 +314,6 @@
         .lp-more-wrap { display: block; margin-top: 10px; }
         .lp-more-wrap.off { display: none; }
         .lp-more-btn { appearance: none; width: 100%; min-height: 44px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--accent-ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-        /* P1-2 异动条横滑车道（scroll-snap） */
-        .movers { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding-bottom: 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-        .movers::-webkit-scrollbar { display: none; }
-        .movers .mv-card { flex: 0 0 86%; scroll-snap-align: start; }
         /* P1-3 回到顶部（滚动 >600px 出现；含安全区） */
         .backtop { display: flex; align-items: center; justify-content: center; position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 40; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--accent-ink); font-size: 19px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(10, 20, 40, .22); opacity: 0; pointer-events: none; transition: opacity .18s ease; }
         .backtop.on { opacity: 1; pointer-events: auto; }
@@ -394,7 +387,6 @@
             <p id="basisPred">预测利率：卡片上箭头后的数字为预测 Stake APR——费用部分取过去 7 天逐小时快照的衰减加权平均（半衰期 2 天），激励按已排期计划计入，再按过去 24 小时 Allocation 变化做趋势修正（外推一半、封顶 ±25%）。预测不是保证：大额分配临时进出（如 Autopilot 再平衡）无法预知。历史不足的池不显示预测。</p>
             <p id="basisRefresh">数据每小时更新，页面每 10 分钟自动刷新。</p>
           </div>
-          <div id="moversStrip" hidden></div>
           <div id="apStrip" hidden></div>
           <div class="tierchips" id="tierChips" role="group"></div>
           <div class="tiers" id="tiers"></div>
@@ -652,7 +644,6 @@
           footer_x_label: "官方 X：",
           footer_xcn_label: "官方中文 X：",
           unit_yi: "亿", unit_wan: "万",
-          movers_title: "过去 24 小时 Allocation 异动", movers_up: "涨幅前 5", movers_down: "跌幅前 5", movers_none: "暂无",
           ap_title: "自动投票 · Autopilot", ap_yield: "收益率（年化）", ap_deposit: "存入规模", ap_status: "状态", ap_st_idle: "待分配（队列中）", ap_st_live: "已分配", ap_st_partial: "已分配 {p}%", ap_yield_pending: "尚未开始分配", ap_src: "更新 {t}", ap_stale_s: " · 本轮采样异常，沿用上一帧",
           status_fail: "运行状态：本轮未通过质量检查，已保留上一轮数据{hf}",
           status_ok: "运行状态：正常{t}", status_gen: " · 生成于 {t}", status_warn: " · 提示：{w}",
@@ -792,7 +783,6 @@
           footer_x_label: "Official X: ",
           footer_xcn_label: "Official Chinese X: ",
           unit_yi: "00M", unit_wan: "0K",
-          movers_title: "Allocation Movers — Past 24 Hours", movers_up: "Top 5 gainers", movers_down: "Top 5 losers", movers_none: "None",
           ap_title: "Autopilot", ap_yield: "Yield (annualized)", ap_deposit: "Deposited", ap_status: "Status", ap_st_idle: "Queued — not allocated yet", ap_st_live: "Allocated", ap_st_partial: "{p}% allocated", ap_yield_pending: "Not earning yet", ap_src: "Updated {t}", ap_stale_s: " · sampler issue this round; showing the previous frame",
           status_fail: "Run status: this run failed the quality check; the previous data was kept{hf}",
           status_ok: "Run status: OK{t}", status_gen: " · generated {t}", status_warn: " · Note: {w}",
@@ -2390,28 +2380,6 @@
         queryAddress(addr.toLowerCase());
       });
 
-      /* ================= B：投票页异动条（data/movers.json） ================= */
-      window.renderMovers = function (j) {
-        if (!j || j.ready !== true) return;
-        function pickArr(o, keys) { for (var i = 0; i < keys.length; i++) if (Array.isArray(o[keys[i]])) return o[keys[i]]; return []; }
-        function pickNum(o, keys) { for (var i = 0; i < keys.length; i++) { if (o[keys[i]] !== null && o[keys[i]] !== undefined && isFinite(Number(o[keys[i]]))) return Number(o[keys[i]]); } return null; }
-        var g = pickArr(j, ["gainers", "up", "top_gainers", "gainers24h"]);
-        var l = pickArr(j, ["losers", "down", "top_losers", "losers24h"]);
-        if (!g.length && !l.length) return;
-        function row(m, down) {
-          var name = m.pair || m.name || m.symbol || "";
-          var pct = pickNum(m, ["pct", "change_pct", "delta_pct", "pct_change", "changePct"]);
-          var d = pickNum(m, ["delta", "delta_aero", "change", "delta_alloc", "delta_allocation"]);
-          return '<div class="mv-row"><span class="mv-name">' + escHtml(name) + "</span>" + (m.chain ? chainBadge(m.chain) : "") + '<span class="mv-pct ' + (down ? "down" : "up") + ' mono">' + (pct === null ? "—" : (pct > 0 ? "+" : "") + fmtNum(pct) + "%") + "</span>" + '<span class="mv-delta mono">' + (d === null ? "" : (d > 0 ? "+" : "") + fmtAlloc(d) + " AERO") + "</span></div>";
-        }
-        $("moversStrip").innerHTML = '<h3 style="margin:0 0 8px;font-size:15.5px">' + t("movers_title") + '</h3><div class="movers">' + '<div class="mv-card"><h4>' + t("movers_up") + '</h4>' + (g.slice(0, 5).map(function (m) { return row(m, false); }).join("") || '<p class="tempty">' + t("movers_none") + '</p>') + "</div>" + '<div class="mv-card"><h4>' + t("movers_down") + '</h4>' + (l.slice(0, 5).map(function (m) { return row(m, true); }).join("") || '<p class="tempty">' + t("movers_none") + '</p>') + "</div></div>";
-        $("moversStrip").hidden = false;
-      };
-      window.loadMovers = function () {
-        fetch("data/movers.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("no movers"); return r.json(); }).then(function (j) { window.__moversData = j; window.renderMovers(j); }).catch(function () { });
-      };
-      window.loadMovers();
-
       /* ================= B2：Autopilot 收益（data/relays.json） ================= */
       window.renderAutopilot = function (j) {
         var box = $("apStrip"); if (!box) return;
@@ -2575,7 +2543,6 @@
         if (window.__lastLPRaw) { try { applyLiveLP(window.__lastLPRaw); } catch (e) {} }
         if (typeof updateOverview === "function") updateOverview();
         if (typeof updateStamp === "function") updateStamp();
-        if (window.__moversData && typeof window.renderMovers === "function") window.renderMovers(window.__moversData);
         if (window.__relaysData && typeof window.renderAutopilot === "function") window.renderAutopilot(window.__relaysData);
         if (window.__statusData && typeof window.renderStatus === "function") window.renderStatus(window.__statusData);
         if (typeof saState !== "undefined" && saState && saState.chainData && saState.current !== null && typeof renderAllPosition === "function") renderAllPosition();
@@ -2607,7 +2574,6 @@
           lastRefresh = Date.now();
           if (typeof loadPools === "function") loadPools();
           if (typeof loadLP === "function") loadLP();
-          if (typeof window.loadMovers === "function") window.loadMovers();
           if (typeof window.loadAutopilot === "function") window.loadAutopilot();
           if (typeof window.loadStatus === "function") window.loadStatus();
           if (typeof window.loadDexShare === "function") window.loadDexShare();
