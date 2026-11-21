@@ -38,6 +38,13 @@ fees48h 历史序列（不含当前行）的 EWMA 基线（口径同上），fee
 显示 ratio ≥2 的池未来 48h 维持尖峰的概率显著高于基线，页面据此在
 卡片底部行标注尖峰值。历史不足的行不带这两个字段。
 
+2026-11-21 起，最终 pred_apr 再过两项局部校准（依据同日首次真实
+评分，55,587 个样本）：尖峰持续性修正（ratio 2–3 档 ×1.07、≥3 档
+×1.13，校准两档偏离中位 +6.7%/+13.4% 的系统性偏冷；升温档无偏，
+不修正）与股票池周末校准（B 方案：股票池在未来 48h 周末占比
+≥50% 时 ×0.82，校准该窗口 −18.4% 的系统性高估）。两项可叠加；
+显示口径（Stake APR、Rewards）不变，只动 pred_apr。
+
 Run: python predict.py --feed data/pools.json --history-dir history/
 (the history dir uses the data-history layout history/YYYY/MM/DD/).
 The feed file is rewritten in place.
@@ -63,6 +70,24 @@ SHRINK_K_USD = 500.0    # fee-scale shrinkage: the prediction delta is
                         # weighted by pred_fees / (pred_fees + K), so
                         # dust-fee pools (whose EWMA is noise) barely
                         # move while real pools take the full signal
+
+# 2026-11-21 两项局部校准（依据同日首次真实评分，55,587 个样本；
+# 报告见 goals/aero-analysis-dashboard/hidden_files/
+# pred-eval-20261121/REPORT.md）：
+# 尖峰持续性修正：fees_ratio 2–3 档偏离中位 +6.7%、≥3 档 +13.4%
+# （实际 APR 系统性高于预测），最终 pred_apr 按档乘修正系数；
+# 升温档（1.5–2）偏离中位 +0.2% 基本无偏，不修正。
+SPIKE_CORR_MID = 1.07   # 2 <= fees_ratio < 3
+SPIKE_CORR_HIGH = 1.13  # fees_ratio >= 3
+# 股票池周末校准（B 方案）：股票池在未来 48h 周末占比 ≥50% 的窗口
+# 偏离中位 −18.4%（系统性高估），pred 乘 0.82；非股票池无周末
+# 效应，不修正。股票符号集与评分口径一致（c 后缀代币化股票）。
+STOCK_SYMBOLS = frozenset({
+    "AAPLc", "ANTc", "GOOGLc", "METAc", "MSTRc",
+    "NVDAc", "ORCLc", "SNDKc", "SPCXc", "TSLAc"})
+WEEKEND_MIN_SHARE = 0.5
+WEEKEND_CORR = 0.82
+FWD_WINDOW_H = 48.0     # 预测前瞻窗（与偏离评分窗一致）
 
 _NAME_RE = re.compile(r"(?:pools|preds)-(\d{2})(\d{2})\.json\.gz$")
 
@@ -186,6 +211,26 @@ def fees_baseline(samples, now):
     return fsum / wsum
 
 
+def weekend_share_fwd(now):
+    """[now, now+48h] 落在周六/周日（UTC）的比例，整点采样。"""
+    steps = int(FWD_WINDOW_H)
+    hits = 0
+    for i in range(steps):
+        dt = datetime.fromtimestamp(now + (i + 0.5) * 3600.0,
+                                    tz=timezone.utc)
+        if dt.weekday() >= 5:
+            hits += 1
+    return hits / float(steps)
+
+
+def is_stock_pair(pair):
+    """pair 任一侧为代币化股票符号（评分口径的 c 后缀集合）。"""
+    if not pair:
+        return False
+    return any(tok.strip() in STOCK_SYMBOLS
+               for tok in str(pair).split("/"))
+
+
 def predict_row(row, samples, now):
     """pred_apr for one feed row, or None when history is too thin."""
     apr = row.get("stake_apr")
@@ -258,6 +303,9 @@ def main():
     n_pred = 0
     n_dev = 0
     n_ratio = 0
+    n_spike = 0
+    n_wknd = 0
+    wknd_share = weekend_share_fwd(now)
     preds = []
     for row in feed.get("pools", []):
         key = (str(row.get("chain", "")).lower(),
@@ -267,8 +315,28 @@ def main():
         if past is not None and isinstance(apr_now, (int, float)):
             row["pred_dev"] = round((apr_now / past - 1.0) * 100.0, 1)
             n_dev += 1
+        base = fees_baseline(series.get(key, []), now)
+        fees_now = row.get("fees48h")
+        ratio = None
+        if base is not None and base > 0 \
+                and isinstance(fees_now, (int, float)):
+            ratio = round(fees_now / base, 2)
+            row["fees_ratio"] = ratio
+            row["fees_base"] = round(base, 2)
+            n_ratio += 1
         pred = predict_row(row, series.get(key, []), now)
         if pred is not None:
+            corr = 1.0
+            if ratio is not None and ratio >= 2.0:
+                corr *= SPIKE_CORR_HIGH if ratio >= 3.0 \
+                    else SPIKE_CORR_MID
+                n_spike += 1
+            if wknd_share >= WEEKEND_MIN_SHARE \
+                    and is_stock_pair(row.get("pair")):
+                corr *= WEEKEND_CORR
+                n_wknd += 1
+            if corr != 1.0:
+                pred = round(pred * corr, 2)
             row["pred_apr"] = pred
             n_pred += 1
             preds.append({
@@ -277,13 +345,6 @@ def main():
                 "pred_apr": pred, "rewards48h": row.get("rewards48h"),
                 "incentives48h": row.get("incentives48h"),
                 "allocation": row.get("allocation")})
-        base = fees_baseline(series.get(key, []), now)
-        fees_now = row.get("fees48h")
-        if base is not None and base > 0 \
-                and isinstance(fees_now, (int, float)):
-            row["fees_ratio"] = round(fees_now / base, 2)
-            row["fees_base"] = round(base, 2)
-            n_ratio += 1
     with open(args.feed, "w", encoding="utf-8") as f:
         json.dump(feed, f, indent=1)
     if args.preds_out:
@@ -293,7 +354,9 @@ def main():
     print(f"predict: {n_pred}/{len(feed.get('pools', []))} pools "
           f"have pred_apr ({len(series)} pools in history window); "
           f"{n_dev} rows scored with pred_dev; "
-          f"{n_ratio} rows with fees_ratio")
+          f"{n_ratio} rows with fees_ratio; "
+          f"corrections: spike x{n_spike}, stock-weekend x{n_wknd} "
+          f"(fwd weekend share {wknd_share:.0%})")
     return 0
 
 
