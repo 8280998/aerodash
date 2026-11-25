@@ -1,16 +1,16 @@
 {
- "generated_at": "2026-11-25T00:28:56Z",
+ "generated_at": "2026-11-25T01:29:17Z",
  "deployed": true,
  "hard_failures": [],
  "warnings": [
-  "gaugeStates read losses: 1 pools",
+  "gaugeStates read losses: 2 pools",
   "price gate: 17 token price(s) corrected to pool-spot consensus",
   "price gate: 35 token(s) price-unverified; 88 pool(s) flagged and excluded by the adapter"
  ],
- "feed_pools": 211,
- "prev_feed_pools": 212,
- "lp_pools": 207,
- "gauge_losses": 1,
+ "feed_pools": 212,
+ "prev_feed_pools": 211,
+ "lp_pools": 206,
+ "gauge_losses": 2,
  "coinbase_symbols": 169,
  "raw_pools": 1615,
  "raw_gauged": 596,
@@ -24,7 +24,7 @@
  "burn_total_wei": "10407815833789355337512741",
  "burn_total_aero": 10407815.83,
  "burn_events": 3,
- "burn_last_block": 61881490,
+ "burn_last_block": 61899615,
  "burn_latest_amount": 10000000.0,
  "burn_latest_at": "2026-11-20T17:10:41Z",
  "burn_latest_tx": "0x439ba89d39cdb2c1eef596afe24f8468bed91037e3777305c8723c53a307361e",
@@ -58,7 +58,5 @@
  "ve_locked_aero": 1080972890.6920743,
  "ve_total_supply_aero": 2152022258.6976185,
  "ve_block": 61881787,
- "ve_stale": false,
- "emis48h_aero": 2165260.24,
- "emis_span_h": 48.0
+ "ve_stale": true
 }
