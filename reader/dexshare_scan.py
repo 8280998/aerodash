@@ -28,6 +28,12 @@ URL = ("https://api.llama.fi/overview/dexs"
 TOP_N = 12
 
 
+def excluded(name):
+    # Kalshi is a prediction market, not a DEX: excluded from the
+    # families AND the totals, same as the dashboard page (2026-11-26).
+    return str(name or "").lower().startswith("kalshi")
+
+
 def family(name):
     n = str(name or "").lower()
     if "aero" in n:
@@ -74,6 +80,8 @@ def main():
     for p in data.get("protocols") or []:
         v = p.get("total24h")
         if not isinstance(v, (int, float)) or not v > 0:
+            continue
+        if excluded(p.get("name")):
             continue
         v7 = p.get("total7d")
         has7 = isinstance(v7, (int, float)) and v7 > 0
