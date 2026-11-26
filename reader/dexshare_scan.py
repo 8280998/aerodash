@@ -2,12 +2,17 @@
 """DEX market-share hourly snapshot (archival only; the page does not
 consume this file).
 
-Fetches DefiLlama's public DEX overview once, groups protocols by
-project with the SAME family rules as the dashboard's live DEX-share
-table, and writes a compact snapshot: all-DEX 24h/7d totals plus the
-top families by 24h volume (Aerodrome always included). The hourly
-runner archives each snapshot to the data-history branch so a
-self-owned, fixed-caliber share series accumulates over time.
+Fetches DefiLlama's public DEX overview once and groups protocols with
+the SAME caliber as defillama.com/dexs and the dashboard's live
+DEX-share table (user decision, 2026-11-26): only protocols whose
+category is "Dexs" count (prediction markets such as Kalshi and
+Polymarket are excluded from the families AND the totals), aggregated
+by DefiLlama parent protocol with the parent's site display name.
+Writes a compact snapshot: DEX-only 24h/7d totals plus the top
+families by 24h volume (Aero always included). The hourly runner
+archives each snapshot to the data-history branch so a self-owned,
+fixed-caliber share series accumulates over time. NOTE: snapshots
+before 2026-11-26 used the old all-category family caliber.
 
 Failure policy: any fetch/parse error exits non-zero WITHOUT writing
 output; the runner treats this step as non-blocking.
@@ -28,31 +33,25 @@ URL = ("https://api.llama.fi/overview/dexs"
 TOP_N = 12
 
 
-def excluded(name):
-    # Kalshi is a prediction market, not a DEX: excluded from the
-    # families AND the totals, same as the dashboard page (2026-11-26).
-    return str(name or "").lower().startswith("kalshi")
+PARENT_NAMES = {
+    "uniswap": "Uniswap", "aero-protocol": "Aero",
+    "pancakeswap": "PancakeSwap", "metric": "Metric", "orca": "Orca",
+    "raydium": "Raydium", "fluid": "Fluid", "hyperliquid": "Hyperliquid",
+    "meteora": "Meteora", "curve-finance": "Curve Finance",
+    "pump": "Pump", "jupiter": "Jupiter", "dexalot": "Dexalot",
+}
 
 
-def family(name):
-    n = str(name or "").lower()
-    if "aero" in n:
-        return "Aerodrome"
-    if n.startswith("uniswap"):
-        return "Uniswap"
-    if n.startswith("pancakeswap"):
-        return "PancakeSwap"
-    if n.startswith("raydium"):
-        return "Raydium"
-    if n.startswith("meteora"):
-        return "Meteora"
-    if n.startswith("curve"):
-        return "Curve"
-    if n.startswith("orca"):
-        return "Orca"
-    if n.startswith("polymarket"):
-        return "Polymarket"
-    return name
+def group_of(p):
+    """(group key, display name or None) for one protocol, site caliber.
+
+    Parent protocols group under their DefiLlama parent with the
+    parent's site display name (None -> caller falls back to the
+    largest child's name); parentless protocols stand alone."""
+    pp = str(p.get("parentProtocol") or "")
+    if pp.startswith("parent#"):
+        return pp, PARENT_NAMES.get(pp[len("parent#"):])
+    return "single#" + str(p.get("name") or ""), str(p.get("name") or "")
 
 
 def main():
@@ -81,22 +80,29 @@ def main():
         v = p.get("total24h")
         if not isinstance(v, (int, float)) or not v > 0:
             continue
-        if excluded(p.get("name")):
+        if p.get("category") != "Dexs":
             continue
         v7 = p.get("total7d")
         has7 = isinstance(v7, (int, float)) and v7 > 0
         tot24 += v
         if has7:
             tot7 += v7
-        g = groups.setdefault(family(p.get("name")),
-                              {"name": family(p.get("name")),
-                               "vol24h": 0.0, "vol7d": 0.0})
+        key, disp = group_of(p)
+        g = groups.setdefault(key, {"name": disp, "vol24h": 0.0,
+                                    "vol7d": 0.0, "_big": -1.0,
+                                    "_big_name": str(p.get("name") or "")})
+        if v > g["_big"]:
+            g["_big"] = v
+            g["_big_name"] = str(p.get("name") or "")
         g["vol24h"] += v
         if has7:
             g["vol7d"] += v7
-    if not tot24 > 0 or "Aerodrome" not in groups:
-        print("dexshare: empty totals or Aerodrome missing",
-              file=sys.stderr)
+    for g in groups.values():
+        if not g["name"]:
+            g["name"] = g["_big_name"]
+        del g["_big"], g["_big_name"]
+    if not tot24 > 0 or all(g["name"] != "Aero" for g in groups.values()):
+        print("dexshare: empty totals or Aero missing", file=sys.stderr)
         return 1
 
     fams = sorted(groups.values(), key=lambda g: -g["vol24h"])
@@ -107,8 +113,8 @@ def main():
         g["vol24h"] = round(g["vol24h"], 2)
         g["vol7d"] = round(g["vol7d"], 2)
     keep = fams[:TOP_N]
-    if all(g["name"] != "Aerodrome" for g in keep):
-        keep.append(next(g for g in fams if g["name"] == "Aerodrome"))
+    if all(g["name"] != "Aero" for g in keep):
+        keep.append(next(g for g in fams if g["name"] == "Aero"))
 
     out = {
         "generated_at": datetime.now(timezone.utc).strftime(
@@ -120,8 +126,8 @@ def main():
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "w") as f:
         json.dump(out, f, indent=1)
-    aero = next(g for g in fams if g["name"] == "Aerodrome")
-    print(f"dexshare: total24h ${tot24:,.0f}; Aerodrome rank "
+    aero = next(g for g in fams if g["name"] == "Aero")
+    print(f"dexshare: total24h ${tot24:,.0f}; Aero rank "
           f"{aero['rank']} share {aero['share24']:.2f}%; "
           f"{len(keep)} families written")
     return 0

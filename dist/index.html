@@ -1307,35 +1307,39 @@
       /* ---------- 分页 3：DEX 市场份额（页面打开时实时拉取全网 DEX 成交数据，
          按项目合并口径计算份额；拉取失败时表格保持「—」，不使用任何缓存值） ---------- */
       var dexShareData = null, dexShareBusy = false;
-      /* Kalshi 是预测市场、不是 DEX：不计入本表与份额分母（用户 2026-11-26 定） */
-      function dexExcluded(name) {
-        return String(name || "").toLowerCase().indexOf("kalshi") === 0;
+      /* 口径与 defillama.com/dexs 排名一致（用户 2026-11-26 定）：只计 category=Dexs
+         的协议（Kalshi、Polymarket 等预测市场不在内），按 DefiLlama 父协议合并，
+         名称用父协议在官网的显示名；无父协议的用其自身名称，未知父协议回退到
+         其最大子协议名。 */
+      var DEX_PARENT_NAMES = {
+        "uniswap": "Uniswap", "aero-protocol": "Aero", "pancakeswap": "PancakeSwap",
+        "metric": "Metric", "orca": "Orca", "raydium": "Raydium", "fluid": "Fluid",
+        "hyperliquid": "Hyperliquid", "meteora": "Meteora", "curve-finance": "Curve Finance",
+        "pump": "Pump", "jupiter": "Jupiter", "dexalot": "Dexalot"
+      };
+      function dexGroupKey(p) {
+        var pp = String(p.parentProtocol || "");
+        if (pp.indexOf("parent#") === 0) return pp;
+        return "single#" + String(p.name || "");
       }
-      function dexFamily(name) {
-        var n = String(name || "").toLowerCase();
-        if (n.indexOf("aero") >= 0) return "Aerodrome";
-        if (n.indexOf("uniswap") === 0) return "Uniswap";
-        if (n.indexOf("pancakeswap") === 0) return "PancakeSwap";
-        if (n.indexOf("raydium") === 0) return "Raydium";
-        if (n.indexOf("meteora") === 0) return "Meteora";
-        if (n.indexOf("curve") === 0) return "Curve";
-        if (n.indexOf("orca") === 0) return "Orca";
-        if (n.indexOf("polymarket") === 0) return "Polymarket";
-        return name;
+      function dexGroupName(p) {
+        var pp = String(p.parentProtocol || "");
+        if (pp.indexOf("parent#") === 0) return DEX_PARENT_NAMES[pp.slice(7)] || null;
+        return String(p.name || "");
       }
       function renderDexShare() {
         var body = $("dexShareBody");
         if (!body) return;
         if (!dexShareData) { body.innerHTML = '<tr><td colspan="5">—</td></tr>'; return; }
         var rows = dexShareData.slice(0, 5);
-        var hasAero = rows.some(function (r) { return r.name === "Aerodrome"; });
+        var hasAero = rows.some(function (r) { return r.name === "Aero"; });
         if (!hasAero) {
           var aero = null;
-          dexShareData.forEach(function (r) { if (r.name === "Aerodrome") aero = r; });
+          dexShareData.forEach(function (r) { if (r.name === "Aero") aero = r; });
           if (aero) rows.push(aero);
         }
         body.innerHTML = rows.map(function (r) {
-          return '<tr' + (r.name === "Aerodrome" ? ' class="hl"' : "") + '><td class="mono">' + r.rank + '</td><td>' + escHtml(r.name) + '</td><td class="num mono">' + r.share.toFixed(2) + '%</td><td class="num mono">' + fmtM(r.vol) + '</td><td class="num mono">' + r.share7.toFixed(2) + '%</td></tr>';
+          return '<tr' + (r.name === "Aero" ? ' class="hl"' : "") + '><td class="mono">' + r.rank + '</td><td>' + escHtml(r.name) + '</td><td class="num mono">' + r.share.toFixed(2) + '%</td><td class="num mono">' + fmtM(r.vol) + '</td><td class="num mono">' + r.share7.toFixed(2) + '%</td></tr>';
         }).join("");
       }
       window.renderDexShare = renderDexShare;
@@ -1349,16 +1353,17 @@
             (d.protocols || []).forEach(function (p) {
               var v = p.total24h, v7 = p.total7d;
               if (typeof v !== "number" || !(v > 0)) return;
-              if (dexExcluded(p.name)) return;
+              if (p.category !== "Dexs") return;
               tot24 += v;
               var has7 = (typeof v7 === "number" && v7 > 0);
               if (has7) tot7 += v7;
-              var f = dexFamily(p.name);
-              var g = groups[f] || (groups[f] = { name: f, vol: 0, vol7: 0 });
+              var k = dexGroupKey(p);
+              var g = groups[k] || (groups[k] = { name: dexGroupName(p), vol: 0, vol7: 0, big: -1, bigName: p.name });
+              if (v > g.big) { g.big = v; g.bigName = p.name; }
               g.vol += v; if (has7) g.vol7 += v7;
             });
             if (!(tot24 > 0)) return;
-            var arr = Object.keys(groups).map(function (k) { return groups[k]; });
+            var arr = Object.keys(groups).map(function (k) { var g = groups[k]; if (!g.name) g.name = g.bigName; return g; });
             arr.sort(function (a, b) { return b.vol - a.vol; });
             arr.forEach(function (g, i) { g.rank = i + 1; g.share = g.vol / tot24 * 100; g.share7 = tot7 > 0 ? g.vol7 / tot7 * 100 : 0; });
             dexShareData = arr;
@@ -1374,7 +1379,7 @@
          DEX 每日总成交量；任一序列拉取失败则整图保持「—」） ---------- */
       var dexSeries = null, dexChartBusy = false;
       var DEX_LINES = [
-        { slug: "aero", name: "Aerodrome", color: "#0052FF", width: 2.4 },
+        { slug: "aero", name: "Aero", color: "#0052FF", width: 2.4 },
         { slug: "uniswap", name: "Uniswap", color: "#FF007A", width: 1.6 },
         { slug: "pancakeswap", name: "PancakeSwap", color: "#D1884F", width: 1.6 }
       ];
@@ -1487,15 +1492,19 @@
         var famP = DEX_LINES.map(function (L) {
           return fetch(base + "/summary/dexs/" + L.slug, { cache: "no-store" }).then(function (r) { return r.json(); });
         });
-        /* 分母同口径剔除 Kalshi：其日序列抓到才扣减，抓不到则按原总量出图、不整图失败 */
-        var kalP = fetch(base + "/summary/dexs/kalshi", { cache: "no-store" }).then(function (r) { return r.json(); }).catch(function () { return null; });
-        Promise.all([totP].concat(famP).concat([kalP])).then(function (res) {
+        /* 分母同口径剔除 Kalshi 与 Polymarket（预测市场）：日序列抓到才扣减，
+           抓不到则按原总量出图、不整图失败。Polymarket 用父协议汇总序列。 */
+        var exP = ["kalshi", "polymarket"].map(function (slug) {
+          return fetch(base + "/summary/dexs/" + slug, { cache: "no-store" }).then(function (r) { return r.json(); }).catch(function () { return null; });
+        });
+        Promise.all([totP].concat(famP).concat(exP)).then(function (res) {
           var totals = dexDayMap(res[0].totalDataChart);
-          var kal = res[res.length - 1];
-          if (kal && kal.totalDataChart) {
-            var km = dexDayMap(kal.totalDataChart);
-            Object.keys(km).forEach(function (ts) { if (typeof totals[ts] === "number" && isFinite(km[ts])) totals[ts] -= km[ts]; });
-          }
+          res.slice(1 + famP.length).forEach(function (ex) {
+            if (ex && ex.totalDataChart) {
+              var xm = dexDayMap(ex.totalDataChart);
+              Object.keys(xm).forEach(function (ts) { if (typeof totals[ts] === "number" && isFinite(xm[ts])) totals[ts] -= xm[ts]; });
+            }
+          });
           var tsList = Object.keys(totals).map(Number).sort(function (a, b) { return a - b; });
           /* 只用完整 UTC 日：最新一天是未走完的当日，各协议补数节奏不一，
              混入会让个别曲线在末端假摔；取 91 天后丢弃最后一天。 */
