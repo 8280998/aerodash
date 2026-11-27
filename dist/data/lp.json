@@ -1,16 +1,16 @@
 {
- "generated_at": "2026-11-27T19:25:27Z",
+ "generated_at": "2026-11-27T20:28:38Z",
  "source": "onchain",
- "aero_price_usd": 0.392455,
+ "aero_price_usd": 0.39056,
  "pools": [
   {
    "pair": "AERO/USDC",
    "fee": "0.31%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 21587866.18,
-   "aero_apr": 23.33,
-   "fees_apr": 6.42,
+   "tvl": 21536631.63,
+   "aero_apr": 23.27,
+   "fees_apr": 6.22,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -23,9 +23,9 @@
    "fee": "0.03%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 10799196.85,
-   "aero_apr": 140.81,
-   "fees_apr": 149.19,
+   "tvl": 9784330.58,
+   "aero_apr": 132.31,
+   "fees_apr": 160.09,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -38,9 +38,9 @@
    "fee": "0.3%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 7854963.16,
-   "aero_apr": 19.54,
-   "fees_apr": 28.02,
+   "tvl": 7806495.26,
+   "aero_apr": 17.29,
+   "fees_apr": 26.86,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -49,28 +49,28 @@
    "gauge": "0x0201fb8297B493c084d201721D816Fd414BbFcfa"
   },
   {
-   "pair": "USDC/cbBTC",
-   "fee": "0.05%",
+   "pair": "WETH/VVV",
+   "fee": "0.31%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 7338034.77,
-   "aero_apr": 66.71,
-   "fees_apr": 41.15,
+   "tvl": 7496604.42,
+   "aero_apr": 75.97,
+   "fees_apr": 107.06,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0x784E539F15Ca2D19449a6311c5dAb6cF37d8f1ba",
-   "gauge": "0x4262b2d1415345b98E656a56c2f12cDBb1118539"
+   "pool": "0xdeBAEbE5B2729f7D62072b2eA40472d78d2C1626",
+   "gauge": "0xFc8922E268CCcbe8160e5C1AD546Af9705Cf0A61"
   },
   {
    "pair": "VVV/DIEM",
    "fee": "0.27%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 6593163.52,
-   "aero_apr": 11.26,
-   "fees_apr": 13.34,
+   "tvl": 6501931.31,
+   "aero_apr": 11.76,
+   "fees_apr": 13.04,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -83,9 +83,9 @@
    "fee": "0.03%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 5499941.54,
-   "aero_apr": 62.69,
-   "fees_apr": 47.97,
+   "tvl": 6140932.21,
+   "aero_apr": 40.15,
+   "fees_apr": 41.69,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -94,28 +94,28 @@
    "gauge": "0x5b14d6D194E49330647eB4717010aDe1B1B3f8B5"
   },
   {
-   "pair": "WETH/cbBTC",
-   "fee": "<0.01%",
+   "pair": "USDC/cbBTC",
+   "fee": "0.04%",
    "chain": "Base",
-   "type": "CL1",
-   "tvl": 4976203.59,
-   "aero_apr": 140.51,
-   "fees_apr": 103.57,
+   "type": "CL100",
+   "tvl": 5812413.19,
+   "aero_apr": 61.65,
+   "fees_apr": 49.67,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0xeC3c3755b9DED4a2960ef50C9b48C1694CE274C2",
-   "gauge": "0xAbb3fb6659e05847631896cB87A6D1b8bc0c6D8C"
+   "pool": "0x784E539F15Ca2D19449a6311c5dAb6cF37d8f1ba",
+   "gauge": "0x4262b2d1415345b98E656a56c2f12cDBb1118539"
   },
   {
    "pair": "USDC/cbBTC",
    "fee": "0.02%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 4617178.74,
-   "aero_apr": 114.52,
-   "fees_apr": 82.76,
+   "tvl": 5731891.73,
+   "aero_apr": 72.71,
+   "fees_apr": 64.64,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -124,13 +124,28 @@
    "gauge": "0x74a30B3357121a822aDB91A539F4B11b5fb7cb3F"
   },
   {
+   "pair": "WETH/cbBTC",
+   "fee": "<0.01%",
+   "chain": "Base",
+   "type": "CL1",
+   "tvl": 4913321.15,
+   "aero_apr": 136.0,
+   "fees_apr": 103.83,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xeC3c3755b9DED4a2960ef50C9b48C1694CE274C2",
+   "gauge": "0xAbb3fb6659e05847631896cB87A6D1b8bc0c6D8C"
+  },
+  {
    "pair": "WETH/USDC",
    "fee": "0.3%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 4275678.4,
-   "aero_apr": 5.59,
-   "fees_apr": 4.09,
+   "tvl": 4266491.41,
+   "aero_apr": 2.06,
+   "fees_apr": 3.97,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -143,9 +158,9 @@
    "fee": "<0.01%",
    "chain": "Ethereum",
    "type": "CL1",
-   "tvl": 4162635.52,
-   "aero_apr": 16.36,
-   "fees_apr": 4.38,
+   "tvl": 4262544.65,
+   "aero_apr": 15.9,
+   "fees_apr": 4.26,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -154,28 +169,13 @@
    "gauge": "0x3142Ce317ea21B4e4121A8bbf04f51230da5c649"
   },
   {
-   "pair": "WETH/USDC",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL100",
-   "tvl": 3591200.61,
-   "aero_apr": 72.65,
-   "fees_apr": 52.19,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x2A430bEbD2082d8e05D56d64DEDE8944279bbC24",
-   "gauge": "0x14018f5AFaeCA44BB49d5036267d836723B57c91"
-  },
-  {
    "pair": "AERO/USDC",
    "fee": "1.05%",
    "chain": "Base",
    "type": "CL200",
-   "tvl": 3587202.79,
-   "aero_apr": 66.8,
-   "fees_apr": 33.69,
+   "tvl": 3587408.56,
+   "aero_apr": 66.48,
+   "fees_apr": 33.55,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -184,28 +184,28 @@
    "gauge": "0x4A3B6A77B545584d870D4A6de446AAc4610c60D5"
   },
   {
-   "pair": "WETH/VVV",
-   "fee": "0.31%",
+   "pair": "WETH/USDC",
+   "fee": "0.05%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 2562749.7,
-   "aero_apr": 265.33,
-   "fees_apr": 326.33,
+   "tvl": 2439606.67,
+   "aero_apr": 88.32,
+   "fees_apr": 75.11,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0xdeBAEbE5B2729f7D62072b2eA40472d78d2C1626",
-   "gauge": "0xFc8922E268CCcbe8160e5C1AD546Af9705Cf0A61"
+   "pool": "0x2A430bEbD2082d8e05D56d64DEDE8944279bbC24",
+   "gauge": "0x14018f5AFaeCA44BB49d5036267d836723B57c91"
   },
   {
    "pair": "AERO/fBOMB",
    "fee": "2%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 2369181.03,
-   "aero_apr": 0.05,
-   "fees_apr": 0.72,
+   "tvl": 2360204.97,
+   "aero_apr": 0.71,
+   "fees_apr": 0.66,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -218,9 +218,9 @@
    "fee": "0.1%",
    "chain": "Base",
    "type": "CL200",
-   "tvl": 2092787.17,
-   "aero_apr": 212.95,
-   "fees_apr": 120.56,
+   "tvl": 2154914.85,
+   "aero_apr": 204.52,
+   "fees_apr": 114.12,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -233,7 +233,7 @@
    "fee": "0.3%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 1988197.44,
+   "tvl": 1988196.29,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
@@ -244,13 +244,28 @@
    "gauge": null
   },
   {
+   "pair": "USDC/USD\u20ae0",
+   "fee": "<0.01%",
+   "chain": "Arbitrum",
+   "type": "CL10",
+   "tvl": 1913480.59,
+   "aero_apr": 9.2,
+   "fees_apr": 1.94,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x412cF90dc0e435E9f68d2d810B24fE7D2904085b",
+   "gauge": "0xB78E6CfC4c09304a21886701f32067E1630c30f0"
+  },
+  {
    "pair": "USDC/USDG",
    "fee": "<0.01%",
    "chain": "Ethereum",
    "type": "CL1",
-   "tvl": 1888773.22,
-   "aero_apr": 9.3,
-   "fees_apr": 2.43,
+   "tvl": 1888769.61,
+   "aero_apr": 9.26,
+   "fees_apr": 2.4,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -259,11 +274,26 @@
    "gauge": "0x9CE6331e5D7a42dB5876a9E5B1205e07502fce06"
   },
   {
+   "pair": "AERO/cbBTC",
+   "fee": "0.28%",
+   "chain": "Base",
+   "type": "CL200",
+   "tvl": 1846607.79,
+   "aero_apr": 25.3,
+   "fees_apr": 22.5,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xe6A7317DF4A9a7540663B99A07d1e019CAa8Afa4",
+   "gauge": "0x347f2eEDD83Dc6b14116f0260403d67A21f47C30"
+  },
+  {
    "pair": "USDe/COMPUTE.r",
    "fee": "1%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 1771986.25,
+   "tvl": 1771295.88,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
@@ -274,43 +304,13 @@
    "gauge": null
   },
   {
-   "pair": "USDC/USD\u20ae0",
-   "fee": "<0.01%",
-   "chain": "Arbitrum",
-   "type": "CL10",
-   "tvl": 1756756.32,
-   "aero_apr": 10.07,
-   "fees_apr": 2.12,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x412cF90dc0e435E9f68d2d810B24fE7D2904085b",
-   "gauge": "0xB78E6CfC4c09304a21886701f32067E1630c30f0"
-  },
-  {
-   "pair": "WETH/MORPHO",
-   "fee": "0.27%",
-   "chain": "Base",
-   "type": "CL200",
-   "tvl": 1698114.82,
-   "aero_apr": 29.13,
-   "fees_apr": 19.36,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x3626a7c07CF4a7EdEF2eC5d5d4B25bc8ab2C03F2",
-   "gauge": "0x694fDC6B6BFdF5186E04516F699D643dc4c5C9b4"
-  },
-  {
    "pair": "USDC/NVDAc",
-   "fee": "0.04%",
+   "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 1693841.14,
-   "aero_apr": 381.5,
-   "fees_apr": 307.29,
+   "tvl": 1701869.27,
+   "aero_apr": 300.62,
+   "fees_apr": 300.52,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -324,7 +324,7 @@
    "chain": "Base",
    "type": "Basic Stable",
    "tvl": 1617796.34,
-   "aero_apr": 18.05,
+   "aero_apr": 17.96,
    "fees_apr": 0.12,
    "price_via": {
     "token0": "coinbase",
@@ -334,28 +334,13 @@
    "gauge": "0xBd18BdD2C99cE1C8FaB955451b035CAa03184d75"
   },
   {
-   "pair": "USDG/USDC",
-   "fee": "<0.01%",
-   "chain": "Arbitrum",
-   "type": "CL1",
-   "tvl": 1554410.35,
-   "aero_apr": 11.79,
-   "fees_apr": 1.48,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x09328BE718d89228A985471bb470988a34d0B162",
-   "gauge": "0x2E956A98e993D8814f9088862be36cC8fC9E86Bc"
-  },
-  {
    "pair": "USDC/AMZNc",
-   "fee": "0.02%",
+   "fee": "0.03%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 1535827.97,
-   "aero_apr": 116.77,
-   "fees_apr": 81.81,
+   "tvl": 1601039.48,
+   "aero_apr": 113.21,
+   "fees_apr": 84.19,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -364,13 +349,28 @@
    "gauge": "0x2e45BbAeeBd8e00bbB838bC885E5332cd8829D4f"
   },
   {
+   "pair": "USDG/USDC",
+   "fee": "<0.01%",
+   "chain": "Arbitrum",
+   "type": "CL1",
+   "tvl": 1554402.55,
+   "aero_apr": 11.74,
+   "fees_apr": 1.49,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x09328BE718d89228A985471bb470988a34d0B162",
+   "gauge": "0x2E956A98e993D8814f9088862be36cC8fC9E86Bc"
+  },
+  {
    "pair": "USDC/GOOGLc",
    "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 1435606.18,
-   "aero_apr": 131.52,
-   "fees_apr": 97.26,
+   "tvl": 1458073.55,
+   "aero_apr": 100.57,
+   "fees_apr": 95.09,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -379,28 +379,13 @@
    "gauge": "0x89D6eEF2f1403a4Bc045dC9F994e30F518ECbfe4"
   },
   {
-   "pair": "cbETH/WETH",
-   "fee": "<0.01%",
-   "chain": "Base",
-   "type": "CL1",
-   "tvl": 1431579.19,
-   "aero_apr": 3.2,
-   "fees_apr": 1.78,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x03bf20662F76312aEc31EF28d4a024E1ECa108Af",
-   "gauge": "0xb41eAc5BECD6c09ec40294185BCdE208fB3C6B7B"
-  },
-  {
    "pair": "USDC/SNDKc",
-   "fee": "0.03%",
+   "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 1424479.85,
-   "aero_apr": 299.66,
-   "fees_apr": 241.13,
+   "tvl": 1409556.57,
+   "aero_apr": 284.32,
+   "fees_apr": 239.83,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -409,28 +394,13 @@
    "gauge": "0xdeF20C7f935b5BAab283302EB248D023575c1862"
   },
   {
-   "pair": "AERO/cbBTC",
-   "fee": "0.28%",
-   "chain": "Base",
-   "type": "CL200",
-   "tvl": 1408346.67,
-   "aero_apr": 41.18,
-   "fees_apr": 30.0,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xe6A7317DF4A9a7540663B99A07d1e019CAa8Afa4",
-   "gauge": "0x347f2eEDD83Dc6b14116f0260403d67A21f47C30"
-  },
-  {
    "pair": "USDC/ANTc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 1325801.51,
-   "aero_apr": 141.24,
-   "fees_apr": 128.41,
+   "tvl": 1319781.54,
+   "aero_apr": 138.41,
+   "fees_apr": 126.58,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -443,9 +413,9 @@
    "fee": "0.01%",
    "chain": "Robinhood",
    "type": "CL50",
-   "tvl": 1292599.75,
-   "aero_apr": 404.15,
-   "fees_apr": 271.99,
+   "tvl": 1286329.09,
+   "aero_apr": 339.83,
+   "fees_apr": 269.63,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -458,9 +428,9 @@
    "fee": "1.05%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 1136751.77,
-   "aero_apr": 3.88,
-   "fees_apr": 2.19,
+   "tvl": 1131564.19,
+   "aero_apr": 1.12,
+   "fees_apr": 2.2,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -469,13 +439,28 @@
    "gauge": "0x25D0DaF0Efc41400e385b69Cd5376C3dd609a5b8"
   },
   {
+   "pair": "cbETH/WETH",
+   "fee": "<0.01%",
+   "chain": "Base",
+   "type": "CL1",
+   "tvl": 1128044.9,
+   "aero_apr": 4.04,
+   "fees_apr": 2.1,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x03bf20662F76312aEc31EF28d4a024E1ECa108Af",
+   "gauge": "0xb41eAc5BECD6c09ec40294185BCdE208fB3C6B7B"
+  },
+  {
    "pair": "USDC/SPCXc",
    "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 1095053.16,
-   "aero_apr": 119.12,
-   "fees_apr": 80.02,
+   "tvl": 1120915.83,
+   "aero_apr": 101.56,
+   "fees_apr": 76.06,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -485,12 +470,12 @@
   },
   {
    "pair": "WHYPE/KNTQ",
-   "fee": "0.47%",
+   "fee": "0.41%",
    "chain": "Elysium",
    "type": "CL200",
-   "tvl": 1059532.2,
-   "aero_apr": 85.24,
-   "fees_apr": 162.69,
+   "tvl": 1080209.19,
+   "aero_apr": 83.2,
+   "fees_apr": 159.19,
    "price_via": {
     "token0": "onchain",
     "token1": "onchain"
@@ -499,73 +484,13 @@
    "gauge": "0x6df1615c8c210f664934b6c0a590394CD3C89C77"
   },
   {
-   "pair": "WETH/USDT",
-   "fee": "0.03%",
-   "chain": "Ethereum",
-   "type": "CL50",
-   "tvl": 971988.29,
-   "aero_apr": 531.97,
-   "fees_apr": 251.66,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xBa9abfDFB7c28E232d853d85c619e4248971AA31",
-   "gauge": "0x430D74920F5BF2a6A2A27aF16Ab66Dfe77bffA2a"
-  },
-  {
-   "pair": "WETH/REI",
-   "fee": "1%",
-   "chain": "Base",
-   "type": "CL100",
-   "tvl": 945994.83,
-   "aero_apr": 23.59,
-   "fees_apr": 80.33,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x8Ea1727d4EDE95a7Eb006A97aa315f122Fe0af5B",
-   "gauge": "0x9e2fC63b3AA22b9524000449D58d9beBaae8eF83"
-  },
-  {
-   "pair": "WETH/DRV",
-   "fee": "0.63%",
-   "chain": "Base",
-   "type": "CL200",
-   "tvl": 945757.61,
-   "aero_apr": 46.19,
-   "fees_apr": 158.21,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x2e8B5774887B71E4F806b6D4D9e6EB26CC4D17DA",
-   "gauge": "0x512138372510Fd89240fA78d3834f01614204B63"
-  },
-  {
-   "pair": "WBTC/WETH",
-   "fee": "0.02%",
-   "chain": "Ethereum",
-   "type": "CL10",
-   "tvl": 938406.15,
-   "aero_apr": 84.15,
-   "fees_apr": 47.33,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x4650FF4fE74407859219C8eB9Ce5cffC91C7988D",
-   "gauge": "0xEEBdc9a01bfD04bFBC8CddEba91071F93b96b9Df"
-  },
-  {
    "pair": "WETH/AAVE",
    "fee": "0.15%",
    "chain": "Base",
    "type": "CL200",
-   "tvl": 874634.59,
-   "aero_apr": 91.24,
-   "fees_apr": 50.15,
+   "tvl": 1054275.66,
+   "aero_apr": 63.84,
+   "fees_apr": 41.22,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -574,13 +499,58 @@
    "gauge": "0x25750d650F3fF6876BA80f9EAe47618A3dB95113"
   },
   {
+   "pair": "WETH/USDT",
+   "fee": "0.03%",
+   "chain": "Ethereum",
+   "type": "CL50",
+   "tvl": 1001507.09,
+   "aero_apr": 513.79,
+   "fees_apr": 241.08,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xBa9abfDFB7c28E232d853d85c619e4248971AA31",
+   "gauge": "0x430D74920F5BF2a6A2A27aF16Ab66Dfe77bffA2a"
+  },
+  {
+   "pair": "WBTC/WETH",
+   "fee": "0.02%",
+   "chain": "Ethereum",
+   "type": "CL10",
+   "tvl": 956530.5,
+   "aero_apr": 46.74,
+   "fees_apr": 45.66,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x4650FF4fE74407859219C8eB9Ce5cffC91C7988D",
+   "gauge": "0xEEBdc9a01bfD04bFBC8CddEba91071F93b96b9Df"
+  },
+  {
+   "pair": "WETH/REI",
+   "fee": "1%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 942358.31,
+   "aero_apr": 23.66,
+   "fees_apr": 81.37,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x8Ea1727d4EDE95a7Eb006A97aa315f122Fe0af5B",
+   "gauge": "0x9e2fC63b3AA22b9524000449D58d9beBaae8eF83"
+  },
+  {
    "pair": "USDC/PAXG",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 864858.69,
-   "aero_apr": 5.77,
-   "fees_apr": 9.26,
+   "tvl": 867955.27,
+   "aero_apr": 5.7,
+   "fees_apr": 8.89,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -589,13 +559,28 @@
    "gauge": "0x48D58E28AB528f735f0d3E6746BEA74a757954b7"
   },
   {
+   "pair": "USDC/cbZEC",
+   "fee": "0.14%",
+   "chain": "Base",
+   "type": "CL200",
+   "tvl": 863445.15,
+   "aero_apr": 183.11,
+   "fees_apr": 246.51,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0xE7030bE388b8E247aBe0C9fa876673e83fBcBD3C",
+   "gauge": "0xCBa7452690663D6789C0115fe889C9da85Bf8c56"
+  },
+  {
    "pair": "YFI/wstETH",
    "fee": "0.3%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 863369.67,
+   "tvl": 862318.87,
    "aero_apr": 1.86,
-   "fees_apr": 1.32,
+   "fees_apr": 1.26,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -604,13 +589,28 @@
    "gauge": "0x2B7CbFA48390791B668826D7ECb8fC81dec5599a"
   },
   {
+   "pair": "AERO/USDC",
+   "fee": "0.02%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 805786.87,
+   "aero_apr": 58.44,
+   "fees_apr": 58.08,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x422dF9aa896e883c9CDcBad309C0785b7364A1cF",
+   "gauge": "0x1E417f2Af612d2E9A951eDe32ca4B05A287B50de"
+  },
+  {
    "pair": "USDC/WETH",
    "fee": "0.03%",
    "chain": "Ethereum",
    "type": "CL50",
-   "tvl": 810766.22,
-   "aero_apr": 405.33,
-   "fees_apr": 181.8,
+   "tvl": 799477.0,
+   "aero_apr": 409.07,
+   "fees_apr": 181.89,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -619,19 +619,19 @@
    "gauge": "0x9De929252c9017FE8A4Cd5986475a658aD87Ce33"
   },
   {
-   "pair": "AERO/USDC",
-   "fee": "0.02%",
+   "pair": "USDC/cbHYPE",
+   "fee": "0.19%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 808126.5,
-   "aero_apr": 63.83,
-   "fees_apr": 59.15,
+   "tvl": 759568.41,
+   "aero_apr": 318.99,
+   "fees_apr": 348.34,
    "price_via": {
     "token0": "coinbase",
-    "token1": "coinbase"
+    "token1": "onchain"
    },
-   "pool": "0x422dF9aa896e883c9CDcBad309C0785b7364A1cF",
-   "gauge": "0x1E417f2Af612d2E9A951eDe32ca4B05A287B50de"
+   "pool": "0xd80F5C0c76818cC52F0056d51713faCC12311BC2",
+   "gauge": "0xa06FD10Bb776E511c46243C03BAA3427f5bF656f"
   },
   {
    "pair": "VOLTA/WHYPE",
@@ -649,41 +649,11 @@
    "gauge": null
   },
   {
-   "pair": "USDC/cbZEC",
-   "fee": "0.14%",
-   "chain": "Base",
-   "type": "CL200",
-   "tvl": 722267.46,
-   "aero_apr": 306.3,
-   "fees_apr": 302.56,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0xE7030bE388b8E247aBe0C9fa876673e83fBcBD3C",
-   "gauge": "0xCBa7452690663D6789C0115fe889C9da85Bf8c56"
-  },
-  {
-   "pair": "USDC/cbHYPE",
-   "fee": "0.19%",
-   "chain": "Base",
-   "type": "CL100",
-   "tvl": 702704.35,
-   "aero_apr": 346.95,
-   "fees_apr": 376.88,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0xd80F5C0c76818cC52F0056d51713faCC12311BC2",
-   "gauge": "0xa06FD10Bb776E511c46243C03BAA3427f5bF656f"
-  },
-  {
    "pair": "USDC/MUSD",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 697369.34,
+   "tvl": 697370.09,
    "aero_apr": 0.13,
    "fees_apr": 1.58,
    "price_via": {
@@ -698,8 +668,8 @@
    "fee": "0.04%",
    "chain": "Ethereum",
    "type": "CL1",
-   "tvl": 693797.54,
-   "aero_apr": 8.94,
+   "tvl": 693798.03,
+   "aero_apr": 7.88,
    "fees_apr": 8.39,
    "price_via": {
     "token0": "onchain",
@@ -724,12 +694,27 @@
    "gauge": null
   },
   {
+   "pair": "USDC/METAc",
+   "fee": "0.02%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 681536.91,
+   "aero_apr": 177.98,
+   "fees_apr": 134.37,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0xd072410fa13D242e1d53721Bcf7AF02e3455DC96",
+   "gauge": "0x45eca41693d06c50784b9564457b7741f2914BD3"
+  },
+  {
    "pair": "USDG/USD\u20ae0",
    "fee": "<0.01%",
    "chain": "Arbitrum",
    "type": "CL1",
-   "tvl": 680872.1,
-   "aero_apr": 27.03,
+   "tvl": 680921.54,
+   "aero_apr": 26.9,
    "fees_apr": 3.98,
    "price_via": {
     "token0": "coinbase",
@@ -739,28 +724,13 @@
    "gauge": "0x1Ef39BD68e472d932aF1F3c79526F00CEd5D8b91"
   },
   {
-   "pair": "USDC/METAc",
-   "fee": "0.02%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 671945.51,
-   "aero_apr": 179.02,
-   "fees_apr": 131.35,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0xd072410fa13D242e1d53721Bcf7AF02e3455DC96",
-   "gauge": "0x45eca41693d06c50784b9564457b7741f2914BD3"
-  },
-  {
    "pair": "fBOMB/USDC",
    "fee": "1%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 669498.97,
-   "aero_apr": 4.84,
-   "fees_apr": 2.67,
+   "tvl": 668555.17,
+   "aero_apr": 4.82,
+   "fees_apr": 2.73,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -844,13 +814,28 @@
    "gauge": null
   },
   {
+   "pair": "USDG/META",
+   "fee": "0.21%",
+   "chain": "Robinhood",
+   "type": "CL100",
+   "tvl": 630032.55,
+   "aero_apr": 96.25,
+   "fees_apr": 81.49,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "spot_consensus"
+   },
+   "pool": "0x09B8dE3DeD768478376D98FBBe80d09AE8e6cD3c",
+   "gauge": "0x32580FbfAee8Fcc2748fbcb831b562F3CBCA8130"
+  },
+  {
    "pair": "WETH/WELL",
    "fee": "1%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 619840.82,
+   "tvl": 618242.27,
    "aero_apr": 0.2,
-   "fees_apr": 2.64,
+   "fees_apr": 2.35,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -860,12 +845,12 @@
   },
   {
    "pair": "USDC/MUc",
-   "fee": "0.03%",
+   "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 603244.25,
-   "aero_apr": 199.47,
-   "fees_apr": 149.09,
+   "tvl": 597823.77,
+   "aero_apr": 149.76,
+   "fees_apr": 147.79,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -874,13 +859,28 @@
    "gauge": "0x8b5670678192519C9847D235011c82A34aee495d"
   },
   {
+   "pair": "WETH/DRV",
+   "fee": "0.63%",
+   "chain": "Base",
+   "type": "CL200",
+   "tvl": 586780.51,
+   "aero_apr": 83.41,
+   "fees_apr": 245.19,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x2e8B5774887B71E4F806b6D4D9e6EB26CC4D17DA",
+   "gauge": "0x512138372510Fd89240fA78d3834f01614204B63"
+  },
+  {
    "pair": "WETH/EDEL",
    "fee": "0.7%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 581796.89,
+   "tvl": 579202.02,
    "aero_apr": 2.4,
-   "fees_apr": 17.09,
+   "fees_apr": 17.02,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -889,28 +889,13 @@
    "gauge": "0xa66B448100Dc494a26daFb3a0Bf694FCAfD79AC0"
   },
   {
-   "pair": "WETH/DRV",
-   "fee": "0.3%",
-   "chain": "Base",
-   "type": "Basic Volatile",
-   "tvl": 578058.07,
-   "aero_apr": 8.14,
-   "fees_apr": 14.4,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x002Ae5AE3653A1E46387542c0f68c2dC2A687036",
-   "gauge": "0xf443C8450D4C995e8b031a78f6e811DFae9D26CA"
-  },
-  {
    "pair": "USDC/GHST",
    "fee": "1%",
    "chain": "Base",
    "type": "CL100",
    "tvl": 576931.03,
    "aero_apr": 0.0,
-   "fees_apr": 0.84,
+   "fees_apr": 0.83,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -919,43 +904,28 @@
    "gauge": null
   },
   {
-   "pair": "USDG/META",
-   "fee": "0.21%",
-   "chain": "Robinhood",
-   "type": "CL100",
-   "tvl": 557061.41,
-   "aero_apr": 109.39,
-   "fees_apr": 92.97,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "spot_consensus"
-   },
-   "pool": "0x09B8dE3DeD768478376D98FBBe80d09AE8e6cD3c",
-   "gauge": "0x32580FbfAee8Fcc2748fbcb831b562F3CBCA8130"
-  },
-  {
-   "pair": "WETH/VVV",
-   "fee": "0.71%",
+   "pair": "WETH/DRV",
+   "fee": "0.3%",
    "chain": "Base",
-   "type": "CL200",
-   "tvl": 548540.72,
-   "aero_apr": 57.52,
-   "fees_apr": 143.48,
+   "type": "Basic Volatile",
+   "tvl": 576229.8,
+   "aero_apr": 8.01,
+   "fees_apr": 14.09,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0x9f11C9E86Ef74dD8Bc6b3eEfA9Ff20a96B7f3ffE",
-   "gauge": "0xf79BC641Fa325eCE8499D962B3C412295e711eeC"
+   "pool": "0x002Ae5AE3653A1E46387542c0f68c2dC2A687036",
+   "gauge": "0xf443C8450D4C995e8b031a78f6e811DFae9D26CA"
   },
   {
    "pair": "cbETH/cbBTC",
-   "fee": "0.03%",
+   "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 538969.65,
-   "aero_apr": 35.85,
-   "fees_apr": 27.28,
+   "tvl": 537475.76,
+   "aero_apr": 24.02,
+   "fees_apr": 26.48,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -969,8 +939,8 @@
    "chain": "Ethereum",
    "type": "CL1",
    "tvl": 528864.88,
-   "aero_apr": 22.19,
-   "fees_apr": 8.17,
+   "aero_apr": 22.09,
+   "fees_apr": 7.78,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -979,41 +949,56 @@
    "gauge": "0x1a41c91d3Cf0056bBBf514f7300A46c33Ee5ABc6"
   },
   {
-   "pair": "WETH/cbXRP",
+   "pair": "SOL/cbBTC",
    "fee": "0.02%",
    "chain": "Base",
-   "type": "CL100",
-   "tvl": 521898.13,
-   "aero_apr": 56.26,
-   "fees_apr": 50.44,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0xf0844016F0E92099D3D56ee13c6A50Df59E08781",
-   "gauge": "0xe300153B7A51C02a47cb8b78C76f97E7bc5ddBe7"
-  },
-  {
-   "pair": "USDC/WETH",
-   "fee": "0.05%",
-   "chain": "OP Mainnet",
-   "type": "CL100",
-   "tvl": 521815.93,
-   "aero_apr": 94.59,
-   "fees_apr": 68.31,
+   "type": "CL10",
+   "tvl": 525213.51,
+   "aero_apr": 124.84,
+   "fees_apr": 116.49,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0xcA231D91eC00385a54e541f504617d2197f9B7c3",
-   "gauge": "0x8F6a9ea8304Fe2c16a6a11f31ABa71F2c526cFd9"
+   "pool": "0xc01c2800186207270BA5386532a8173C5b7dD194",
+   "gauge": "0x81189366762Ce456DB7CF81181785bf22B5baEC6"
+  },
+  {
+   "pair": "USDC/KNTQ",
+   "fee": "0.01%",
+   "chain": "Base",
+   "type": "CL1",
+   "tvl": 521517.8,
+   "aero_apr": 4.15,
+   "fees_apr": 23.15,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x2aCFe5952EA0E78c73Ea7Ca5d709C3C1C13AB661",
+   "gauge": "0xD882383F6B22294Fcfb87ed3872d136b97C57A8F"
+  },
+  {
+   "pair": "WETH/ZEN",
+   "fee": "0.11%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 519662.32,
+   "aero_apr": 16.09,
+   "fees_apr": 18.98,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x5CA1da1ED90a6Cf15974C0A0D2808bfdE76314c1",
+   "gauge": "0xFde616C287A8BB1E9fae41557CCF415AFfCa4140"
   },
   {
    "pair": "LINK/WLINK",
    "fee": "0.3%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 520704.16,
+   "tvl": 518461.06,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
@@ -1024,58 +1009,58 @@
    "gauge": null
   },
   {
-   "pair": "USDC/KNTQ",
-   "fee": "0.01%",
+   "pair": "WETH/VVV",
+   "fee": "0.71%",
    "chain": "Base",
-   "type": "CL1",
-   "tvl": 516291.8,
-   "aero_apr": 4.14,
-   "fees_apr": 22.34,
+   "type": "CL200",
+   "tvl": 517135.34,
+   "aero_apr": 64.46,
+   "fees_apr": 144.16,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x9f11C9E86Ef74dD8Bc6b3eEfA9Ff20a96B7f3ffE",
+   "gauge": "0xf79BC641Fa325eCE8499D962B3C412295e711eeC"
+  },
+  {
+   "pair": "WETH/cbXRP",
+   "fee": "0.03%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 510858.12,
+   "aero_apr": 54.1,
+   "fees_apr": 47.28,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
    },
-   "pool": "0x2aCFe5952EA0E78c73Ea7Ca5d709C3C1C13AB661",
-   "gauge": "0xD882383F6B22294Fcfb87ed3872d136b97C57A8F"
+   "pool": "0xf0844016F0E92099D3D56ee13c6A50Df59E08781",
+   "gauge": "0xe300153B7A51C02a47cb8b78C76f97E7bc5ddBe7"
   },
   {
-   "pair": "AVNT/USDC",
-   "fee": "0.25%",
+   "pair": "USDC/VVV",
+   "fee": "0.17%",
    "chain": "Base",
-   "type": "CL1",
-   "tvl": 495344.05,
-   "aero_apr": 71.26,
-   "fees_apr": 61.96,
+   "type": "CL50",
+   "tvl": 504569.9,
+   "aero_apr": 172.24,
+   "fees_apr": 454.19,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0x67b3cf9f0B878eAC7aa6cC118Cd17f4FcE7bCEaC",
-   "gauge": "0xA1671ce478048118a515C59AAcb625cA51e9E832"
-  },
-  {
-   "pair": "WETH/ZEN",
-   "fee": "0.11%",
-   "chain": "Base",
-   "type": "CL100",
-   "tvl": 489619.89,
-   "aero_apr": 17.16,
-   "fees_apr": 20.16,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x5CA1da1ED90a6Cf15974C0A0D2808bfdE76314c1",
-   "gauge": "0xFde616C287A8BB1E9fae41557CCF415AFfCa4140"
+   "pool": "0xc5De7F0514E7531dea5d71A30597c4cf131f533A",
+   "gauge": "0xB16Dfcc911Ec996273bf8AEa481aE0AC202fBdEA"
   },
   {
    "pair": "USDC/WHYPE",
-   "fee": "0.1%",
+   "fee": "0.13%",
    "chain": "Elysium",
    "type": "CL100",
-   "tvl": 486519.15,
-   "aero_apr": 266.47,
-   "fees_apr": 274.2,
+   "tvl": 494910.72,
+   "aero_apr": 260.69,
+   "fees_apr": 266.51,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1084,28 +1069,28 @@
    "gauge": "0x05782cA239D44F57779A1Fd8a369D97F9D74E527"
   },
   {
-   "pair": "SOL/cbBTC",
-   "fee": "0.02%",
+   "pair": "AVNT/USDC",
+   "fee": "0.25%",
    "chain": "Base",
-   "type": "CL10",
-   "tvl": 485402.26,
-   "aero_apr": 121.41,
-   "fees_apr": 127.41,
+   "type": "CL1",
+   "tvl": 494303.63,
+   "aero_apr": 57.39,
+   "fees_apr": 59.84,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0xc01c2800186207270BA5386532a8173C5b7dD194",
-   "gauge": "0x81189366762Ce456DB7CF81181785bf22B5baEC6"
+   "pool": "0x67b3cf9f0B878eAC7aa6cC118Cd17f4FcE7bCEaC",
+   "gauge": "0xA1671ce478048118a515C59AAcb625cA51e9E832"
   },
   {
    "pair": "XSGD/USDC",
    "fee": "0.03%",
    "chain": "Base",
    "type": "CL1",
-   "tvl": 481526.65,
-   "aero_apr": 7.0,
-   "fees_apr": 6.33,
+   "tvl": 481528.33,
+   "aero_apr": 4.02,
+   "fees_apr": 6.24,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1118,9 +1103,9 @@
    "fee": "0.32%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 473859.82,
-   "aero_apr": 16.01,
-   "fees_apr": 16.19,
+   "tvl": 470012.18,
+   "aero_apr": 14.79,
+   "fees_apr": 16.26,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1130,12 +1115,12 @@
   },
   {
    "pair": "WETH/EURC",
-   "fee": "0.03%",
+   "fee": "0.02%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 468481.37,
-   "aero_apr": 39.31,
-   "fees_apr": 27.36,
+   "tvl": 452351.78,
+   "aero_apr": 26.75,
+   "fees_apr": 27.57,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1144,28 +1129,13 @@
    "gauge": "0x2cD47Ba367766a8a5ab641825fbf4A3a29e92ec9"
   },
   {
-   "pair": "WETH/WBTC",
-   "fee": "0.03%",
-   "chain": "OP Mainnet",
-   "type": "CL10",
-   "tvl": 450593.22,
-   "aero_apr": 40.25,
-   "fees_apr": 32.8,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x2A7606F119Fd933076e550AE87b5B30adc50725c",
-   "gauge": "0x9Be126eCbf42aBd2444C3bFbad1Ac6Ed78B37C05"
-  },
-  {
    "pair": "USDC/TSLAc",
    "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 441848.35,
-   "aero_apr": 195.09,
-   "fees_apr": 146.89,
+   "tvl": 447112.45,
+   "aero_apr": 182.54,
+   "fees_apr": 142.81,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1174,13 +1144,28 @@
    "gauge": "0x9d32ce3252b817BA708E959562c1a43ffE70C893"
   },
   {
+   "pair": "WETH/WBTC",
+   "fee": "0.03%",
+   "chain": "OP Mainnet",
+   "type": "CL10",
+   "tvl": 440409.78,
+   "aero_apr": 21.87,
+   "fees_apr": 32.99,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x2A7606F119Fd933076e550AE87b5B30adc50725c",
+   "gauge": "0x9Be126eCbf42aBd2444C3bFbad1Ac6Ed78B37C05"
+  },
+  {
    "pair": "msUSD/msETH",
    "fee": "0.23%",
    "chain": "Base",
    "type": "CL200",
-   "tvl": 437645.77,
-   "aero_apr": 42.88,
-   "fees_apr": 17.27,
+   "tvl": 435852.59,
+   "aero_apr": 16.2,
+   "fees_apr": 16.75,
    "price_via": {
     "token0": "onchain",
     "token1": "spot_consensus"
@@ -1193,9 +1178,9 @@
    "fee": "1.5%",
    "chain": "Base",
    "type": "CL200",
-   "tvl": 434821.74,
-   "aero_apr": 3.7,
-   "fees_apr": 25.4,
+   "tvl": 432969.88,
+   "aero_apr": 1.33,
+   "fees_apr": 25.29,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1208,9 +1193,9 @@
    "fee": "<0.01%",
    "chain": "Ethereum",
    "type": "CL10",
-   "tvl": 432732.93,
-   "aero_apr": 15.19,
-   "fees_apr": 9.53,
+   "tvl": 432736.06,
+   "aero_apr": 15.11,
+   "fees_apr": 9.5,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -1219,88 +1204,13 @@
    "gauge": "0xBC694fc46324791d75762e44d5D8CDCc00E2F053"
   },
   {
-   "pair": "WETH/USDC",
-   "fee": "0.04%",
-   "chain": "Arc",
-   "type": "CL50",
-   "tvl": 430855.54,
-   "aero_apr": 54.61,
-   "fees_apr": 35.78,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xAd5eea00214715cce97cdc4D0D13E9Ee2B57EacE",
-   "gauge": "0xD74d3B50d21365243fb4d9b9ACf29B804cA0C3f3"
-  },
-  {
-   "pair": "USDC/VVV",
-   "fee": "0.17%",
-   "chain": "Base",
-   "type": "CL50",
-   "tvl": 428653.12,
-   "aero_apr": 203.58,
-   "fees_apr": 542.32,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xc5De7F0514E7531dea5d71A30597c4cf131f533A",
-   "gauge": "0xB16Dfcc911Ec996273bf8AEa481aE0AC202fBdEA"
-  },
-  {
-   "pair": "USDC/MSFTc",
-   "fee": "0.02%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 420793.26,
-   "aero_apr": 167.18,
-   "fees_apr": 148.01,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x2740C0faAb738F6e346e545fDE02aEF9B1A01ee7",
-   "gauge": "0xf174d6dE66b1b5d5343b95a46B206A043b131283"
-  },
-  {
-   "pair": "USDC/MSTRc",
-   "fee": "0.02%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 416545.27,
-   "aero_apr": 430.99,
-   "fees_apr": 271.1,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x66DCd42E6314B287110922AE36cB2a8bdEECc153",
-   "gauge": "0xa958059616fAE8Cc0778662b3F033AFa582d7576"
-  },
-  {
-   "pair": "EURC/USDC",
-   "fee": "<0.01%",
-   "chain": "Base",
-   "type": "CL50",
-   "tvl": 416332.72,
-   "aero_apr": 7.59,
-   "fees_apr": 3.44,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xdc65a7a69E1d647b12E87de6C1C7a84Db80C0703",
-   "gauge": "0x7DF01565a8F49CB9205898087f40cfD7f42b4C2c"
-  },
-  {
    "pair": "wstETH/WETH",
    "fee": "<0.01%",
    "chain": "Ethereum",
    "type": "CL1",
-   "tvl": 411620.87,
-   "aero_apr": 10.0,
-   "fees_apr": 7.91,
+   "tvl": 424348.24,
+   "aero_apr": 9.65,
+   "fees_apr": 7.59,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1309,58 +1219,13 @@
    "gauge": "0xF02Cf50e7c7A8D44D59521905FDA6793821BE91F"
   },
   {
-   "pair": "WETH/OP",
-   "fee": "0.02%",
-   "chain": "OP Mainnet",
-   "type": "CL100",
-   "tvl": 401141.34,
-   "aero_apr": 19.71,
-   "fees_apr": 15.14,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x36B34113Cd2dAEF6782558Ac1647B70407afAEb3",
-   "gauge": "0xfbBF157d2CD3e4AAe26ad43f90bc70fEEe608148"
-  },
-  {
-   "pair": "USDG/NVDA",
-   "fee": "0.02%",
-   "chain": "Robinhood",
-   "type": "CL10",
-   "tvl": 391216.89,
-   "aero_apr": 179.42,
-   "fees_apr": 113.05,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "spot_consensus"
-   },
-   "pool": "0xA1513DA56f71b83D98124D645828A14a191b8010",
-   "gauge": "0x5874f5B8728776993de4C90c61473D76EeaB90db"
-  },
-  {
-   "pair": "SPCX/USDG",
-   "fee": "0.03%",
-   "chain": "Robinhood",
-   "type": "CL50",
-   "tvl": 387470.54,
-   "aero_apr": 282.44,
-   "fees_apr": 147.18,
-   "price_via": {
-    "token0": "onchain",
-    "token1": "coinbase"
-   },
-   "pool": "0x79aC9e4F5382B2157Ad06cE57392aD3677A09C83",
-   "gauge": "0x8f9C022A1e2CE1AB8aE0CBF69E95B2207e33632F"
-  },
-  {
    "pair": "USDC/AAPLc",
-   "fee": "0.03%",
+   "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 378000.14,
-   "aero_apr": 199.85,
-   "fees_apr": 158.27,
+   "tvl": 419312.96,
+   "aero_apr": 184.44,
+   "fees_apr": 151.47,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1369,13 +1234,118 @@
    "gauge": "0xe7977774210874FC95e2975b799906Cc3Bbfa399"
   },
   {
+   "pair": "USDC/MSFTc",
+   "fee": "0.02%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 418611.79,
+   "aero_apr": 166.76,
+   "fees_apr": 150.68,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x2740C0faAb738F6e346e545fDE02aEF9B1A01ee7",
+   "gauge": "0xf174d6dE66b1b5d5343b95a46B206A043b131283"
+  },
+  {
+   "pair": "EURC/USDC",
+   "fee": "<0.01%",
+   "chain": "Base",
+   "type": "CL50",
+   "tvl": 416500.26,
+   "aero_apr": 7.72,
+   "fees_apr": 3.41,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xdc65a7a69E1d647b12E87de6C1C7a84Db80C0703",
+   "gauge": "0x7DF01565a8F49CB9205898087f40cfD7f42b4C2c"
+  },
+  {
+   "pair": "USDC/MSTRc",
+   "fee": "0.02%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 408035.03,
+   "aero_apr": 302.7,
+   "fees_apr": 271.26,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x66DCd42E6314B287110922AE36cB2a8bdEECc153",
+   "gauge": "0xa958059616fAE8Cc0778662b3F033AFa582d7576"
+  },
+  {
+   "pair": "USDG/NVDA",
+   "fee": "0.03%",
+   "chain": "Robinhood",
+   "type": "CL10",
+   "tvl": 404442.56,
+   "aero_apr": 172.72,
+   "fees_apr": 107.42,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "spot_consensus"
+   },
+   "pool": "0xA1513DA56f71b83D98124D645828A14a191b8010",
+   "gauge": "0x5874f5B8728776993de4C90c61473D76EeaB90db"
+  },
+  {
+   "pair": "WETH/OP",
+   "fee": "0.03%",
+   "chain": "OP Mainnet",
+   "type": "CL100",
+   "tvl": 398354.22,
+   "aero_apr": 18.13,
+   "fees_apr": 15.1,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x36B34113Cd2dAEF6782558Ac1647B70407afAEb3",
+   "gauge": "0xfbBF157d2CD3e4AAe26ad43f90bc70fEEe608148"
+  },
+  {
+   "pair": "USDC/WETH",
+   "fee": "0.06%",
+   "chain": "OP Mainnet",
+   "type": "CL100",
+   "tvl": 396927.97,
+   "aero_apr": 95.67,
+   "fees_apr": 88.18,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xcA231D91eC00385a54e541f504617d2197f9B7c3",
+   "gauge": "0x8F6a9ea8304Fe2c16a6a11f31ABa71F2c526cFd9"
+  },
+  {
+   "pair": "SPCX/USDG",
+   "fee": "0.03%",
+   "chain": "Robinhood",
+   "type": "CL50",
+   "tvl": 388651.24,
+   "aero_apr": 280.22,
+   "fees_apr": 145.58,
+   "price_via": {
+    "token0": "onchain",
+    "token1": "coinbase"
+   },
+   "pool": "0x79aC9e4F5382B2157Ad06cE57392aD3677A09C83",
+   "gauge": "0x8f9C022A1e2CE1AB8aE0CBF69E95B2207e33632F"
+  },
+  {
    "pair": "UP/cbBTC",
    "fee": "1%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 366343.21,
-   "aero_apr": 34.66,
-   "fees_apr": 35.01,
+   "tvl": 373123.04,
+   "aero_apr": 33.87,
+   "fees_apr": 34.14,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1384,28 +1354,28 @@
    "gauge": "0x5Aa337B53C6b866D255542f834Ae80109cE292b4"
   },
   {
-   "pair": "SPY/USDG",
-   "fee": "0.02%",
-   "chain": "Robinhood",
-   "type": "CL10",
-   "tvl": 361983.2,
-   "aero_apr": 148.46,
-   "fees_apr": 65.29,
+   "pair": "WETH/MORPHO",
+   "fee": "0.27%",
+   "chain": "Base",
+   "type": "CL200",
+   "tvl": 363527.66,
+   "aero_apr": 131.21,
+   "fees_apr": 90.87,
    "price_via": {
-    "token0": "onchain",
+    "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0x4A9b7cCBa4a3CD9Ee604AfA95d3DfA77D0d593e5",
-   "gauge": "0x77723be829731F95E5ec31304FAd1A238C84B660"
+   "pool": "0x3626a7c07CF4a7EdEF2eC5d5d4B25bc8ab2C03F2",
+   "gauge": "0x694fDC6B6BFdF5186E04516F699D643dc4c5C9b4"
   },
   {
    "pair": "DOLA/USDC",
    "fee": "0.01%",
    "chain": "Ethereum",
    "type": "CL1",
-   "tvl": 356438.47,
-   "aero_apr": 43.35,
-   "fees_apr": 8.59,
+   "tvl": 356411.31,
+   "aero_apr": 43.15,
+   "fees_apr": 8.28,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1414,11 +1384,41 @@
    "gauge": "0x6dc4417b7Ff0dE51aa106bB33B854A9980a6dFC1"
   },
   {
+   "pair": "SPY/USDG",
+   "fee": "0.04%",
+   "chain": "Robinhood",
+   "type": "CL10",
+   "tvl": 354223.24,
+   "aero_apr": 150.98,
+   "fees_apr": 65.57,
+   "price_via": {
+    "token0": "onchain",
+    "token1": "coinbase"
+   },
+   "pool": "0x4A9b7cCBa4a3CD9Ee604AfA95d3DfA77D0d593e5",
+   "gauge": "0x77723be829731F95E5ec31304FAd1A238C84B660"
+  },
+  {
+   "pair": "WETH/USDC",
+   "fee": "0.03%",
+   "chain": "Arc",
+   "type": "CL50",
+   "tvl": 353655.96,
+   "aero_apr": 66.21,
+   "fees_apr": 42.77,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xAd5eea00214715cce97cdc4D0D13E9Ee2B57EacE",
+   "gauge": "0xD74d3B50d21365243fb4d9b9ACf29B804cA0C3f3"
+  },
+  {
    "pair": "WETH/msETH",
    "fee": "0.05%",
    "chain": "Base",
    "type": "Basic Stable",
-   "tvl": 354508.58,
+   "tvl": 352985.61,
    "aero_apr": 9.65,
    "fees_apr": 0.04,
    "price_via": {
@@ -1433,9 +1433,9 @@
    "fee": "0.3%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 349412.03,
+   "tvl": 345648.05,
    "aero_apr": 0.71,
-   "fees_apr": 3.48,
+   "fees_apr": 3.35,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -1444,28 +1444,13 @@
    "gauge": "0xD3d2A7084e971f9bbCd16EC25bBFB246540734d6"
   },
   {
-   "pair": "USDC/AMDc",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 348628.21,
-   "aero_apr": 340.23,
-   "fees_apr": 247.19,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x138Cb591C4A7D854D796E1906af8228d84CB7642",
-   "gauge": "0xc4b5393D65A94B35442512E6b94670267a59aCC5"
-  },
-  {
    "pair": "USDC/EURC",
    "fee": "0.03%",
    "chain": "Arc",
    "type": "CL1",
-   "tvl": 345705.29,
-   "aero_apr": 7.45,
-   "fees_apr": 7.96,
+   "tvl": 344461.88,
+   "aero_apr": 11.02,
+   "fees_apr": 7.95,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1474,28 +1459,43 @@
    "gauge": "0x1dcc3AC4a70985Ea37208Da4ebc2E1E207821e03"
   },
   {
-   "pair": "USDC/INFI",
-   "fee": "0.01%",
+   "pair": "USDC/AMDc",
+   "fee": "0.05%",
    "chain": "Base",
-   "type": "CL100",
-   "tvl": 344665.86,
-   "aero_apr": 147.91,
-   "fees_apr": 3.07,
+   "type": "CL10",
+   "tvl": 344000.43,
+   "aero_apr": 346.22,
+   "fees_apr": 250.39,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
    },
-   "pool": "0xeDb67E8E9F77b8e48A4Ff81b376699D5c8ba2C98",
-   "gauge": "0x015000EcBBDe71A684cE8b7454B44e8b478E5C5B"
+   "pool": "0x138Cb591C4A7D854D796E1906af8228d84CB7642",
+   "gauge": "0xc4b5393D65A94B35442512E6b94670267a59aCC5"
+  },
+  {
+   "pair": "USDC/DIEM",
+   "fee": "0.53%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 339701.34,
+   "aero_apr": 289.43,
+   "fees_apr": 331.93,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xf69cD40Bc4c661D0DbAbb3d74b4F2a228aD63270",
+   "gauge": "0x4A870ac2a047909c1aB791F8d7176d33bC2d60eb"
   },
   {
    "pair": "USDC/PLTRc",
    "fee": "0.02%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 339157.42,
-   "aero_apr": 49.92,
-   "fees_apr": 33.69,
+   "tvl": 339400.41,
+   "aero_apr": 51.13,
+   "fees_apr": 33.59,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1504,12 +1504,42 @@
    "gauge": "0x81C1C1c657BeBcA536C4858661Bb0A55De80D768"
   },
   {
+   "pair": "XDP/USDC",
+   "fee": "<0.01%",
+   "chain": "Base",
+   "type": "CL200",
+   "tvl": 335701.5,
+   "aero_apr": 55.81,
+   "fees_apr": 5.99,
+   "price_via": {
+    "token0": "onchain",
+    "token1": "coinbase"
+   },
+   "pool": "0xC3CBFbaab532a04E36b6F901D725EaA5113FD781",
+   "gauge": "0x82a22544534ad422F6588Fb44d38F86a0C9Bf20D"
+  },
+  {
+   "pair": "USDC/INFI",
+   "fee": "0.01%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 330832.62,
+   "aero_apr": 153.35,
+   "fees_apr": 3.25,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0xeDb67E8E9F77b8e48A4Ff81b376699D5c8ba2C98",
+   "gauge": "0x015000EcBBDe71A684cE8b7454B44e8b478E5C5B"
+  },
+  {
    "pair": "msUSD/USDC",
    "fee": "0.05%",
    "chain": "Base",
    "type": "Basic Stable",
-   "tvl": 330964.65,
-   "aero_apr": 11.0,
+   "tvl": 330046.23,
+   "aero_apr": 11.13,
    "fees_apr": 0.17,
    "price_via": {
     "token0": "onchain",
@@ -1519,28 +1549,28 @@
    "gauge": "0xeb009555fd7aF2C5B841f7Ad9b737f5c4703Cd6A"
   },
   {
-   "pair": "XDP/USDC",
-   "fee": "<0.01%",
+   "pair": "USDC/NFLXc",
+   "fee": "0.05%",
    "chain": "Base",
-   "type": "CL200",
-   "tvl": 327251.99,
-   "aero_apr": 57.48,
-   "fees_apr": 6.05,
+   "type": "CL10",
+   "tvl": 320193.54,
+   "aero_apr": 223.59,
+   "fees_apr": 142.05,
    "price_via": {
-    "token0": "onchain",
-    "token1": "coinbase"
+    "token0": "coinbase",
+    "token1": "onchain"
    },
-   "pool": "0xC3CBFbaab532a04E36b6F901D725EaA5113FD781",
-   "gauge": "0x82a22544534ad422F6588Fb44d38F86a0C9Bf20D"
+   "pool": "0x67Ba8dBeDC6D7f93f0F5967Aa2420715f1edC756",
+   "gauge": "0x4B04159458e5dB5F5ff18FC05c9d16da583dA2F5"
   },
   {
    "pair": "GHO/USDC",
    "fee": "0.03%",
    "chain": "Ethereum",
    "type": "CL1",
-   "tvl": 315641.02,
-   "aero_apr": 18.74,
-   "fees_apr": 17.67,
+   "tvl": 315647.79,
+   "aero_apr": 19.31,
+   "fees_apr": 18.33,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -1553,9 +1583,9 @@
    "fee": "0.08%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 314981.77,
-   "aero_apr": 33.25,
-   "fees_apr": 24.03,
+   "tvl": 305929.19,
+   "aero_apr": 31.44,
+   "fees_apr": 22.83,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -1564,28 +1594,13 @@
    "gauge": "0x77Bf070D246c5b2823C9c8059d0E26b88b614c91"
   },
   {
-   "pair": "USDC/DIEM",
-   "fee": "0.53%",
-   "chain": "Base",
-   "type": "CL100",
-   "tvl": 314398.65,
-   "aero_apr": 315.51,
-   "fees_apr": 364.01,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xf69cD40Bc4c661D0DbAbb3d74b4F2a228aD63270",
-   "gauge": "0x4A870ac2a047909c1aB791F8d7176d33bC2d60eb"
-  },
-  {
    "pair": "MSTRc/cbBTC",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 298693.07,
-   "aero_apr": 380.46,
-   "fees_apr": 234.29,
+   "tvl": 298972.27,
+   "aero_apr": 266.5,
+   "fees_apr": 229.69,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -1594,28 +1609,43 @@
    "gauge": "0x79fc4cbD860e3528f092Bd7d9261e0Cd141a4803"
   },
   {
-   "pair": "USDC/NFLXc",
+   "pair": "USDC/ORCLc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 295225.4,
-   "aero_apr": 243.67,
-   "fees_apr": 153.63,
+   "tvl": 294131.83,
+   "aero_apr": 305.92,
+   "fees_apr": 180.34,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
    },
-   "pool": "0x67Ba8dBeDC6D7f93f0F5967Aa2420715f1edC756",
-   "gauge": "0x4B04159458e5dB5F5ff18FC05c9d16da583dA2F5"
+   "pool": "0x62B5452E80E50B047dcF6dd3Fb6a1D266C678eB5",
+   "gauge": "0x1b3bFf5f1dA1Fdcf770D4b205F7aA883f59c3eA8"
+  },
+  {
+   "pair": "XAUt/USDT",
+   "fee": "0.05%",
+   "chain": "Ethereum",
+   "type": "CL10",
+   "tvl": 289927.84,
+   "aero_apr": 89.64,
+   "fees_apr": 39.83,
+   "price_via": {
+    "token0": "onchain",
+    "token1": "coinbase"
+   },
+   "pool": "0xACE88ccC9F71C811ea38Ea93d707d036579166D4",
+   "gauge": "0xC8fF04236AF736e3D538230b98E2D9cD9be111e7"
   },
   {
    "pair": "msETH/WETH",
    "fee": "0.05%",
    "chain": "OP Mainnet",
    "type": "Basic Stable",
-   "tvl": 290079.18,
-   "aero_apr": 15.25,
-   "fees_apr": 0.64,
+   "tvl": 288655.88,
+   "aero_apr": 14.84,
+   "fees_apr": 0.62,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -1628,9 +1658,9 @@
    "fee": "0.3%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 284753.46,
+   "tvl": 283481.36,
    "aero_apr": 0.0,
-   "fees_apr": 0.79,
+   "fees_apr": 0.77,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1639,43 +1669,13 @@
    "gauge": null
   },
   {
-   "pair": "XAUt/USDT",
-   "fee": "0.05%",
-   "chain": "Ethereum",
-   "type": "CL10",
-   "tvl": 284405.13,
-   "aero_apr": 91.82,
-   "fees_apr": 40.9,
-   "price_via": {
-    "token0": "onchain",
-    "token1": "coinbase"
-   },
-   "pool": "0xACE88ccC9F71C811ea38Ea93d707d036579166D4",
-   "gauge": "0xC8fF04236AF736e3D538230b98E2D9cD9be111e7"
-  },
-  {
-   "pair": "USDC/ORCLc",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 282370.3,
-   "aero_apr": 320.2,
-   "fees_apr": 190.11,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x62B5452E80E50B047dcF6dd3Fb6a1D266C678eB5",
-   "gauge": "0x1b3bFf5f1dA1Fdcf770D4b205F7aA883f59c3eA8"
-  },
-  {
    "pair": "ICP/WETH",
    "fee": "0.04%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 282123.39,
-   "aero_apr": 28.56,
-   "fees_apr": 20.87,
+   "tvl": 282627.49,
+   "aero_apr": 27.41,
+   "fees_apr": 20.39,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1688,9 +1688,9 @@
    "fee": "0.3%",
    "chain": "Ethereum",
    "type": "CL50",
-   "tvl": 276221.17,
+   "tvl": 275053.59,
    "aero_apr": 0.0,
-   "fees_apr": 2.12,
+   "fees_apr": 2.09,
    "price_via": {
     "token0": "spot_consensus",
     "token1": "coinbase"
@@ -1703,9 +1703,9 @@
    "fee": "1%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 271056.97,
+   "tvl": 270332.63,
    "aero_apr": 0.0,
-   "fees_apr": 1.01,
+   "fees_apr": 1.0,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1714,28 +1714,13 @@
    "gauge": null
   },
   {
-   "pair": "msUSD/USDC",
-   "fee": "0.03%",
-   "chain": "Base",
-   "type": "CL50",
-   "tvl": 269514.14,
-   "aero_apr": 78.66,
-   "fees_apr": 7.19,
-   "price_via": {
-    "token0": "onchain",
-    "token1": "coinbase"
-   },
-   "pool": "0xbAC7394c3C4b2D188d4180275ef6Dd629f4C56fF",
-   "gauge": "0x58c012eC3Dd4d44aF2415A111EFfF69f879fe0F6"
-  },
-  {
    "pair": "USDC/TTWOc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 268510.14,
-   "aero_apr": 266.27,
-   "fees_apr": 120.83,
+   "tvl": 269609.23,
+   "aero_apr": 263.9,
+   "fees_apr": 121.18,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1744,13 +1729,28 @@
    "gauge": "0x3E022237c1a642EBfeBbef17b7ec2640a1f1C327"
   },
   {
+   "pair": "msUSD/USDC",
+   "fee": "0.03%",
+   "chain": "Base",
+   "type": "CL50",
+   "tvl": 268647.4,
+   "aero_apr": 72.35,
+   "fees_apr": 7.06,
+   "price_via": {
+    "token0": "onchain",
+    "token1": "coinbase"
+   },
+   "pool": "0xbAC7394c3C4b2D188d4180275ef6Dd629f4C56fF",
+   "gauge": "0x58c012eC3Dd4d44aF2415A111EFfF69f879fe0F6"
+  },
+  {
    "pair": "USDC/HIMSc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 266181.75,
-   "aero_apr": 270.3,
-   "fees_apr": 132.79,
+   "tvl": 268554.67,
+   "aero_apr": 266.62,
+   "fees_apr": 137.34,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1759,49 +1759,34 @@
    "gauge": "0x9487B81c6728B99D4E3cbd9afD4D6415c710f657"
   },
   {
-   "pair": "USDC/HOODc",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 258496.89,
-   "aero_apr": 278.29,
-   "fees_apr": 153.37,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x25B45fF27bd03dAfa0C0bf458762FFD0911fA9de",
-   "gauge": "0xC544fA46cA59C847cD0Cb890B887234cD0eCCF02"
-  },
-  {
-   "pair": "EURC/USDC",
-   "fee": "<0.01%",
-   "chain": "Base",
-   "type": "CL1",
-   "tvl": 256043.06,
-   "aero_apr": 45.34,
-   "fees_apr": 33.69,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x6eaEc4F69c92BD16a4B018Ceb6FE7A446A113598",
-   "gauge": "0xC9fbA11eFd440c8E99B8Cf9F24b99559e12bD178"
-  },
-  {
    "pair": "USDC/INFI",
-   "fee": "0.01%",
+   "fee": "1.5%",
    "chain": "Ethereum",
    "type": "CL100",
-   "tvl": 251512.58,
+   "tvl": 265174.54,
    "aero_apr": 0.0,
-   "fees_apr": 45.78,
+   "fees_apr": 44.63,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
    },
    "pool": "0xDB34dddb2EDc931ae2724Ed2a42Ad24fa6605cBB",
    "gauge": "0xC9A4D5426786898b1dc2Ca218fe2D4bc09F3d10e"
+  },
+  {
+   "pair": "WBTC/WETH",
+   "fee": "0.02%",
+   "chain": "Arbitrum",
+   "type": "CL10",
+   "tvl": 254323.48,
+   "aero_apr": 186.04,
+   "fees_apr": 135.1,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x6938F149a2B1CA7F4737109Ab7d0DF0C50b69087",
+   "gauge": "0x9EAc666361C4C9989Ab2A865d9320F16cB627094"
   },
   {
    "pair": "USDC/TITN",
@@ -1819,6 +1804,21 @@
    "gauge": null
   },
   {
+   "pair": "WETH/ZRO",
+   "fee": "0.09%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 248651.7,
+   "aero_apr": 208.47,
+   "fees_apr": 198.54,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x0f21A72A02DC78217c2987826D061500AECF7707",
+   "gauge": "0xB3b8d636D59B71EAb86CD36AB4C94c1C2dfbCE70"
+  },
+  {
    "pair": "USDC/eUSD",
    "fee": "0.05%",
    "chain": "Ethereum",
@@ -1834,12 +1834,42 @@
    "gauge": "0x71c42E5422FA01bC0B0e5711874e9A3e116a7DD2"
   },
   {
+   "pair": "VIRTUAL/WETH",
+   "fee": "0.04%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 243746.4,
+   "aero_apr": 54.03,
+   "fees_apr": 28.9,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x792f465e0434fB1028EA3BfeB05240CB839C4e04",
+   "gauge": "0x9376BBEF9bCB2558C4d9fC2EadAa3cf7356A6941"
+  },
+  {
+   "pair": "USDC/HOODc",
+   "fee": "0.05%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 243095.62,
+   "aero_apr": 294.5,
+   "fees_apr": 161.61,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x25B45fF27bd03dAfa0C0bf458762FFD0911fA9de",
+   "gauge": "0xC544fA46cA59C847cD0Cb890B887234cD0eCCF02"
+  },
+  {
    "pair": "USDC/alUSD",
    "fee": "0.05%",
    "chain": "OP Mainnet",
    "type": "Basic Stable",
-   "tvl": 239864.96,
-   "aero_apr": 14.76,
+   "tvl": 239877.9,
+   "aero_apr": 14.38,
    "fees_apr": 0.05,
    "price_via": {
     "token0": "coinbase",
@@ -1849,43 +1879,28 @@
    "gauge": "0xb5D3019da1C447fEB1Fbe765AC914bdF3be063Fc"
   },
   {
-   "pair": "WBTC/WETH",
-   "fee": "0.02%",
-   "chain": "Arbitrum",
-   "type": "CL10",
-   "tvl": 238919.15,
-   "aero_apr": 199.03,
-   "fees_apr": 146.32,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x6938F149a2B1CA7F4737109Ab7d0DF0C50b69087",
-   "gauge": "0x9EAc666361C4C9989Ab2A865d9320F16cB627094"
-  },
-  {
-   "pair": "VIRTUAL/WETH",
-   "fee": "0.04%",
+   "pair": "EURC/USDC",
+   "fee": "<0.01%",
    "chain": "Base",
-   "type": "CL100",
-   "tvl": 236979.39,
-   "aero_apr": 65.76,
-   "fees_apr": 29.64,
+   "type": "CL1",
+   "tvl": 236623.41,
+   "aero_apr": 51.27,
+   "fees_apr": 35.97,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0x792f465e0434fB1028EA3BfeB05240CB839C4e04",
-   "gauge": "0x9376BBEF9bCB2558C4d9fC2EadAa3cf7356A6941"
+   "pool": "0x6eaEc4F69c92BD16a4B018Ceb6FE7A446A113598",
+   "gauge": "0xC9fbA11eFd440c8E99B8Cf9F24b99559e12bD178"
   },
   {
    "pair": "USDC/WBTC",
    "fee": "0.03%",
    "chain": "OP Mainnet",
    "type": "CL50",
-   "tvl": 235140.89,
-   "aero_apr": 49.14,
-   "fees_apr": 39.14,
+   "tvl": 235233.93,
+   "aero_apr": 28.23,
+   "fees_apr": 38.22,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1898,9 +1913,9 @@
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 234473.93,
-   "aero_apr": 3.7,
-   "fees_apr": 6.3,
+   "tvl": 234726.88,
+   "aero_apr": 2.2,
+   "fees_apr": 6.21,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1910,12 +1925,12 @@
   },
   {
    "pair": "HYPE/WETH",
-   "fee": "0.02%",
+   "fee": "0.03%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 232336.97,
-   "aero_apr": 124.32,
-   "fees_apr": 130.8,
+   "tvl": 232637.55,
+   "aero_apr": 125.86,
+   "fees_apr": 105.76,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -1924,73 +1939,13 @@
    "gauge": "0x2e82B394AAa198aEF7F689c1B183c66B9A6dDDb4"
   },
   {
-   "pair": "SOL/USDC",
-   "fee": "0.01%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 230110.66,
-   "aero_apr": 127.13,
-   "fees_apr": 99.66,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x868Eed6BAD4bD368cd053b766F84CC727697589A",
-   "gauge": "0x9f4594cc94c373141242FA2cA199C5f78E1662E5"
-  },
-  {
-   "pair": "USDC/INTCc",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 229241.42,
-   "aero_apr": 11.84,
-   "fees_apr": 11.9,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x3D384288fA79B51De882B06B617aB7989CcAd4f3",
-   "gauge": "0xa02d8bf9841433e9E2687b92B369F420a6aD98f2"
-  },
-  {
-   "pair": "USDC/MRVLc",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 229207.14,
-   "aero_apr": 6.74,
-   "fees_apr": 7.19,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x611ab290422d534D9595b01e648911fefA963137",
-   "gauge": "0x8AE70f1449e8640720e745b5c36aE5efA6A161f6"
-  },
-  {
-   "pair": "USD\u20ae0/WETH",
-   "fee": "0.14%",
-   "chain": "Ink",
-   "type": "CL100",
-   "tvl": 229142.36,
-   "aero_apr": 144.14,
-   "fees_apr": 154.1,
-   "price_via": {
-    "token0": "onchain",
-    "token1": "coinbase"
-   },
-   "pool": "0x63469B9532E95C3a269D3070A31cf9f5c23204e7",
-   "gauge": "0x32132364cf59419fb50683d58B3A0d8456A0BB58"
-  },
-  {
    "pair": "USDC/CRCLc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 229027.51,
-   "aero_apr": 14.51,
-   "fees_apr": 14.24,
+   "tvl": 229711.63,
+   "aero_apr": 14.05,
+   "fees_apr": 14.11,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -1999,27 +1954,57 @@
    "gauge": "0x6be1473ef33673673A94aE83ae9E17cE624121bc"
   },
   {
-   "pair": "WETH/ZRO",
-   "fee": "0.1%",
+   "pair": "SOL/USDC",
+   "fee": "0.02%",
    "chain": "Base",
-   "type": "CL100",
-   "tvl": 228991.22,
-   "aero_apr": 235.07,
-   "fees_apr": 217.88,
+   "type": "CL10",
+   "tvl": 228671.7,
+   "aero_apr": 101.7,
+   "fees_apr": 97.96,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0x0f21A72A02DC78217c2987826D061500AECF7707",
-   "gauge": "0xB3b8d636D59B71EAb86CD36AB4C94c1C2dfbCE70"
+   "pool": "0x868Eed6BAD4bD368cd053b766F84CC727697589A",
+   "gauge": "0x9f4594cc94c373141242FA2cA199C5f78E1662E5"
+  },
+  {
+   "pair": "USDC/MRVLc",
+   "fee": "0.05%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 228592.55,
+   "aero_apr": 6.73,
+   "fees_apr": 7.0,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x611ab290422d534D9595b01e648911fefA963137",
+   "gauge": "0x8AE70f1449e8640720e745b5c36aE5efA6A161f6"
+  },
+  {
+   "pair": "USDC/INTCc",
+   "fee": "0.05%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 228538.09,
+   "aero_apr": 11.82,
+   "fees_apr": 11.69,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x3D384288fA79B51De882B06B617aB7989CcAd4f3",
+   "gauge": "0xa02d8bf9841433e9E2687b92B369F420a6aD98f2"
   },
   {
    "pair": "alETH/WETH",
    "fee": "0.05%",
    "chain": "OP Mainnet",
    "type": "Basic Stable",
-   "tvl": 228811.4,
-   "aero_apr": 0.54,
+   "tvl": 228397.68,
+   "aero_apr": 0.55,
    "fees_apr": 0.02,
    "price_via": {
     "token0": "onchain",
@@ -2029,28 +2014,13 @@
    "gauge": "0x988511ea49A3Cc7e0D6eF36f500b0f72f6A30df7"
   },
   {
-   "pair": "WBTC/USDT",
-   "fee": "0.03%",
-   "chain": "Ethereum",
-   "type": "CL10",
-   "tvl": 226716.49,
-   "aero_apr": 112.94,
-   "fees_apr": 61.29,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x941dDC62f8699f448e86C798e62520550616503D",
-   "gauge": "0xc0AC924D176Dcf18Ec565cE5fF79a7D774720f0C"
-  },
-  {
    "pair": "USDC/AVGOc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 226127.63,
-   "aero_apr": 15.04,
-   "fees_apr": 19.98,
+   "tvl": 227226.21,
+   "aero_apr": 14.9,
+   "fees_apr": 19.79,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -2059,13 +2029,43 @@
    "gauge": "0xd0E8164D38D89D09Ffb7D73d70c3D9a0ae080330"
   },
   {
+   "pair": "WETH/USDT",
+   "fee": "0.04%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 224958.63,
+   "aero_apr": 67.74,
+   "fees_apr": 64.27,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x2DBe0E264C7C246e05c6614794899937f264cf7b",
+   "gauge": "0x2f68E89Ad5176d1fcA1b4CAc7265536A539807e7"
+  },
+  {
+   "pair": "WBTC/USDT",
+   "fee": "0.02%",
+   "chain": "Ethereum",
+   "type": "CL10",
+   "tvl": 224668.12,
+   "aero_apr": 113.4,
+   "fees_apr": 61.5,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x941dDC62f8699f448e86C798e62520550616503D",
+   "gauge": "0xc0AC924D176Dcf18Ec565cE5fF79a7D774720f0C"
+  },
+  {
    "pair": "USDC/LLYc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 223842.07,
-   "aero_apr": 4.74,
-   "fees_apr": 2.37,
+   "tvl": 224192.6,
+   "aero_apr": 1.96,
+   "fees_apr": 2.27,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -2074,13 +2074,28 @@
    "gauge": "0xD358f81289038FA377c479279E9f05b1F3bFfD84"
   },
   {
+   "pair": "UNI/WETH",
+   "fee": "0.26%",
+   "chain": "Ethereum",
+   "type": "CL100",
+   "tvl": 223243.21,
+   "aero_apr": 433.21,
+   "fees_apr": 207.67,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x1281c215BD70BEf88430d2000DA193CAb5e7f87a",
+   "gauge": "0x7dA20b44FF9D1f2678682BcE143756880dE1fc18"
+  },
+  {
    "pair": "USDC/BEc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 221091.41,
-   "aero_apr": 8.28,
-   "fees_apr": 9.78,
+   "tvl": 223112.67,
+   "aero_apr": 7.11,
+   "fees_apr": 9.75,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -2093,9 +2108,9 @@
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 218495.01,
+   "tvl": 218320.11,
    "aero_apr": 0.3,
-   "fees_apr": 0.52,
+   "fees_apr": 0.48,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -2108,9 +2123,9 @@
    "fee": "0.3%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 216148.53,
-   "aero_apr": 9.61,
-   "fees_apr": 73.87,
+   "tvl": 215537.46,
+   "aero_apr": 9.59,
+   "fees_apr": 73.59,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2119,49 +2134,34 @@
    "gauge": "0x93964F48bD4F30605eEa383D5a3C53B34354b44E"
   },
   {
-   "pair": "USDC/KOc",
-   "fee": "0.05%",
+   "pair": "CHIP/USDC",
+   "fee": "0.21%",
    "chain": "Base",
-   "type": "CL10",
-   "tvl": 215710.11,
-   "aero_apr": 0.57,
-   "fees_apr": 0.95,
+   "type": "CL200",
+   "tvl": 214416.74,
+   "aero_apr": 27.7,
+   "fees_apr": 30.3,
    "price_via": {
     "token0": "coinbase",
-    "token1": "onchain"
+    "token1": "coinbase"
    },
-   "pool": "0x59C7a81E752fCa11b89E29Fa98E56A6f2eAD5fb3",
-   "gauge": "0xf89bB273057c0AC074dE26C346d2d2c5B85a587E"
+   "pool": "0x7779415171077FA77568d9E1FB5C66E3ee03d9c2",
+   "gauge": "0xAA3B00f22dE3C2a4a2485a9bdCFE56C185B49b88"
   },
   {
    "pair": "jEUR/EURC",
    "fee": "0.05%",
    "chain": "Base",
    "type": "Basic Stable",
-   "tvl": 212175.47,
-   "aero_apr": 2.24,
-   "fees_apr": 1.01,
+   "tvl": 212281.05,
+   "aero_apr": 2.23,
+   "fees_apr": 0.99,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
    },
    "pool": "0x64F492b7a8ac4b27E35D8E6C3C21e6b31ac69a27",
    "gauge": "0x60AF91007B1A7eA248Bcc059eC726a22499a42Eb"
-  },
-  {
-   "pair": "RECALL/USDC",
-   "fee": "0.24%",
-   "chain": "Base",
-   "type": "CL200",
-   "tvl": 212085.49,
-   "aero_apr": 9.27,
-   "fees_apr": 8.27,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xb35B5b3f17f4a780Ec694202dB704BE4fc46E2F0",
-   "gauge": "0x41a2e79BEBa348f5C779B8b905b4b107c031f09F"
   },
   {
    "pair": "USDC/AAOIc",
@@ -2179,13 +2179,28 @@
    "gauge": "0x46603B3862F5A0a251dabce8fEDBF00929495461"
   },
   {
+   "pair": "SOL/WETH",
+   "fee": "0.02%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 211962.01,
+   "aero_apr": 43.24,
+   "fees_apr": 45.17,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xf6C259eB2aC81E4269Eb6159e921faebCaF0F4f0",
+   "gauge": "0xE028AB34C8c534f6Efa073d9D470Bf1bee0C74aB"
+  },
+  {
    "pair": "USDC/MCDc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 211093.85,
-   "aero_apr": 1.96,
-   "fees_apr": 3.73,
+   "tvl": 211662.97,
+   "aero_apr": 1.94,
+   "fees_apr": 3.74,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -2194,19 +2209,64 @@
    "gauge": "0x9Da5EFa4009640612E8d71262c0ce7f08de42cc1"
   },
   {
-   "pair": "USDC/NOWc",
+   "pair": "RECALL/USDC",
+   "fee": "0.24%",
+   "chain": "Base",
+   "type": "CL200",
+   "tvl": 211252.08,
+   "aero_apr": 9.26,
+   "fees_apr": 7.4,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xb35B5b3f17f4a780Ec694202dB704BE4fc46E2F0",
+   "gauge": "0x41a2e79BEBa348f5C779B8b905b4b107c031f09F"
+  },
+  {
+   "pair": "USDC/WDCc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 210355.19,
+   "tvl": 210490.74,
+   "aero_apr": 0.05,
+   "fees_apr": 0.04,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x8468bFD8A3c5bB04C44dabF3329D7902F340B12b",
+   "gauge": "0x45d1Fd3790A4bCC11413b3B2e4eF849748aceA6D"
+  },
+  {
+   "pair": "USDC/UBERc",
+   "fee": "0.05%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 210420.79,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
    },
-   "pool": "0xe2935CD42271a31afDeDAEebc1e491214202E6b0",
-   "gauge": "0xD547a23Dc96e07796F3AA49fFA29e6b711500f97"
+   "pool": "0x10658504d00D3D65610c0FD72a81B6926109117A",
+   "gauge": "0x336A87Fd4Babe3D38d4e2c23bE2aFBE16b854574"
+  },
+  {
+   "pair": "USDC/SNOWc",
+   "fee": "0.05%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 210286.31,
+   "aero_apr": 0.0,
+   "fees_apr": 0.0,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x20812d6c78D972EeA8DF85319eC721DB1e67B31F",
+   "gauge": "0xD4D1332B61406ae85c60491BC2ab7f097a862098"
   },
   {
    "pair": "USDC/BRK.Bc",
@@ -2239,56 +2299,11 @@
    "gauge": "0x8168EFBFe385aCfea8761Cab677FE55AbaB5469a"
   },
   {
-   "pair": "USDC/UBERc",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 210137.38,
-   "aero_apr": 0.0,
-   "fees_apr": 0.0,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x10658504d00D3D65610c0FD72a81B6926109117A",
-   "gauge": "0x336A87Fd4Babe3D38d4e2c23bE2aFBE16b854574"
-  },
-  {
-   "pair": "USDC/GMEc",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 210025.05,
-   "aero_apr": 0.0,
-   "fees_apr": 0.06,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0xe1199A8B3cC490e2538AdBD24c4853f78Cbcaa07",
-   "gauge": "0x9EF261bC660B1C4355F024E6fa99911386622A0B"
-  },
-  {
-   "pair": "USDC/WDCc",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 209921.44,
-   "aero_apr": 0.05,
-   "fees_apr": 0.04,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0x8468bFD8A3c5bB04C44dabF3329D7902F340B12b",
-   "gauge": "0x45d1Fd3790A4bCC11413b3B2e4eF849748aceA6D"
-  },
-  {
    "pair": "USDC/CRWVc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 209919.71,
+   "tvl": 209980.09,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
@@ -2299,43 +2314,28 @@
    "gauge": "0x60CEfD923FDC3274328DBeb959e271D7ef5fB279"
   },
   {
-   "pair": "USDC/SNOWc",
+   "pair": "USDC/NOWc",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 209834.52,
+   "tvl": 209369.72,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
    },
-   "pool": "0x20812d6c78D972EeA8DF85319eC721DB1e67B31F",
-   "gauge": "0xD4D1332B61406ae85c60491BC2ab7f097a862098"
-  },
-  {
-   "pair": "SOL/WETH",
-   "fee": "0.02%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 209817.41,
-   "aero_apr": 59.27,
-   "fees_apr": 48.49,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xf6C259eB2aC81E4269Eb6159e921faebCaF0F4f0",
-   "gauge": "0xE028AB34C8c534f6Efa073d9D470Bf1bee0C74aB"
+   "pool": "0xe2935CD42271a31afDeDAEebc1e491214202E6b0",
+   "gauge": "0xD547a23Dc96e07796F3AA49fFA29e6b711500f97"
   },
   {
    "pair": "WETH/msETH",
    "fee": "0.03%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 209195.69,
-   "aero_apr": 75.26,
-   "fees_apr": 7.09,
+   "tvl": 207966.24,
+   "aero_apr": 67.57,
+   "fees_apr": 6.9,
    "price_via": {
     "token0": "coinbase",
     "token1": "spot_consensus"
@@ -2348,9 +2348,9 @@
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 206388.3,
+   "tvl": 206443.37,
    "aero_apr": 0.6,
-   "fees_apr": 4.13,
+   "fees_apr": 4.12,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -2359,49 +2359,19 @@
    "gauge": "0x38caF3a1Bf66882771d1A652CBE983049Cf5Fb65"
   },
   {
-   "pair": "WETH/USDT",
-   "fee": "0.04%",
-   "chain": "Base",
-   "type": "CL100",
-   "tvl": 204692.56,
-   "aero_apr": 116.02,
-   "fees_apr": 73.79,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x2DBe0E264C7C246e05c6614794899937f264cf7b",
-   "gauge": "0x2f68E89Ad5176d1fcA1b4CAc7265536A539807e7"
-  },
-  {
    "pair": "USD\u20ae0/kBTC",
    "fee": "0.07%",
    "chain": "Ink",
    "type": "CL50",
-   "tvl": 204623.28,
-   "aero_apr": 74.05,
-   "fees_apr": 85.25,
+   "tvl": 205943.21,
+   "aero_apr": 63.97,
+   "fees_apr": 84.18,
    "price_via": {
     "token0": "onchain",
     "token1": "onchain"
    },
    "pool": "0xf3C750eA813eE9e71f801d68a668fcF9F980f5F4",
    "gauge": "0xB26b4c3d774294770c7A5D137bc27f72a95b5DE6"
-  },
-  {
-   "pair": "CHIP/USDC",
-   "fee": "0.21%",
-   "chain": "Base",
-   "type": "CL200",
-   "tvl": 201980.32,
-   "aero_apr": 41.4,
-   "fees_apr": 32.54,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x7779415171077FA77568d9E1FB5C66E3ee03d9c2",
-   "gauge": "0xAA3B00f22dE3C2a4a2485a9bdCFE56C185B49b88"
   },
   {
    "pair": "USDC/deJAAA",
@@ -2423,9 +2393,9 @@
    "fee": "0.05%",
    "chain": "OP Mainnet",
    "type": "Basic Stable",
-   "tvl": 199956.76,
-   "aero_apr": 23.23,
-   "fees_apr": 0.76,
+   "tvl": 200197.65,
+   "aero_apr": 22.45,
+   "fees_apr": 0.74,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -2434,11 +2404,26 @@
    "gauge": "0xfF7bA47015C308e793a5521Fba385C103Ba3aD7E"
   },
   {
+   "pair": "WETH/LINK",
+   "fee": "0.22%",
+   "chain": "Base",
+   "type": "CL100",
+   "tvl": 199948.19,
+   "aero_apr": 22.51,
+   "fees_apr": 28.37,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x0Ae5f0a9D1B7824d340c56070Dc3a329E4A75a75",
+   "gauge": "0xa72E6401Db1312E406e73fB6084A14C6005FC349"
+  },
+  {
    "pair": "USDC/rANT",
    "fee": "0.3%",
    "chain": "Arbitrum",
    "type": "Basic Volatile",
-   "tvl": 197259.95,
+   "tvl": 197429.44,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
@@ -2453,9 +2438,9 @@
    "fee": "0.32%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 192571.68,
-   "aero_apr": 0.75,
-   "fees_apr": 5.28,
+   "tvl": 191777.43,
+   "aero_apr": 0.62,
+   "fees_apr": 5.18,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2464,19 +2449,49 @@
    "gauge": "0xc09FA77Cdc322CEa16720Ca86D6C857fEc363E05"
   },
   {
-   "pair": "WETH/LINK",
+   "pair": "TTWO/USDG",
    "fee": "0.22%",
+   "chain": "Robinhood",
+   "type": "CL10",
+   "tvl": 191060.09,
+   "aero_apr": 408.21,
+   "fees_apr": 140.58,
+   "price_via": {
+    "token0": "onchain",
+    "token1": "coinbase"
+   },
+   "pool": "0xbf88d2B2B0922484Af03D9b0a786a1D04e9F523B",
+   "gauge": "0xfB488142281D7aff2E61ef58c22f7bD6cF2Edd64"
+  },
+  {
+   "pair": "WETH/NVDAc",
+   "fee": "0.03%",
    "chain": "Base",
-   "type": "CL100",
-   "tvl": 191781.78,
-   "aero_apr": 29.53,
-   "fees_apr": 30.21,
+   "type": "CL50",
+   "tvl": 186628.85,
+   "aero_apr": 363.36,
+   "fees_apr": 313.66,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0xCe56168C09f4B7FCa30523822C48008705C01156",
+   "gauge": "0x4E054a8542D5B772aB1bDA187F14208274c9867A"
+  },
+  {
+   "pair": "CHZ/USDC",
+   "fee": "0.25%",
+   "chain": "Base",
+   "type": "CL50",
+   "tvl": 182120.03,
+   "aero_apr": 4.4,
+   "fees_apr": 6.47,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
-   "pool": "0x0Ae5f0a9D1B7824d340c56070Dc3a329E4A75a75",
-   "gauge": "0xa72E6401Db1312E406e73fB6084A14C6005FC349"
+   "pool": "0xF97dc64314813De750169Ce924C92564bc9fF411",
+   "gauge": "0x1b4ACa92f7df7370f2EDe1bF6575e54428f82Fd3"
   },
   {
    "pair": "USDC/MAI",
@@ -2494,64 +2509,19 @@
    "gauge": null
   },
   {
-   "pair": "UNI/WETH",
-   "fee": "0.25%",
-   "chain": "Ethereum",
-   "type": "CL100",
-   "tvl": 179622.98,
-   "aero_apr": 541.11,
-   "fees_apr": 262.28,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x1281c215BD70BEf88430d2000DA193CAb5e7f87a",
-   "gauge": "0x7dA20b44FF9D1f2678682BcE143756880dE1fc18"
-  },
-  {
-   "pair": "WETH/NVDAc",
+   "pair": "XSGD/WETH",
    "fee": "0.03%",
    "chain": "Base",
-   "type": "CL50",
-   "tvl": 179339.34,
-   "aero_apr": 377.27,
-   "fees_apr": 326.96,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0xCe56168C09f4B7FCa30523822C48008705C01156",
-   "gauge": "0x4E054a8542D5B772aB1bDA187F14208274c9867A"
-  },
-  {
-   "pair": "XSGD/WETH",
-   "fee": "0.02%",
-   "chain": "Base",
    "type": "CL100",
-   "tvl": 178801.64,
+   "tvl": 178298.36,
    "aero_apr": 1.53,
-   "fees_apr": 11.78,
+   "fees_apr": 11.44,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
    },
    "pool": "0x469d00fa2D589C1C505a28eF94FeB183Aea36Dc6",
    "gauge": "0x485AEb8df4A349D80a7bC961722d858BDDBD0398"
-  },
-  {
-   "pair": "CHZ/USDC",
-   "fee": "0.25%",
-   "chain": "Base",
-   "type": "CL50",
-   "tvl": 176574.42,
-   "aero_apr": 9.58,
-   "fees_apr": 7.18,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xF97dc64314813De750169Ce924C92564bc9fF411",
-   "gauge": "0x1b4ACa92f7df7370f2EDe1bF6575e54428f82Fd3"
   },
   {
    "pair": "VCHF/USDC",
@@ -2573,7 +2543,7 @@
    "fee": "0.25%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 165703.8,
+   "tvl": 165162.48,
    "aero_apr": 0.0,
    "fees_apr": 0.2,
    "price_via": {
@@ -2584,13 +2554,28 @@
    "gauge": null
   },
   {
+   "pair": "PONS/USDG",
+   "fee": "0.15%",
+   "chain": "Robinhood",
+   "type": "CL100",
+   "tvl": 162362.16,
+   "aero_apr": 1018.1,
+   "fees_apr": 824.87,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xD75790f3a3F639FEdB7406DF6dABB5bb8605949b",
+   "gauge": "0x750A4e760873C863dAF22890b8dB55f4c71F1114"
+  },
+  {
    "pair": "cirBTC/USDC",
    "fee": "<0.01%",
    "chain": "Arc",
    "type": "CL50",
-   "tvl": 161706.13,
-   "aero_apr": 14.4,
-   "fees_apr": 5.49,
+   "tvl": 159970.76,
+   "aero_apr": 14.49,
+   "fees_apr": 5.39,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -2603,9 +2588,9 @@
    "fee": "0.21%",
    "chain": "Ethereum",
    "type": "CL50",
-   "tvl": 157284.96,
-   "aero_apr": 139.54,
-   "fees_apr": 265.81,
+   "tvl": 156939.74,
+   "aero_apr": 139.15,
+   "fees_apr": 266.79,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2614,11 +2599,26 @@
    "gauge": "0xF14D22132DDB6a08497628e4382C92525b26B1Fe"
   },
   {
-   "pair": "cirBTC/USDC",
+   "pair": "tGBP/USDC",
    "fee": "0.05%",
+   "chain": "Base",
+   "type": "CL10",
+   "tvl": 153071.54,
+   "aero_apr": 1.1,
+   "fees_apr": 0.64,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xe530b3f533193d00BA65D16F19FE227779fAb2fc",
+   "gauge": "0xE1431f2a15CEb49c218d6E3673D8434679bFb71c"
+  },
+  {
+   "pair": "cirBTC/USDC",
+   "fee": "0.04%",
    "chain": "Arc",
    "type": "CL50",
-   "tvl": 153500.68,
+   "tvl": 152803.67,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
@@ -2629,43 +2629,13 @@
    "gauge": "0x9fCee4089FDaAB33fAdAd7f2eB0D1DAaC86E9012"
   },
   {
-   "pair": "PONS/USDG",
-   "fee": "0.15%",
-   "chain": "Robinhood",
-   "type": "CL100",
-   "tvl": 153411.55,
-   "aero_apr": 1082.74,
-   "fees_apr": 869.24,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xD75790f3a3F639FEdB7406DF6dABB5bb8605949b",
-   "gauge": "0x750A4e760873C863dAF22890b8dB55f4c71F1114"
-  },
-  {
-   "pair": "tGBP/USDC",
-   "fee": "0.05%",
-   "chain": "Base",
-   "type": "CL10",
-   "tvl": 153068.63,
-   "aero_apr": 1.05,
-   "fees_apr": 0.6,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xe530b3f533193d00BA65D16F19FE227779fAb2fc",
-   "gauge": "0xE1431f2a15CEb49c218d6E3673D8434679bFb71c"
-  },
-  {
    "pair": "VIRTUAL/cbBTC",
    "fee": "0.3%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 152896.88,
-   "aero_apr": 3.3,
-   "fees_apr": 3.75,
+   "tvl": 151706.29,
+   "aero_apr": 3.31,
+   "fees_apr": 3.66,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2678,9 +2648,9 @@
    "fee": "0.27%",
    "chain": "Ethereum",
    "type": "CL50",
-   "tvl": 151335.3,
-   "aero_apr": 15.97,
-   "fees_apr": 14.65,
+   "tvl": 150532.6,
+   "aero_apr": 15.98,
+   "fees_apr": 14.4,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2689,13 +2659,28 @@
    "gauge": "0x93f9cAFd90e0AB1e74F3D8C4a47b058D5d793410"
   },
   {
+   "pair": "LINK/WETH",
+   "fee": "0.23%",
+   "chain": "Ethereum",
+   "type": "CL10",
+   "tvl": 149596.51,
+   "aero_apr": 356.41,
+   "fees_apr": 170.57,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0xc7b83692A7F0591c07A7Eb67ba0724723D9C4f30",
+   "gauge": "0x2C56Bc4ea8035B5dddF8A41fFBF5f5cD0A2f7A6C"
+  },
+  {
    "pair": "RSGP/USDC",
    "fee": "1%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 146081.82,
-   "aero_apr": 80.08,
-   "fees_apr": 73.07,
+   "tvl": 145695.6,
+   "aero_apr": 61.08,
+   "fees_apr": 73.01,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -2708,9 +2693,9 @@
    "fee": "1%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 145002.3,
-   "aero_apr": 2.32,
-   "fees_apr": 3.18,
+   "tvl": 143748.86,
+   "aero_apr": 2.27,
+   "fees_apr": 2.9,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2719,28 +2704,13 @@
    "gauge": "0x2416952B8b2CaCaB88B75d0212200E43ea900383"
   },
   {
-   "pair": "tBTC/cbBTC",
-   "fee": "<0.01%",
-   "chain": "Base",
-   "type": "CL1",
-   "tvl": 143802.04,
-   "aero_apr": 0.86,
-   "fees_apr": 3.31,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x72b070Ccc1675b466cbD04551e73282444fE8c80",
-   "gauge": "0xA85Fb7551bC8f6246fE6c71B4d59F12F0A290957"
-  },
-  {
    "pair": "USDC/cbBTC",
    "fee": "0.3%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 143672.71,
+   "tvl": 143489.1,
    "aero_apr": 0.0,
-   "fees_apr": 2.96,
+   "fees_apr": 2.87,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2749,13 +2719,28 @@
    "gauge": null
   },
   {
+   "pair": "tBTC/cbBTC",
+   "fee": "<0.01%",
+   "chain": "Base",
+   "type": "CL1",
+   "tvl": 143404.84,
+   "aero_apr": 0.86,
+   "fees_apr": 2.84,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x72b070Ccc1675b466cbD04551e73282444fE8c80",
+   "gauge": "0xA85Fb7551bC8f6246fE6c71B4d59F12F0A290957"
+  },
+  {
    "pair": "MOCA/USDC",
    "fee": "0.32%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 143331.16,
-   "aero_apr": 41.35,
-   "fees_apr": 55.32,
+   "tvl": 141458.15,
+   "aero_apr": 53.6,
+   "fees_apr": 56.4,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2764,43 +2749,13 @@
    "gauge": "0x1352099cA120E354f28D6cEF63fa55B5A56CfC27"
   },
   {
-   "pair": "LINK/WETH",
-   "fee": "0.23%",
-   "chain": "Ethereum",
-   "type": "CL10",
-   "tvl": 139750.59,
-   "aero_apr": 383.38,
-   "fees_apr": 180.99,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0xc7b83692A7F0591c07A7Eb67ba0724723D9C4f30",
-   "gauge": "0x2C56Bc4ea8035B5dddF8A41fFBF5f5cD0A2f7A6C"
-  },
-  {
-   "pair": "ZEST/USDC",
-   "fee": "0.01%",
-   "chain": "Base",
-   "type": "CL1",
-   "tvl": 135749.29,
-   "aero_apr": 0.0,
-   "fees_apr": 1.81,
-   "price_via": {
-    "token0": "onchain",
-    "token1": "coinbase"
-   },
-   "pool": "0x93d2F2E5a4634562d23ed58A807B7391E35ab746",
-   "gauge": null
-  },
-  {
    "pair": "USDC/WHUF",
-   "fee": "0.71%",
+   "fee": "0.3%",
    "chain": "Base",
    "type": "CL200",
-   "tvl": 133799.94,
-   "aero_apr": 76.58,
-   "fees_apr": 105.97,
+   "tvl": 138263.02,
+   "aero_apr": 73.75,
+   "fees_apr": 99.42,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2809,43 +2764,28 @@
    "gauge": "0xfCb69Fa140Fb835169bC6C74eE9363F752EDCb7a"
   },
   {
-   "pair": "WETH/TLOS",
-   "fee": "1%",
+   "pair": "ZEST/USDC",
+   "fee": "0.01%",
    "chain": "Base",
-   "type": "Basic Volatile",
-   "tvl": 131715.53,
-   "aero_apr": 37.91,
-   "fees_apr": 4.51,
+   "type": "CL1",
+   "tvl": 135579.52,
+   "aero_apr": 0.0,
+   "fees_apr": 1.78,
    "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0xc065be76Bc4181d2EA7456EA1D1915c442C23Dbb",
-   "gauge": "0xAC73e33DaE3F7A46F8435E7538dcC7136bf7b896"
-  },
-  {
-   "pair": "WETH/USDC",
-   "fee": "0.03%",
-   "chain": "Arbitrum",
-   "type": "CL100",
-   "tvl": 130140.65,
-   "aero_apr": 80.73,
-   "fees_apr": 63.79,
-   "price_via": {
-    "token0": "coinbase",
+    "token0": "onchain",
     "token1": "coinbase"
    },
-   "pool": "0x30c83aaECC7ceAbea96b881a62729A1DF366eFd5",
-   "gauge": "0x12430B2f1E1f9D90DE0909aA51E5dD4943A98947"
+   "pool": "0x93d2F2E5a4634562d23ed58A807B7391E35ab746",
+   "gauge": null
   },
   {
    "pair": "USDC/USDT",
    "fee": "<0.01%",
    "chain": "OP Mainnet",
    "type": "CL1",
-   "tvl": 129089.63,
-   "aero_apr": 24.89,
-   "fees_apr": 4.1,
+   "tvl": 132884.14,
+   "aero_apr": 24.07,
+   "fees_apr": 3.99,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2854,13 +2794,43 @@
    "gauge": "0x9BF2a235F536d2889a5548C7Be8b48d4F5783879"
   },
   {
+   "pair": "WETH/TLOS",
+   "fee": "1%",
+   "chain": "Base",
+   "type": "Basic Volatile",
+   "tvl": 131193.22,
+   "aero_apr": 34.52,
+   "fees_apr": 4.35,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0xc065be76Bc4181d2EA7456EA1D1915c442C23Dbb",
+   "gauge": "0xAC73e33DaE3F7A46F8435E7538dcC7136bf7b896"
+  },
+  {
+   "pair": "USDC/GBPA",
+   "fee": "0.03%",
+   "chain": "Arc",
+   "type": "CL1",
+   "tvl": 129444.27,
+   "aero_apr": 0.09,
+   "fees_apr": 3.7,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0xF343caBe8bF938a7E413824CAea37bFD7aFA9708",
+   "gauge": "0x599d1bF21D153B0aeE341A8F745a4d457BF91C53"
+  },
+  {
    "pair": "USDC/cbBTC",
    "fee": "0.31%",
    "chain": "Ethereum",
    "type": "CL50",
-   "tvl": 128919.69,
-   "aero_apr": 218.73,
-   "fees_apr": 117.29,
+   "tvl": 128412.1,
+   "aero_apr": 218.53,
+   "fees_apr": 115.14,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2869,26 +2839,11 @@
    "gauge": "0x6A874b7b548DaB4928aa49B7E6f5e913E7fCD783"
   },
   {
-   "pair": "WETH/RSC",
-   "fee": "0.75%",
-   "chain": "Base",
-   "type": "CL50",
-   "tvl": 128411.08,
-   "aero_apr": 12.96,
-   "fees_apr": 26.66,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "coinbase"
-   },
-   "pool": "0x5F829d89c86c47e53d5fa99224AF8bD24F80C53f",
-   "gauge": "0x902DFB374CF4a509cb6EFc145c87628dfa64757E"
-  },
-  {
    "pair": "USDT/USDC",
    "fee": "1%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 128098.8,
+   "tvl": 128092.75,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
@@ -2899,13 +2854,28 @@
    "gauge": null
   },
   {
+   "pair": "WETH/RSC",
+   "fee": "0.75%",
+   "chain": "Base",
+   "type": "CL50",
+   "tvl": 126505.71,
+   "aero_apr": 3.22,
+   "fees_apr": 26.25,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x5F829d89c86c47e53d5fa99224AF8bD24F80C53f",
+   "gauge": "0x902DFB374CF4a509cb6EFc145c87628dfa64757E"
+  },
+  {
    "pair": "WETH/RED",
    "fee": "0.77%",
    "chain": "Base",
    "type": "CL200",
-   "tvl": 126223.89,
-   "aero_apr": 5.61,
-   "fees_apr": 7.02,
+   "tvl": 125741.38,
+   "aero_apr": 3.18,
+   "fees_apr": 6.65,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2918,9 +2888,9 @@
    "fee": "0.03%",
    "chain": "Base",
    "type": "CL100",
-   "tvl": 121250.09,
-   "aero_apr": 30.96,
-   "fees_apr": 27.04,
+   "tvl": 125481.19,
+   "aero_apr": 22.23,
+   "fees_apr": 25.28,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2929,13 +2899,28 @@
    "gauge": "0x8808ACeF598Dd44905B5Cc34f068804b2FA7660d"
   },
   {
+   "pair": "USDG/GLD",
+   "fee": "0.05%",
+   "chain": "Robinhood",
+   "type": "CL10",
+   "tvl": 118259.0,
+   "aero_apr": 73.2,
+   "fees_apr": 57.91,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "onchain"
+   },
+   "pool": "0x17e5BD3aB5F33FBe2e1dC40d6580Be42C86e38aD",
+   "gauge": "0x943F7d1E1C1159EC960b3426D43d13B6E515c8c3"
+  },
+  {
    "pair": "WETH/GHST",
    "fee": "0.3%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 118046.29,
+   "tvl": 117792.35,
    "aero_apr": 0.0,
-   "fees_apr": 2.32,
+   "fees_apr": 2.25,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -2960,12 +2945,12 @@
   },
   {
    "pair": "WETH/NVDA",
-   "fee": "0.03%",
+   "fee": "0.05%",
    "chain": "Robinhood",
    "type": "CL50",
-   "tvl": 111486.82,
-   "aero_apr": 584.25,
-   "fees_apr": 368.06,
+   "tvl": 112314.35,
+   "aero_apr": 577.14,
+   "fees_apr": 361.84,
    "price_via": {
     "token0": "coinbase",
     "token1": "spot_consensus"
@@ -2974,28 +2959,28 @@
    "gauge": "0x1471254d950E1390F852Cd1fED8e47be8966CFCF"
   },
   {
-   "pair": "USDG/GLD",
-   "fee": "0.12%",
+   "pair": "USDG/MU",
+   "fee": "0.27%",
    "chain": "Robinhood",
-   "type": "CL10",
-   "tvl": 110846.44,
-   "aero_apr": 78.47,
-   "fees_apr": 62.82,
+   "type": "CL50",
+   "tvl": 111234.5,
+   "aero_apr": 580.74,
+   "fees_apr": 447.61,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
    },
-   "pool": "0x17e5BD3aB5F33FBe2e1dC40d6580Be42C86e38aD",
-   "gauge": "0x943F7d1E1C1159EC960b3426D43d13B6E515c8c3"
+   "pool": "0x2c5E1da832751A260682D7b3816Cdf911E257b96",
+   "gauge": "0x9741D05a1fcfAe0ffaEe7cFe971CAAC7eA741106"
   },
   {
    "pair": "USDC/SQD",
    "fee": "0.3%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 110498.31,
+   "tvl": 110276.79,
    "aero_apr": 0.0,
-   "fees_apr": 5.04,
+   "fees_apr": 4.66,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -3008,7 +2993,7 @@
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
-   "tvl": 109419.25,
+   "tvl": 109412.52,
    "aero_apr": 0.0,
    "fees_apr": 1.25,
    "price_via": {
@@ -3019,28 +3004,28 @@
    "gauge": null
   },
   {
-   "pair": "USDC/GBPA",
-   "fee": "0.03%",
-   "chain": "Arc",
-   "type": "CL1",
-   "tvl": 104133.76,
-   "aero_apr": 0.12,
-   "fees_apr": 4.61,
+   "pair": "USD\u20ae0/WETH",
+   "fee": "0.14%",
+   "chain": "Ink",
+   "type": "CL100",
+   "tvl": 107648.7,
+   "aero_apr": 261.78,
+   "fees_apr": 326.1,
    "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
+    "token0": "onchain",
+    "token1": "coinbase"
    },
-   "pool": "0xF343caBe8bF938a7E413824CAea37bFD7aFA9708",
-   "gauge": "0x599d1bF21D153B0aeE341A8F745a4d457BF91C53"
+   "pool": "0x63469B9532E95C3a269D3070A31cf9f5c23204e7",
+   "gauge": "0x32132364cf59419fb50683d58B3A0d8456A0BB58"
   },
   {
    "pair": "PORTAL/USDC",
-   "fee": "0.2%",
+   "fee": "0.35%",
    "chain": "Base",
    "type": "CL200",
-   "tvl": 103717.13,
-   "aero_apr": 65.63,
-   "fees_apr": 205.44,
+   "tvl": 102761.97,
+   "aero_apr": 120.5,
+   "fees_apr": 210.94,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -3049,28 +3034,13 @@
    "gauge": "0x0447F6B35d61C93fbEBca2155A55a1E206898891"
   },
   {
-   "pair": "USDG/CRCL",
-   "fee": "0.23%",
-   "chain": "Robinhood",
-   "type": "CL100",
-   "tvl": 102355.33,
-   "aero_apr": 399.74,
-   "fees_apr": 207.83,
-   "price_via": {
-    "token0": "coinbase",
-    "token1": "onchain"
-   },
-   "pool": "0xFb383F2470120C2eAC6092C229064272EAE91d6f",
-   "gauge": "0xc88436cEDfA8135C2B48fB90798273228CCE00cf"
-  },
-  {
    "pair": "USD\u20ae0/USDT",
    "fee": "<0.01%",
    "chain": "OP Mainnet",
    "type": "CL1",
-   "tvl": 101231.43,
-   "aero_apr": 4.52,
-   "fees_apr": 7.25,
+   "tvl": 102605.94,
+   "aero_apr": 4.44,
+   "fees_apr": 7.3,
    "price_via": {
     "token0": "onchain",
     "token1": "coinbase"
@@ -3083,9 +3053,9 @@
    "fee": "<0.01%",
    "chain": "Base",
    "type": "CL1",
-   "tvl": 100402.63,
-   "aero_apr": 1.89,
-   "fees_apr": 1.72,
+   "tvl": 100391.37,
+   "aero_apr": 5.9,
+   "fees_apr": 1.67,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -3094,28 +3064,28 @@
    "gauge": "0x12a984598a52F7c7890e1FAB8E360eE2b432e918"
   },
   {
-   "pair": "TTWO/USDG",
-   "fee": "0.22%",
+   "pair": "USDG/CRCL",
+   "fee": "0.23%",
    "chain": "Robinhood",
-   "type": "CL10",
-   "tvl": 99846.87,
-   "aero_apr": 785.01,
-   "fees_apr": 268.92,
+   "type": "CL100",
+   "tvl": 99767.66,
+   "aero_apr": 408.12,
+   "fees_apr": 213.83,
    "price_via": {
-    "token0": "onchain",
-    "token1": "coinbase"
+    "token0": "coinbase",
+    "token1": "onchain"
    },
-   "pool": "0xbf88d2B2B0922484Af03D9b0a786a1D04e9F523B",
-   "gauge": "0xfB488142281D7aff2E61ef58c22f7bD6cF2Edd64"
+   "pool": "0xFb383F2470120C2eAC6092C229064272EAE91d6f",
+   "gauge": "0xc88436cEDfA8135C2B48fB90798273228CCE00cf"
   },
   {
    "pair": "WETH/GOOGLc",
    "fee": "0.02%",
    "chain": "Base",
    "type": "CL50",
-   "tvl": 98825.37,
-   "aero_apr": 55.47,
-   "fees_apr": 59.87,
+   "tvl": 98820.54,
+   "aero_apr": 55.41,
+   "fees_apr": 59.14,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -3128,9 +3098,9 @@
    "fee": "1%",
    "chain": "Base",
    "type": "Basic Volatile",
-   "tvl": 97955.22,
+   "tvl": 97594.15,
    "aero_apr": 0.0,
-   "fees_apr": 0.52,
+   "fees_apr": 0.44,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -3143,7 +3113,7 @@
    "fee": "2.5%",
    "chain": "Base",
    "type": "CL250",
-   "tvl": 97707.03,
+   "tvl": 97593.11,
    "aero_apr": 0.0,
    "fees_apr": 0.0,
    "price_via": {
@@ -3158,9 +3128,9 @@
    "fee": "0.03%",
    "chain": "Arbitrum",
    "type": "CL100",
-   "tvl": 94802.75,
-   "aero_apr": 467.52,
-   "fees_apr": 184.7,
+   "tvl": 96116.8,
+   "aero_apr": 458.89,
+   "fees_apr": 178.55,
    "price_via": {
     "token0": "coinbase",
     "token1": "coinbase"
@@ -3169,13 +3139,28 @@
    "gauge": "0x389e21C7c95De2013b1740666365f898A2Ee3Aad"
   },
   {
+   "pair": "WETH/USDC",
+   "fee": "0.05%",
+   "chain": "Arbitrum",
+   "type": "CL100",
+   "tvl": 93169.77,
+   "aero_apr": 87.61,
+   "fees_apr": 86.26,
+   "price_via": {
+    "token0": "coinbase",
+    "token1": "coinbase"
+   },
+   "pool": "0x30c83aaECC7ceAbea96b881a62729A1DF366eFd5",
+   "gauge": "0x12430B2f1E1f9D90DE0909aA51E5dD4943A98947"
+  },
+  {
    "pair": "USDC/CETES",
    "fee": "0.05%",
    "chain": "Base",
    "type": "CL10",
    "tvl": 92979.86,
    "aero_apr": 0.0,
-   "fees_apr": 0.85,
+   "fees_apr": 0.78,
    "price_via": {
     "token0": "coinbase",
     "token1": "onchain"
@@ -3204,7 +3189,7 @@
    "chain": "Base",
    "type": "CL10",
    "tvl": 90943.12,
-   "aero_apr": 1.36,
+   "aero_apr": 1.35,
    "fees_apr": 0.05,
    "price_via": {
     "token0": "coinbase",
@@ -3216,7 +3201,7 @@
  ],
  "price_gate": {
   "tokens_corrected": 16,
-  "tokens_unverified": 37,
-  "dropped_price_unverified": 93
+  "tokens_unverified": 36,
+  "dropped_price_unverified": 90
  }
 }
